@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mssql
+      - DB_PORT=1433
+      - DB_NAME=digital_certificates
+      - DB_USERNAME=sa
+      - DB_PASSWORD=YourStrong@Passw0rd
+    depends_on:
+      - mssql
+    volumes:
+      - ./logs:/app/logs
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:
