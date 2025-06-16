@@ -10,8 +10,8 @@ import swaggerUi from 'swagger-ui-express';
 // import { requestLogger } from './middlewares/requestLogger';
 // import { rateLimiter } from './middlewares/rateLimiter';
 // import { routes } from './routes';
-import { swaggerSpec } from './config/swagger';
-import { Environment } from './config/environment';
+import { swaggerSpec } from '@config/swagger';
+import { Environment } from '@config/environment';
 // import { logger } from './utils/logger';
 
 // Initialize i18next
@@ -35,7 +35,7 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-    origin: Environment.NODE_ENV === 'production' ? false : true,
+    origin: Environment.NODE_ENV !== 'production',
     credentials: true,
 }));
 

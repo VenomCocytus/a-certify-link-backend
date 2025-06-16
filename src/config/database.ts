@@ -1,4 +1,4 @@
-import { Sequelize, Options } from 'sequelize';
+import { Options } from 'sequelize';
 import { Environment } from './environment';
 
 const sequelizeConfig: Options = {
