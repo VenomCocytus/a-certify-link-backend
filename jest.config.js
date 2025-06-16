@@ -25,7 +25,7 @@ module.exports = {
         '^@utils/(.*)$': '<rootDir>/src/utils/$1',
         '^@middlewares/(.*)$': '<rootDir>/src/middlewares/$1',
         '^@interfaces/(.*)$': '<rootDir>/src/interfaces/$1',
-        '^@dtos/(.*)$': '<rootDir>/src/dtos/$1',
+        '^@dto/(.*)$': '<rootDir>/src/dto/$1',
         '^@exceptions/(.*)$': '<rootDir>/src/exceptions/$1',
     },
 };
