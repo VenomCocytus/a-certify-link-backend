@@ -164,16 +164,16 @@ export const initUserModel = (sequelize: Sequelize) => {
         }
     );
 
-    // Instance methods
-    User.prototype.validatePassword = async function (password: string): Promise<boolean> {
-        return bcrypt.compare(password, this.password);
-    };
-
-    User.prototype.toJSON = function () {
-        const values = { ...this.get() };
-        delete values.password;
-        return values;
-    };
+    // // Instance methods
+    // User.prototype.validatePassword = async function (password: string): Promise<boolean> {
+    //     return bcrypt.compare(password, this.password);
+    // };
+    //
+    // User.prototype.toJSON = function () {
+    //     const values = { ...this.get() };
+    //     delete values.password;
+    //     return values;
+    // };
 
     return User;
 };

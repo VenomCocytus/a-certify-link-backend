@@ -3,8 +3,8 @@ import { OrassPolicyModel } from '@/models';
 import {
     OrassInsuredData,
     OrassPolicyData,
-    OrassInsuredDto,
-    OrassPolicyDto
+    // OrassInsuredDto,
+    // OrassPolicyDto
 } from '@interfaces/orassInterfaces';
 import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';
 
@@ -53,58 +53,58 @@ export class OrassMapper {
             status: apiData.status,
             agent_code: apiData.agentCode || null,
             company_code: apiData.companyCode,
-            guarantees: apiData.guarantees || null,
+            // guarantees: apiData.guarantees || null,
         };
     }
 
-    /**
-     * Map OrassInsuredModel to DTO
-     */
-    static insuredModelToDto(model: OrassInsuredModel): OrassInsuredDto {
-        return {
-            id: model.orass_id,
-            firstName: model.first_name,
-            lastName: model.last_name,
-            email: model.email || undefined,
-            phone: model.phone || undefined,
-            address: model.address || undefined,
-            profession: model.profession || undefined,
-            type: model.type,
-            dateOfBirth: model.date_of_birth?.toISOString().split('T')[0],
-            nationalId: model.national_id || undefined,
-            companyRegistration: model.company_registration || undefined,
-        };
-    }
-
-    /**
-     * Map OrassPolicyModel to DTO
-     */
-    static policyModelToDto(model: OrassPolicyModel): OrassPolicyDto {
-        return {
-            id: model.orass_id,
-            policyNumber: model.policy_number,
-            insuredId: model.insured_id,
-            vehicleRegistration: model.vehicle_registration,
-            vehicleMake: model.vehicle_make,
-            vehicleModel: model.vehicle_model,
-            vehicleYear: model.vehicle_year || undefined,
-            vehicleType: model.vehicle_type || undefined,
-            vehicleUsage: model.vehicle_usage || undefined,
-            subscriptionDate: model.subscription_date.toISOString().split('T')[0],
-            effectiveDate: model.effective_date.toISOString().split('T')[0],
-            expirationDate: model.expiration_date.toISOString().split('T')[0],
-            premiumAmount: Number(model.premium_amount),
-            currency: model.currency,
-            status: model.status,
-            agentCode: model.agent_code || undefined,
-            companyCode: model.company_code,
-        };
-    }
+    // /**
+    //  * Map OrassInsuredModel to DTO
+    //  */
+    // static insuredModelToDto(model: OrassInsuredModel): OrassInsuredDto {
+    //     return {
+    //         id: model.orass_id,
+    //         firstName: model.first_name,
+    //         lastName: model.last_name,
+    //         email: model.email || undefined,
+    //         phone: model.phone || undefined,
+    //         address: model.address || undefined,
+    //         profession: model.profession || undefined,
+    //         type: model.type,
+    //         dateOfBirth: model.date_of_birth?.toISOString().split('T')[0],
+    //         nationalId: model.national_id || undefined,
+    //         companyRegistration: model.company_registration || undefined,
+    //     };
+    // }
+    //
+    // /**
+    //  * Map OrassPolicyModel to DTO
+    //  */
+    // static policyModelToDto(model: OrassPolicyModel): OrassPolicyDto {
+    //     return {
+    //         id: model.orass_id,
+    //         policyNumber: model.policy_number,
+    //         insuredId: model.insured_id,
+    //         vehicleRegistration: model.vehicle_registration,
+    //         vehicleMake: model.vehicle_make,
+    //         vehicleModel: model.vehicle_model,
+    //         vehicleYear: model.vehicle_year || undefined,
+    //         vehicleType: model.vehicle_type || undefined,
+    //         vehicleUsage: model.vehicle_usage || undefined,
+    //         subscriptionDate: model.subscription_date.toISOString().split('T')[0],
+    //         effectiveDate: model.effective_date.toISOString().split('T')[0],
+    //         expirationDate: model.expiration_date.toISOString().split('T')[0],
+    //         premiumAmount: Number(model.premium_amount),
+    //         currency: model.currency,
+    //         status: model.status,
+    //         agentCode: model.agent_code || undefined,
+    //         companyCode: model.company_code,
+    //     };
+    // }
 
     /**
      * Map vehicle type from Orass to IvoryAttestation format
      */
-    static mapVehicleTypeToIvory(orassVehicleType?: string): string {
+    static mapVehicleTypeToIvory(orassVehicleType?: string | null): string {
         const mapping: Record<string, string> = {
             'passenger_car': IvoryAttestationConstants.VEHICLE_TYPES.PERSONAL,
             'commercial_vehicle': IvoryAttestationConstants.VEHICLE_TYPES.UTILITY,
@@ -121,7 +121,7 @@ export class OrassMapper {
     /**
      * Map vehicle usage from Orass to IvoryAttestation format
      */
-    static mapVehicleUsageToIvory(orassUsage?: string): string {
+    static mapVehicleUsageToIvory(orassUsage?: string | null): string {
         const mapping: Record<string, string> = {
             'personal': IvoryAttestationConstants.VEHICLE_USAGE.PERSONAL_BUSINESS,
             'commercial': IvoryAttestationConstants.VEHICLE_USAGE.PUBLIC_GOODS,
@@ -136,7 +136,7 @@ export class OrassMapper {
     /**
      * Map profession from Orass to IvoryAttestation format
      */
-    static mapProfessionToIvory(orassProfession?: string): string {
+    static mapProfessionToIvory(orassProfession?: string | null): string {
         const mapping: Record<string, string> = {
             'farmer': IvoryAttestationConstants.PROFESSIONS.FARMER,
             'employee': IvoryAttestationConstants.PROFESSIONS.EMPLOYEE,
@@ -154,7 +154,7 @@ export class OrassMapper {
     /**
      * Determine vehicle category based on type and usage
      */
-    static determineVehicleCategory(vehicleType?: string, usage?: string): string {
+    static determineVehicleCategory(vehicleType?: string | null, usage?: string | null): string {
         if (usage?.toLowerCase().includes('taxi')) {
             return IvoryAttestationConstants.VEHICLE_CATEGORIES.CATEGORY_4;
         }
@@ -182,7 +182,7 @@ export class OrassMapper {
     /**
      * Determine vehicle genre based on type
      */
-    static determineVehicleGenre(vehicleType?: string): string {
+    static determineVehicleGenre(vehicleType?: string | null): string {
         const type = vehicleType?.toLowerCase() || '';
 
         if (type.includes('motorcycle') || type.includes('scooter')) {
@@ -201,14 +201,14 @@ export class OrassMapper {
             return IvoryAttestationConstants.VEHICLE_GENRES.BUS;
         }
 
-        // Default to car
+        // Default to a car
         return IvoryAttestationConstants.VEHICLE_GENRES.CAR;
     }
 
     /**
      * Determine energy source from vehicle data
      */
-    static determineEnergySource(vehicleYear?: number, vehicleModel?: string): string {
+    static determineEnergySource(vehicleYear?: number | null, vehicleModel?: string): string {
         const model = vehicleModel?.toLowerCase() || '';
 
         if (model.includes('electric') || model.includes('ev')) {

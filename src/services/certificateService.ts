@@ -1,5 +1,5 @@
 import { Transaction } from 'sequelize';
-import { Certificate, OrassPolicy, OrassInsured, sequelize } from '@/models';
+import { Certificate, OrassPolicy, OrassInsured, sequelize } from '@models/index';
 import { CertificateRepository } from '@/repositories/certificateRepository';
 import { OrassService } from './orassService';
 import { IvoryAttestationService } from './ivoryAttestationService';
@@ -16,7 +16,7 @@ import {
     BulkCertificateResult
 } from '@/interfaces/certificateInterfaces';
 import { CertificateServiceInterface } from '../interfaces/serviceInterfaces';
-import { PaginatedResponse, PaginationParams } from '@interfaces/common';
+import { PaginatedResponse, PaginationParams } from '@/interfaces/common';
 import { CertificateMapper } from '@/mappers/certificateMapper';
 import { IvoryAttestationMapper } from '@/mappers/ivoryAttestationMapper';
 import { OrassMapper } from '../mappers/orassMapper';
@@ -24,7 +24,7 @@ import { NotFoundException } from '@exceptions/notFoundException';
 import { ValidationException } from '@exceptions/validationException';
 import { ExternalApiException } from '@exceptions/externalApiException';
 import { Helpers } from '@utils/helpers';
-import { logger } from '@utils/logger';
+import { logger } from '@/utils/logger';
 
 export class CertificateService implements CertificateServiceInterface {
     private certificateRepository: CertificateRepository;
@@ -100,7 +100,7 @@ export class CertificateService implements CertificateServiceInterface {
     }
 
     /**
-     * Get certificate by ID
+     * Get a certificate by ID
      */
     async getCertificateById(id: string): Promise<CertificateData | null> {
         const certificate = await this.certificateRepository.findById(id);
@@ -115,7 +115,7 @@ export class CertificateService implements CertificateServiceInterface {
     }
 
     /**
-     * Get certificate by reference number
+     * Get a certificate by reference number
      */
     async getCertificateByReferenceNumber(referenceNumber: string): Promise<CertificateData | null> {
         const certificate = await this.certificateRepository.findByReferenceNumber(referenceNumber);

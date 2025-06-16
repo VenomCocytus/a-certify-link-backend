@@ -28,10 +28,8 @@ export class CertificateMapper {
      * Map Certificate model to detailed certificate data
      */
     static toCertificateData(
-        certificate: CertificateModel,
-        policy?: OrassPolicyModel,
-        insured?: OrassInsuredModel
-    ): CertificateData {
+        certificate: CertificateModel, p0: OrassPolicyModel | undefined, // policy?: OrassPolicyModel,
+        insured?: OrassInsuredModel    ): CertificateData {
         return {
             id: certificate.id,
             referenceNumber: certificate.reference_number,
@@ -48,7 +46,7 @@ export class CertificateMapper {
             metadata: certificate.metadata || undefined,
             createdAt: certificate.created_at,
             updatedAt: certificate.updated_at,
-            policy: policy ? this.mapOrassPolicy(policy) : undefined,
+            // policy: policy ? this.mapOrassPolicy(policy) : undefined,
             insured: insured ? this.mapOrassInsured(insured) : undefined,
         };
     }

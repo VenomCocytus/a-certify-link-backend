@@ -55,7 +55,7 @@ export class IvoryAttestationMapper {
             numero_telephone_souscripteur: insured.phone || '0000000000',
             boite_postale_souscripteur: 'NA',
 
-            // Insured information (can be same as subscriber)
+            // Insured information (can be the same as subscriber)
             type_assure: insured.type === 'individual'
                 ? IvoryAttestationConstants.INSURED_TYPES.PHYSICAL_PERSON
                 : IvoryAttestationConstants.INSURED_TYPES.LEGAL_ENTITY,
@@ -80,7 +80,7 @@ export class IvoryAttestationMapper {
                 type: 'AUTO',
                 duration: this.calculateContractDuration(policy.effective_date, policy.expiration_date),
             }),
-            zone_circulation: 'CIV002', // Default to Abidjan, should be configurable
+            zone_circulation: 'CIV002', // Default to Abidjan. This should be configurable
             date_premiere_mise_en_circulation: Helpers.formatDateForIvory(new Date(policy.vehicle_year || 2020, 0, 1)),
 
             // Amounts (convert from policy premium breakdown)
@@ -167,7 +167,7 @@ export class IvoryAttestationMapper {
     /**
      * Estimate seating capacity based on a vehicle type
      */
-    private static estimateSeatingCapacity(vehicleType?: string): string {
+    private static estimateSeatingCapacity(vehicleType?: string | null): string {
         const type = vehicleType?.toLowerCase() || '';
 
         if (type.includes('motorcycle')) return '2';
@@ -202,7 +202,7 @@ export class IvoryAttestationMapper {
     /**
      * Determine certificate color based on vehicle type and usage
      */
-    private static determineCertificateColor(vehicleType?: string, usage?: string): string {
+    private static determineCertificateColor(vehicleType?: string | null, usage?: string | null): string {
         if (usage?.toLowerCase().includes('taxi')) {
             return IvoryAttestationConstants.CERTIFICATE_COLORS.BLUE_MATCA;
         }
@@ -232,7 +232,7 @@ export class IvoryAttestationMapper {
      * Estimate vehicle value based on year, make, and model
      */
     private static estimateVehicleValue(
-        year?: number,
+        year?: number | null,
         make?: string,
         model?: string,
         depreciationFactor: number = 1
@@ -289,7 +289,7 @@ export class IvoryAttestationMapper {
     }
 
     /**
-     * Calculate taxes (TVA + other taxes, typically 18% in Côte d'Ivoire)
+     * Calculate taxes (TVA + other taxes, typically 18% in the Ivory Coast)
      */
     private static calculateTaxes(premium: number): number {
         return Math.round(premium * 0.18);
