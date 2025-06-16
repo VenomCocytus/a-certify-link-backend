@@ -1,6 +1,6 @@
 import {Op, Transaction} from 'sequelize';
-import {BaseRepository} from './baseRepository';
-import {IdempotencyRepositoryInterface} from '@interfaces/repositoryInterfaces';
+import { BaseRepository } from './baseRepository';
+import { IdempotencyRepositoryInterface } from '@interfaces/repositoryInterfaces';
 import {IdempotencyKey, IdempotencyKeyModel} from '@/models';
 import {logger} from '@utils/logger';
 

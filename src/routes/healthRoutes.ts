@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { HealthController } from '../controllers/healthController';
+import { HealthController } from '@controllers/healthController';
 import { authMiddleware, requireRoles } from '@middlewares/authMiddleware';
 
 const router = Router();

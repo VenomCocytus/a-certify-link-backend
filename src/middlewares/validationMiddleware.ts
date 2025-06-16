@@ -25,7 +25,7 @@ export const validateJoi = (schema: Schema) => {
             return;
         }
 
-        // Replace request body with validated data
+        // Replace the request body with validated data
         req.body = value;
         next();
     };
@@ -35,7 +35,7 @@ export const validateJoi = (schema: Schema) => {
 export const validateDto = <T extends object>(DtoClass: new () => T) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // Transform plain object to class instance
+            // Transform a plain object to a class instance
             const dto = plainToClass(DtoClass, req.body);
 
             // Validate the DTO
@@ -66,7 +66,7 @@ export const validateDto = <T extends object>(DtoClass: new () => T) => {
                 return;
             }
 
-            // Replace request body with validated DTO
+            // Replace the request body with validated DTO
             req.body = dto;
             next();
         } catch (error) {

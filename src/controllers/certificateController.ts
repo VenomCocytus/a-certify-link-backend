@@ -1,14 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { CertificateService } from '@services/certificateService';
-import {
-    CreateCertificateRequestDto,
-    CertificateListQueryDto,
-    UpdateCertificateStatusDto
-} from '@/dto/certificateDto';
+import { CreateCertificateRequestDto } from '@/dto/certificateDto';
 import { CertificateMapper } from '@/mappers/certificateMapper';
 import { NotFoundException } from '@exceptions/notFoundException';
 import { ValidationException } from '@exceptions/validationException';
-import { Helpers } from '../utils/helpers';
+import { Helpers } from '@utils/helpers';
 import { logger } from '@utils/logger';
 
 interface AuthenticatedRequest extends Request {

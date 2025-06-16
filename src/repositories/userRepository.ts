@@ -1,7 +1,7 @@
 import {Op, Transaction} from 'sequelize';
-import {BaseRepository} from './baseRepository';
-import {User, UserModel} from '@/models';
-import {logger} from '@utils/logger';
+import { BaseRepository } from './baseRepository';
+import { User, UserModel } from '@/models';
+import { logger } from '@utils/logger';
 
 export class UserRepository extends BaseRepository<UserModel> {
     constructor() {

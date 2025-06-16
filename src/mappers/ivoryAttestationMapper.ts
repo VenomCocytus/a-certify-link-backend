@@ -1,7 +1,4 @@
-import {
-    CreateCertificateRequestDto,
-    IvoryAttestationRequestDto
-} from '@/dto/certificateDto';
+import { CreateCertificateRequestDto } from '@/dto/certificateDto';
 import {
     IvoryAttestationEditionRequest,
     IvoryAttestationEditionResponse,
@@ -11,7 +8,7 @@ import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
 import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';
 import { OrassMapper } from './orassMapper';
-import { Helpers } from '../utils/helpers';
+import { Helpers } from '@utils/helpers';
 
 export class IvoryAttestationMapper {
     /**
@@ -121,7 +118,7 @@ export class IvoryAttestationMapper {
     }
 
     /**
-     * Get error message for IvoryAttestation status code
+     * Get an error message for IvoryAttestation status code
      */
     static getErrorMessage(statusCode: number): string {
         const errorMessages: Record<number, string> = {
@@ -168,7 +165,7 @@ export class IvoryAttestationMapper {
     }
 
     /**
-     * Estimate seating capacity based on vehicle type
+     * Estimate seating capacity based on a vehicle type
      */
     private static estimateSeatingCapacity(vehicleType?: string): string {
         const type = vehicleType?.toLowerCase() || '';
@@ -186,7 +183,7 @@ export class IvoryAttestationMapper {
      * Generate card number based on policy number
      */
     private static generateCardNumber(policyNumber: string): string {
-        // Generate a card number based on policy number
+        // Generate a card number based on the policy number
         const timestamp = Date.now().toString().slice(-6);
         return `CB${policyNumber.slice(-4)}${timestamp}`;
     }
@@ -198,7 +195,7 @@ export class IvoryAttestationMapper {
         if (guarantees && guarantees.rc) {
             return guarantees.rc.toString();
         }
-        // Default RC amount for Côte d'Ivoire
+        // Default RC amount for the Ivory Coast
         return '10000000'; // 10M XOF
     }
 
@@ -223,7 +220,7 @@ export class IvoryAttestationMapper {
     }
 
     /**
-     * Calculate contract duration in months
+     * Calculate contract duration in the past months
      */
     private static calculateContractDuration(effectiveDate: Date, expirationDate: Date): number {
         const diffTime = Math.abs(expirationDate.getTime() - effectiveDate.getTime());

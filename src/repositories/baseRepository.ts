@@ -1,13 +1,13 @@
 import {Includeable, Model, ModelStatic, Transaction, WhereOptions} from 'sequelize';
 import {BaseRepositoryInterface, FindAndCountAllOptions} from '@interfaces/repositoryInterfaces';
 import {PaginatedResponse} from '@interfaces/common';
-import {Helpers} from '../utils/helpers';
+import {Helpers} from '@utils/helpers';
 import {logger} from '@utils/logger';
 
 export abstract class BaseRepository<T extends Model, K = string> implements BaseRepositoryInterface<T, K> {
     protected model: ModelStatic<T>;
 
-    constructor(model: ModelStatic<T>) {
+    protected constructor(model: ModelStatic<T>) {
         this.model = model;
     }
 

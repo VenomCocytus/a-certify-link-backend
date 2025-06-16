@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthService } from '../services/authService';
-import { UserRepository } from '../repositories/userRepository';
+import { UserRepository } from '@/repositories/userRepository';
 import { ValidationException } from '@exceptions/validationException';
 import { NotFoundException } from '@exceptions/notFoundException';
 import { Environment } from '@config/environment';
@@ -23,19 +23,19 @@ export class AuthController {
         try {
             const { email, password } = req.body;
 
-            // Find user by email
+            // Find a user by email
             const user = await this.userRepository.findByEmail(email);
             if (!user) {
                 throw new ValidationException('Invalid email or password');
             }
 
-            // Check if account is locked
+            // Check if the account is locked
             if (user.locked_until && user.locked_until > new Date()) {
                 const lockTimeRemaining = Math.ceil((user.locked_until.getTime() - Date.now()) / 60000);
                 throw new ValidationException(`Account is locked. Try again in ${lockTimeRemaining} minutes`);
             }
 
-            // Check if account is active
+            // Check if the account is active
             if (!user.is_active) {
                 throw new ValidationException('Account is disabled');
             }
@@ -127,7 +127,7 @@ export class AuthController {
                 throw new NotFoundException('User not found or inactive');
             }
 
-            // Generate new access token
+            // Generate a new access token
             const tokenPayload = {
                 id: user.id,
                 email: user.email,
@@ -141,7 +141,7 @@ export class AuthController {
                 expiresIn: Environment.JWT_EXPIRES_IN,
             });
 
-            // Generate new refresh token
+            // Generate a new refresh token
             const newRefreshToken = jwt.sign(
                 { id: user.id, type: 'refresh' },
                 Environment.JWT_SECRET,
@@ -186,7 +186,7 @@ export class AuthController {
      */
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // In a production environment, you might want to blacklist the token
+            // In a production environment, you might want to banlist the token
             // or store active sessions in a database/cache
 
             logger.info('User logged out', {

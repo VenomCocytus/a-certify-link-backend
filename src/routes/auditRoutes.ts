@@ -91,7 +91,7 @@ router.use(authMiddleware);
  *         name: action
  *         schema:
  *           type: string
- *           enum: [created, updated, cancelled, suspended, downloaded, status_checked]
+ *           enum: [created, updated, canceled, suspended, downloaded, status_checked]
  *         description: Filter by action type
  *       - in: query
  *         name: resourceType
