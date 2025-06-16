@@ -18,8 +18,7 @@ interface ErrorResponse {
 export const globalExceptionHandler = (
     error: Error,
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
 ): void => {
     const traceId = uuidv4();
     const timestamp = new Date().toISOString();
