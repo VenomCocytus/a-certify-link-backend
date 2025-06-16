@@ -225,4 +225,93 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         emailFields.forEach(field => {
             const value = request[field as keyof IvoryAttestationEditionRequest] as string;
             if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                errors.push(`${field} must# Business Logic Services
+                errors.push(`${field} must be a valid email address`);
+            }
+        });
+
+        // Code validation against constants
+        const codeValidations = [
+            { field: 'genre_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_GENRES) },
+            { field: 'type_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_TYPES) },
+            { field: 'categorie_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_CATEGORIES) },
+            { field: 'usage_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_USAGE) },
+            { field: 'source_energie', validValues: Object.values(IvoryAttestationConstants.ENERGY_SOURCES) },
+            { field: 'type_souscripteur', validValues: Object.values(IvoryAttestationConstants.SUBSCRIBER_TYPES) },
+            { field: 'profession_assure', validValues: Object.values(IvoryAttestationConstants.PROFESSIONS) },
+            { field: 'code_nature_attestation', validValues: Object.values(IvoryAttestationConstants.CERTIFICATE_COLORS) },
+        ];
+
+        codeValidations.forEach(({ field, validValues }) => {
+            const value = request[field as keyof IvoryAttestationEditionRequest] as string;
+            if (value && !validValues.includes(value)) {
+                errors.push(`${field} value '${value}' is not valid`);
+            }
+        });
+
+        return {
+            isValid: errors.length === 0,
+            errors,
+        };
+    }
+
+    /**
+     * Check connection to IvoryAttestation
+     */
+    async checkConnection(): Promise<boolean> {
+        try {
+            // Simple health check - try to make a minimal request
+            const testRequest = {
+                code_demandeur: 'HEALTH_CHECK',
+                reference_demande: 'HC001',
+            };
+
+            await this.httpClient.post(IvoryAttestationConstants.ENDPOINTS.VERIFICATION, testRequest);
+            return true;
+        } catch (error) {
+            logger.error('IvoryAttestation connection check failed:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Get a human-readable description for status code
+     */
+    getStatusCodeDescription(statusCode: number): string {
+        const descriptions: Record<number, string> = {
+            [IvoryAttestationConstants.STATUS_CODES.SUCCESS]: 'Operation completed successfully',
+            [IvoryAttestationConstants.STATUS_CODES.PENDING]: 'Attestation generation pending',
+            [IvoryAttestationConstants.STATUS_CODES.GENERATING]: 'Attestation being generated',
+            [IvoryAttestationConstants.STATUS_CODES.READY_FOR_TRANSFER]: 'Attestation ready for transfer',
+            [IvoryAttestationConstants.STATUS_CODES.TRANSFERRED]: 'Attestation transferred successfully',
+
+            // Error codes
+            [IvoryAttestationConstants.STATUS_CODES.UNAUTHORIZED]: 'Unauthorized to use the edition API',
+            [IvoryAttestationConstants.STATUS_CODES.DUPLICATE_EXISTS]: 'Duplicate attestation exists in database',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_CIRCULATION_ZONE]: 'Invalid circulation zone code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIBER_TYPE]: 'Invalid subscriber type code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_INSURED_TYPE]: 'Invalid insured type code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_PROFESSION]: 'Invalid profession code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_TYPE]: 'Invalid vehicle type code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_USAGE]: 'Invalid vehicle usage code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_GENRE]: 'Invalid vehicle genre code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_ENERGY_SOURCE]: 'Invalid energy source code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_CATEGORY]: 'Invalid vehicle category code',
+            [IvoryAttestationConstants.STATUS_CODES.NO_INTERMEDIARY_RELATION]: 'No relationship between intermediary and company',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_INSURED_EMAIL]: 'Invalid insured email address',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIBER_EMAIL]: 'Invalid subscriber email address',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_CERTIFICATE_COLOR]: 'Invalid certificate color code',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIPTION_DATE]: 'Subscription date is before edition request date',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_EFFECT_DATE]: 'Effect date is before subscription date',
+            [IvoryAttestationConstants.STATUS_CODES.INVALID_DATE_FORMAT]: 'Invalid date format',
+            [IvoryAttestationConstants.STATUS_CODES.DATA_ERROR]: 'Data error in request',
+            [IvoryAttestationConstants.STATUS_CODES.SYSTEM_ERROR]: 'System error',
+            [IvoryAttestationConstants.STATUS_CODES.SAVE_ERROR]: 'Save error',
+            [IvoryAttestationConstants.STATUS_CODES.EDITION_FAILED]: 'Edition failed',
+            [IvoryAttestationConstants.STATUS_CODES.AUTHORIZATION_ERROR]: 'Certificate authorization error',
+            [IvoryAttestationConstants.STATUS_CODES.AUTHENTICATION_ERROR]: 'Authentication error',
+            [IvoryAttestationConstants.STATUS_CODES.RATE_LIMIT_EXCEEDED]: 'Rate limit exceeded, please try again later',
+        };
+
+        return descriptions[statusCode] || `Unknown status code: ${statusCode}`;
+    }
+}

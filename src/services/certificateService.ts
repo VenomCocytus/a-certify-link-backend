@@ -1,6 +1,6 @@
 import { Transaction } from 'sequelize';
-import { Certificate, OrassPolicy, OrassInsured, sequelize } from '../models';
-import { CertificateRepository } from '../repositories/certificateRepository';
+import { Certificate, OrassPolicy, OrassInsured, sequelize } from '@/models';
+import { CertificateRepository } from '@/repositories/certificateRepository';
 import { OrassService } from './orassService';
 import { IvoryAttestationService } from './ivoryAttestationService';
 import { AuditService } from './auditService';
@@ -14,17 +14,17 @@ import {
     CertificateSearchCriteria,
     BulkCertificateRequest,
     BulkCertificateResult
-} from '../interfaces/certificateInterfaces';
+} from '@/interfaces/certificateInterfaces';
 import { CertificateServiceInterface } from '../interfaces/serviceInterfaces';
-import { PaginatedResponse, PaginationParams } from '../interfaces/common';
-import { CertificateMapper } from '../mappers/certificateMapper';
-import { IvoryAttestationMapper } from '../mappers/ivoryAttestationMapper';
+import { PaginatedResponse, PaginationParams } from '@interfaces/common';
+import { CertificateMapper } from '@/mappers/certificateMapper';
+import { IvoryAttestationMapper } from '@/mappers/ivoryAttestationMapper';
 import { OrassMapper } from '../mappers/orassMapper';
-import { NotFoundException } from '../exceptions/notFoundException';
-import { ValidationException } from '../exceptions/validationException';
-import { ExternalApiException } from '../exceptions/externalApiException';
-import { Helpers } from '../utils/helpers';
-import { logger } from '../utils/logger';
+import { NotFoundException } from '@exceptions/notFoundException';
+import { ValidationException } from '@exceptions/validationException';
+import { ExternalApiException } from '@exceptions/externalApiException';
+import { Helpers } from '@utils/helpers';
+import { logger } from '@utils/logger';
 
 export class CertificateService implements CertificateServiceInterface {
     private certificateRepository: CertificateRepository;
@@ -60,7 +60,7 @@ export class CertificateService implements CertificateServiceInterface {
             // Fetch policy and insured data from Orass
             const { policy, insured } = await this.fetchOrassData(request);
 
-            // Create certificate record
+            // Create a certificate record
             const certificate = await this.createCertificateRecord(request, policy, insured, t);
 
             // Create audit log
