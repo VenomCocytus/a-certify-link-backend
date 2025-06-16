@@ -1,30 +1,30 @@
-import { Transaction } from 'sequelize';
-import {OrassPolicy, OrassInsured, sequelize } from '@/models';
-import { CertificateRepository } from '@/repositories/certificateRepository';
-import { OrassService } from './orassService';
-import { IvoryAttestationService } from './ivoryAttestationService';
+import {Transaction} from 'sequelize';
+import {OrassInsured, OrassPolicy, sequelize} from '@/models';
+import {CertificateRepository} from '@/repositories/certificateRepository';
+import {OrassService} from './orassService';
+import {IvoryAttestationService} from './ivoryAttestationService';
 // import { AuditService } from './auditService';
 // import { IdempotencyService } from './idempotencyService';
 import {
+    BulkCertificateRequest,
+    BulkCertificateResult,
     CertificateCreationRequest,
     CertificateCreationResult,
+    CertificateData,
     CertificateOperationRequest,
     CertificateOperationResult,
-    CertificateData,
-    CertificateSearchCriteria,
-    BulkCertificateRequest,
-    BulkCertificateResult
-} from '@/interfaces/certificateInterfaces';
-import { CertificateServiceInterface } from '../interfaces/serviceInterfaces';
-import { PaginatedResponse, PaginationParams } from '@/interfaces/common';
-import { CertificateMapper } from '@/mappers/certificateMapper';
-import { IvoryAttestationMapper } from '@/mappers/ivoryAttestationMapper';
-import { OrassMapper } from '../mappers/orassMapper';
-import { NotFoundException } from '@exceptions/notFoundException';
-import { ValidationException } from '@exceptions/validationException';
-import { ExternalApiException } from '@exceptions/externalApiException';
-import { Helpers } from '@utils/helpers';
-import { logger } from '@/utils/logger';
+    CertificateSearchCriteria, CertificateStatus
+} from '@interfaces/certificateInterfaces';
+import {CertificateServiceInterface} from '@interfaces/serviceInterfaces';
+import {PaginatedResponse, PaginationParams} from '@/interfaces/common';
+import {CertificateMapper} from '@/mappers/certificateMapper';
+import {IvoryAttestationMapper} from '@/mappers/ivoryAttestationMapper';
+import {NotFoundException} from '@exceptions/notFoundException';
+import {ValidationException} from '@exceptions/validationException';
+import {ExternalApiException} from '@exceptions/externalApiException';
+import {Helpers} from '@utils/helpers';
+import {logger} from '@utils/logger';
+import {ErrorCodes} from "@/constants/errorCodes";
 
 export class CertificateService implements CertificateServiceInterface {
     private certificateRepository: CertificateRepository;
@@ -39,6 +39,10 @@ export class CertificateService implements CertificateServiceInterface {
         this.ivoryAttestationService = new IvoryAttestationService();
         // this.auditService = new AuditService();
         // this.idempotencyService = new IdempotencyService();
+    }
+
+    processIdempotentRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
+        throw new Error('Method not implemented.');
     }
 
     /**
@@ -162,7 +166,7 @@ export class CertificateService implements CertificateServiceInterface {
      */
     async updateCertificateStatus(
         id: string,
-        status: string,
+        status: CertificateStatus,
         metadata?: Record<string, unknown>,
         userId?: string
     ): Promise<CertificateData> {
@@ -349,10 +353,10 @@ export class CertificateService implements CertificateServiceInterface {
                 };
             }
 
-            throw new ExternalApiException('IvoryAttestation', 'No download links available', 'IVORY_ATTESTATION_NO_DOWNLOAD');
+            throw new ExternalApiException('IvoryAttestation', 'No download links available', ErrorCodes.IVORY_ATTESTATION_DOWNLOAD_FAILED);
         } catch (error) {
             logger.error('Failed to get download URL:', error);
-            throw new ExternalApiException('IvoryAttestation', 'Failed to get download URL', 'IVORY_ATTESTATION_DOWNLOAD_ERROR');
+            throw new ExternalApiException('IvoryAttestation', 'Failed to get download URL', ErrorCodes.IVORY_ATTESTATION_DOWNLOAD_FAILED);
         }
     }
 
@@ -466,7 +470,7 @@ export class CertificateService implements CertificateServiceInterface {
 
         const certificateData = {
             reference_number: referenceNumber,
-            status: 'pending',
+            status: 'pending' as CertificateStatus,
             policy_id: policy.id,
             insured_id: insured.id,
             policy_number: request.policyNumber,
@@ -580,7 +584,7 @@ export class CertificateService implements CertificateServiceInterface {
             throw new ExternalApiException(
                 'IvoryAttestation',
                 `Failed to ${operation} certificate`,
-                'IVORY_ATTESTATION_OPERATION_ERROR'
+                ErrorCodes.IVORY_ATTESTATION_OPERATION_ERROR
             );
         }
     }

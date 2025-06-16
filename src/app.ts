@@ -6,13 +6,12 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import swaggerUi from 'swagger-ui-express';
-// import { globalExceptionHandler } from './middlewares/globalExceptionHandler';
-// import { requestLogger } from './middlewares/requestLogger';
-// import { rateLimiter } from './middlewares/rateLimiter';
-// import { routes } from './routes';
+import { globalExceptionHandler } from '@middlewares/globalExceptionHandler';
+import { requestLogger } from '@middlewares/requestLogger';
+import { rateLimiter } from '@middlewares/rateLimiter';
+import { routes } from './routes';
 import { swaggerSpec } from '@config/swagger';
 import { Environment } from '@config/environment';
-// import { logger } from './utils/logger';
 
 // Initialize i18next
 i18next
@@ -46,11 +45,11 @@ app.use(express.urlencoded({ extended: true }));
 // Compression middleware
 app.use(compression());
 
-// // Rate limiting
-// app.use(rateLimiter);
-//
-// // Request logging
-// app.use(requestLogger);
+// Rate limiting
+app.use(rateLimiter);
+
+// Request logging
+app.use(requestLogger as express.RequestHandler);
 
 // i18n middleware
 app.use(i18nextMiddleware.handle(i18next));
@@ -67,8 +66,8 @@ app.get('/health', (req, res) => {
     });
 });
 
-// // API routes
-// app.use('/api/v1', routes);
+// API routes
+app.use('/api/v1', routes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -81,7 +80,7 @@ app.use('*', (req, res) => {
     });
 });
 
-// // Global error handler (must be last)
-// app.use(globalExceptionHandler);
+// Global error handler (must be last)
+app.use(globalExceptionHandler);
 
 export { app };

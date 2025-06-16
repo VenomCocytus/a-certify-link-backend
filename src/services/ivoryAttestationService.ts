@@ -1,4 +1,4 @@
-import {IvoryAttestationServiceInterface} from '../interfaces/serviceInterfaces';
+import {IvoryAttestationServiceInterface} from '@interfaces/serviceInterfaces';
 import {
     IvoryAttestationEditionRequest,
     IvoryAttestationEditionResponse,
@@ -14,6 +14,13 @@ import {IvoryAttestationConstants} from '@/constants/ivoryAttestation';
 import {ExternalApiException} from '@exceptions/externalApiException';
 import {ValidationException} from '@exceptions/validationException';
 import {logger} from '@utils/logger';
+import {ErrorCodes} from "@/constants/errorCodes";
+
+// Define the type for the validation entries
+interface CodeValidation {
+    field: keyof IvoryAttestationEditionRequest;
+    validValues: string[];
+}
 
 export class IvoryAttestationService implements IvoryAttestationServiceInterface {
     private httpClient: HttpClient;
@@ -61,7 +68,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -80,7 +87,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -98,7 +105,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
                     throw new ExternalApiException(
                         'IvoryAttestation',
                         `Status update failed: ${this.getStatusCodeDescription(response.statut)}`,
-                        'IVORY_ATTESTATION_UPDATE_FAILED'
+                        ErrorCodes.IVORY_ATTESTATION_UPDATE_FAILED
                     );
                 }
 
@@ -109,7 +116,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -131,7 +138,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
                     throw new ExternalApiException(
                         'IvoryAttestation',
                         `Download failed: ${this.getStatusCodeDescription(response.statut)}`,
-                        'IVORY_ATTESTATION_DOWNLOAD_FAILED'
+                        ErrorCodes.IVORY_ATTESTATION_DOWNLOAD_FAILED
                     );
                 }
 
@@ -165,7 +172,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -230,15 +237,15 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         });
 
         // Code validation against constants
-        const codeValidations = [
-            { field: 'genre_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_GENRES) },
-            { field: 'type_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_TYPES) },
-            { field: 'categorie_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_CATEGORIES) },
-            { field: 'usage_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_USAGE) },
-            { field: 'source_energie', validValues: Object.values(IvoryAttestationConstants.ENERGY_SOURCES) },
-            { field: 'type_souscripteur', validValues: Object.values(IvoryAttestationConstants.SUBSCRIBER_TYPES) },
-            { field: 'profession_assure', validValues: Object.values(IvoryAttestationConstants.PROFESSIONS) },
-            { field: 'code_nature_attestation', validValues: Object.values(IvoryAttestationConstants.CERTIFICATE_COLORS) },
+        const codeValidations: CodeValidation[] = [
+            { field: 'genre_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_GENRES) as string[] },
+            { field: 'type_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_TYPES) as string[] },
+            { field: 'categorie_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_CATEGORIES) as string[] },
+            { field: 'usage_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_USAGE) as string[] },
+            { field: 'source_energie', validValues: Object.values(IvoryAttestationConstants.ENERGY_SOURCES) as string[] },
+            { field: 'type_souscripteur', validValues: Object.values(IvoryAttestationConstants.SUBSCRIBER_TYPES) as string[] },
+            { field: 'profession_assure', validValues: Object.values(IvoryAttestationConstants.PROFESSIONS) as string[] },
+            { field: 'code_nature_attestation', validValues: Object.values(IvoryAttestationConstants.CERTIFICATE_COLORS) as string[] },
         ];
 
         codeValidations.forEach(({ field, validValues }) => {

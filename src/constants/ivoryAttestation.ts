@@ -132,6 +132,7 @@ export const IvoryAttestationConstants = {
         TRANSFERRED: 124,
 
         // Error codes
+        RATE_LIMIT_EXCEEDED: -37,
         UNAUTHORIZED: -36,
         DUPLICATE_EXISTS: -35,
         INVALID_CIRCULATION_ZONE: -34,
@@ -168,7 +169,6 @@ export const IvoryAttestationConstants = {
         INVALID_INTERMEDIARY_CODE: -3,
         INVALID_COMPANY_CODE: -2,
         DUPLICATE_ERROR: -1,
-        RATE_LIMIT_EXCEEDED: -0,
     },
 
     // Max limits

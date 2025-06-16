@@ -22,6 +22,9 @@ export enum ErrorCodes {
     IVORY_ATTESTATION_CONNECTION_ERROR = 'IVORY_ATTESTATION_CONNECTION_ERROR',
     IVORY_ATTESTATION_AUTHENTICATION_ERROR = 'IVORY_ATTESTATION_AUTHENTICATION_ERROR',
     IVORY_ATTESTATION_CREATION_FAILED = 'IVORY_ATTESTATION_CREATION_FAILED',
+    IVORY_ATTESTATION_UPDATE_FAILED = 'IVORY_ATTESTATION_UPDATE_FAILED',
+    IVORY_ATTESTATION_DOWNLOAD_FAILED = 'IVORY_ATTESTATION_DOWNLOAD_FAILED',
+    IVORY_ATTESTATION_OPERATION_ERROR = 'IVORY_ATTESTATION_OPERATION_ERROR',
 
     // Database errors
     DATABASE_CONNECTION_ERROR = 'DATABASE_CONNECTION_ERROR',
@@ -55,6 +58,9 @@ export const ErrorMessages: Record<ErrorCodes, string> = {
     [ErrorCodes.IVORY_ATTESTATION_CONNECTION_ERROR]: 'Failed to connect to IvoryAttestation system',
     [ErrorCodes.IVORY_ATTESTATION_AUTHENTICATION_ERROR]: 'IvoryAttestation authentication failed',
     [ErrorCodes.IVORY_ATTESTATION_CREATION_FAILED]: 'Failed to create attestation in IvoryAttestation',
+    [ErrorCodes.IVORY_ATTESTATION_UPDATE_FAILED]: 'Failed to update attestation in IvoryAttestation',
+    [ErrorCodes.IVORY_ATTESTATION_DOWNLOAD_FAILED]: 'Failed to download attestation from IvoryAttestation',
+    [ErrorCodes.IVORY_ATTESTATION_OPERATION_ERROR]: 'Operation not allowed for IvoryAttestation',
 
     [ErrorCodes.DATABASE_CONNECTION_ERROR]: 'Database connection failed',
     [ErrorCodes.DATABASE_TRANSACTION_ERROR]: 'Database transaction failed',

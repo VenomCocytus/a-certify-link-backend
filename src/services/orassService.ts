@@ -1,4 +1,4 @@
-import { OrassServiceInterface } from '../interfaces/serviceInterfaces';
+import { OrassServiceInterface } from '@interfaces/serviceInterfaces';
 import {
     OrassPolicyData,
     OrassInsuredData,
@@ -30,7 +30,7 @@ export class OrassService implements OrassServiceInterface {
     }
 
     /**
-     * Authenticate with Orass system
+     * Authenticate with an Orass system
      */
     async authenticate(): Promise<string> {
         const circuitBreaker = orassCircuitBreaker(async () => {
@@ -52,7 +52,7 @@ export class OrassService implements OrassServiceInterface {
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -82,7 +82,7 @@ export class OrassService implements OrassServiceInterface {
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -112,7 +112,7 @@ export class OrassService implements OrassServiceInterface {
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -161,7 +161,7 @@ export class OrassService implements OrassServiceInterface {
             }
         });
 
-        return circuitBreaker();
+        return circuitBreaker.fire();
     }
 
     /**
@@ -191,7 +191,7 @@ export class OrassService implements OrassServiceInterface {
             errors.push('Policy has expired');
         }
 
-        // Check if policy is effective
+        // Check if the policy is effective
         const effectiveDate = new Date(policy.effectiveDate);
         if (effectiveDate > now) {
             errors.push('Policy is not yet effective');
