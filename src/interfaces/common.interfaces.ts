@@ -17,13 +17,6 @@ export interface PaginatedResponse<T> {
     meta: PaginationMeta;
 }
 
-export interface ApiResponse<T = unknown> {
-    success: boolean;
-    data?: T;
-    message?: string;
-    errors?: string[];
-}
-
 export interface HealthCheckResult {
     status: 'healthy' | 'unhealthy' | 'degraded';
     timestamp: string;

@@ -1,6 +1,16 @@
-import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import {
+    IsString,
+    IsEmail,
+    IsNotEmpty,
+    MinLength,
+    IsUUID,
+    IsOptional,
+    IsArray,
+    IsBoolean,
+    IsDate
+} from 'class-validator';
 
-export class LoginDto {
+export class LoginRequest {
     @IsEmail()
     @IsNotEmpty()
     email!: string;
@@ -11,13 +21,13 @@ export class LoginDto {
     password!: string;
 }
 
-export class RefreshTokenDto {
+export class RefreshTokenRequest {
     @IsString()
     @IsNotEmpty()
     refreshToken!: string;
 }
 
-export class ChangePasswordDto {
+export class ChangePasswordRequest {
     @IsString()
     @IsNotEmpty()
     currentPassword!: string;
@@ -33,4 +43,55 @@ export class ResetPasswordDto {
     @IsNotEmpty()
     @MinLength(8)
     newPassword!: string;
+}
+
+export class VerifyTokenRequest {
+    @IsString()
+    @IsNotEmpty()
+    token!: string;
+}
+
+export class UnlockAccountRequest {
+    @IsUUID()
+    @IsNotEmpty()
+    userId!: string;
+}
+
+export class UserProfileRequest {
+    @IsUUID()
+    id!: string;
+
+    @IsEmail()
+    email!: string;
+
+    @IsString()
+    firstName!: string;
+
+    @IsString()
+    lastName!: string;
+
+    @IsString()
+    role!: string; // You can further restrict this to union types if desired
+
+    @IsOptional()
+    @IsString()
+    companyCode?: string | null;
+
+    @IsOptional()
+    @IsString()
+    agentCode?: string | null;
+
+    @IsArray()
+    @IsString({ each: true })
+    permissions!: string[];
+
+    @IsBoolean()
+    isActive!: boolean;
+
+    @IsOptional()
+    @IsDate()
+    lastLoginAt?: Date | null;
+
+    @IsDate()
+    createdAt!: Date;
 }

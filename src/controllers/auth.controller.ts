@@ -7,6 +7,9 @@ import { NotFoundException } from '@exceptions/notFound.exception';
 import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
 import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
+import {validate} from "class-validator";
+import {LoginRequest} from "@dto/auth.dto";
+import {plainToInstance} from "class-transformer";
 
 export class AuthController {
     private authService: AuthService;
@@ -17,86 +20,16 @@ export class AuthController {
         this.userRepository = new UserRepository();
     }
 
-    /**
-     * @swagger
-     * /auth/login:
-     *   post:
-     *     summary: User login
-     *     description: Authenticate user and return JWT tokens
-     *     tags: [Authentication]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - email
-     *               - password
-     *             properties:
-     *               email:
-     *                 type: string
-     *                 format: email
-     *                 example: admin@digitalcertificates.com
-     *               password:
-     *                 type: string
-     *                 example: Admin@123456
-     *     responses:
-     *       200:
-     *         description: Login successful
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 data:
-     *                   type: object
-     *                   properties:
-     *                     token:
-     *                       type: string
-     *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     *                     refreshToken:
-     *                       type: string
-     *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     *                     expiresIn:
-     *                       type: number
-     *                       example: 86400
-     *                     user:
-     *                       type: object
-     *                       properties:
-     *                         id:
-     *                           type: string
-     *                         email:
-     *                           type: string
-     *                         firstName:
-     *                           type: string
-     *                         lastName:
-     *                           type: string
-     *                         role:
-     *                           type: string
-     *                         companyCode:
-     *                           type: string
-     *                         permissions:
-     *                           type: array
-     *                           items:
-     *                             type: string
-     *                 message:
-     *                   type: string
-     *                   example: Login successful
-     *       400:
-     *         $ref: '#/components/responses/BadRequest'
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     *       423:
-     *         description: Account locked
-     *       429:
-     *         $ref: '#/components/responses/TooManyRequests'
-     */
     login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+            // Transform and validate input DTO
+            const loginDto = plainToInstance(LoginRequest, req.body);
+            const errors = await validate(loginDto);
+
+            if (errors.length > 0) {
+                throw ValidationException.fromClassValidatorErrors(errors);
+            }
+
             const { email, password } = req.body;
 
             // Find a user by email
@@ -181,52 +114,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/refresh:
-     *   post:
-     *     summary: Refresh access token
-     *     description: Get a new access token using refresh token
-     *     tags: [Authentication]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - refreshToken
-     *             properties:
-     *               refreshToken:
-     *                 type: string
-     *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     *     responses:
-     *       200:
-     *         description: Token refreshed successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 data:
-     *                   type: object
-     *                   properties:
-     *                     token:
-     *                       type: string
-     *                     refreshToken:
-     *                       type: string
-     *                     expiresIn:
-     *                       type: number
-     *                     user:
-     *                       type: object
-     *       400:
-     *         $ref: '#/components/responses/BadRequest'
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     */
     refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { refreshToken } = req.body;
@@ -301,32 +188,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/logout:
-     *   post:
-     *     summary: User logout
-     *     description: Invalidate user session and log logout event
-     *     tags: [Authentication]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Logout successful
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 message:
-     *                   type: string
-     *                   example: Logout successful
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     */
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // In a production environment, you might want to banlist the token
@@ -346,58 +207,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/profile:
-     *   get:
-     *     summary: Get current user profile
-     *     description: Retrieve the authenticated user's profile information
-     *     tags: [Authentication]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: User profile retrieved successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 data:
-     *                   type: object
-     *                   properties:
-     *                     id:
-     *                       type: string
-     *                     email:
-     *                       type: string
-     *                     firstName:
-     *                       type: string
-     *                     lastName:
-     *                       type: string
-     *                     role:
-     *                       type: string
-     *                     companyCode:
-     *                       type: string
-     *                     agentCode:
-     *                       type: string
-     *                     permissions:
-     *                       type: array
-     *                       items:
-     *                         type: string
-     *                     isActive:
-     *                       type: boolean
-     *                     lastLoginAt:
-     *                       type: string
-     *                       format: date-time
-     *                     createdAt:
-     *                       type: string
-     *                       format: date-time
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     */
     getProfile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const user = req.user!;
@@ -428,51 +237,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/change-password:
-     *   post:
-     *     summary: Change user password
-     *     description: Change the authenticated user's password
-     *     tags: [Authentication]
-     *     security:
-     *       - bearerAuth: []
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - currentPassword
-     *               - newPassword
-     *             properties:
-     *               currentPassword:
-     *                 type: string
-     *                 example: OldPassword@123
-     *               newPassword:
-     *                 type: string
-     *                 example: NewPassword@456
-     *                 description: Must be at least 8 characters with uppercase, lowercase, number, and special character
-     *     responses:
-     *       200:
-     *         description: Password changed successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 message:
-     *                   type: string
-     *                   example: Password changed successfully
-     *       400:
-     *         $ref: '#/components/responses/BadRequest'
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     */
     changePassword = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const user = req.user!;
@@ -499,71 +263,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/verify-token:
-     *   post:
-     *     summary: Verify JWT token
-     *     description: Verify if a JWT token is valid and return user information
-     *     tags: [Authentication]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - token
-     *             properties:
-     *               token:
-     *                 type: string
-     *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     *     responses:
-     *       200:
-     *         description: Token is valid
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: true
-     *                 data:
-     *                   type: object
-     *                   properties:
-     *                     valid:
-     *                       type: boolean
-     *                       example: true
-     *                     user:
-     *                       type: object
-     *                       properties:
-     *                         id:
-     *                           type: string
-     *                         email:
-     *                           type: string
-     *                         role:
-     *                           type: string
-     *       400:
-     *         description: Token is invalid
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 success:
-     *                   type: boolean
-     *                   example: false
-     *                 data:
-     *                   type: object
-     *                   properties:
-     *                     valid:
-     *                       type: boolean
-     *                       example: false
-     *                     error:
-     *                       type: string
-     *                       example: Token has expired
-     */
     verifyToken = async (req: Request, res: Response): Promise<void> => {
         try {
             const { token } = req.body;
@@ -611,41 +310,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/reset-password:
-     *   post:
-     *     summary: Reset user password (Admin only)
-     *     description: Reset another user's password (admin function)
-     *     tags: [Authentication]
-     *     security:
-     *       - bearerAuth: []
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - userId
-     *               - newPassword
-     *             properties:
-     *               userId:
-     *                 type: string
-     *                 example: 550e8400-e29b-41d4-a716-446655440000
-     *               newPassword:
-     *                 type: string
-     *                 example: NewPassword@123
-     *     responses:
-     *       200:
-     *         description: Password reset successfully
-     *       400:
-     *         $ref: '#/components/responses/BadRequest'
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     *       403:
-     *         $ref: '#/components/responses/Forbidden'
-     */
     resetPassword = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const adminUser = req.user!;
@@ -676,37 +340,6 @@ export class AuthController {
         }
     };
 
-    /**
-     * @swagger
-     * /auth/unlock-account:
-     *   post:
-     *     summary: Unlock user account (Admin only)
-     *     description: Unlock a locked user account
-     *     tags: [Authentication]
-     *     security:
-     *       - bearerAuth: []
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - userId
-     *             properties:
-     *               userId:
-     *                 type: string
-     *                 example: 550e8400-e29b-41d4-a716-446655440000
-     *     responses:
-     *       200:
-     *         description: Account unlocked successfully
-     *       400:
-     *         $ref: '#/components/responses/BadRequest'
-     *       401:
-     *         $ref: '#/components/responses/Unauthorized'
-     *       403:
-     *         $ref: '#/components/responses/Forbidden'
-     */
     unlockAccount = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const adminUser = req.user!;

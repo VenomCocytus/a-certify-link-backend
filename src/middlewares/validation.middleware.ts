@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Schema } from 'joi';
 import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+import {plainToClass, plainToInstance} from 'class-transformer';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 
@@ -36,7 +36,7 @@ export const validateDto = <T extends object>(DtoClass: new () => T) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // Transform a plain object to a class instance
-            const dto = plainToClass(DtoClass, req.body);
+            const dto = plainToInstance(DtoClass, req.body);
 
             // Validate the DTO
             const errors = await validate(dto);

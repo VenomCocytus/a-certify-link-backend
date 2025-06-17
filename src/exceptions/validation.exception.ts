@@ -1,5 +1,6 @@
 import { BaseException } from './base.exception';
 import { ErrorCodes } from '@/constants/errorCodes';
+import { ValidationError } from 'class-validator';
 
 export class ValidationException extends BaseException {
     constructor(
@@ -13,6 +14,21 @@ export class ValidationException extends BaseException {
     static fromJoiError(error: any, instance?: string): ValidationException {
         const details = error.details?.reduce((acc: Record<string, string>, detail: any) => {
             acc[detail.path.join('.')] = detail.message;
+            return acc;
+        }, {});
+
+        return new ValidationException(
+            'Validation failed',
+            { validationErrors: details },
+            instance
+        );
+    }
+
+    static fromClassValidatorErrors(errors: ValidationError[], instance?: string): ValidationException {
+        const details = errors.reduce((acc: Record<string, string>, error) => {
+            if (error.constraints) {
+                acc[error.property] = Object.values(error.constraints).join(', ');
+            }
             return acc;
         }, {});
 
