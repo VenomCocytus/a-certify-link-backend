@@ -71,7 +71,7 @@ export class UserProfileRequest {
     lastName!: string;
 
     @IsString()
-    role!: string; // You can further restrict this to union types if desired
+    role!: string;
 
     @IsOptional()
     @IsString()

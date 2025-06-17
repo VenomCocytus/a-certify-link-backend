@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Schema } from 'joi';
 import { validate } from 'class-validator';
-import {plainToClass, plainToInstance} from 'class-transformer';
+import {plainToInstance} from 'class-transformer';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 
