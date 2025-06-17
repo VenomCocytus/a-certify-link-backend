@@ -110,7 +110,7 @@ router.use(authMiddleware);
  *   post:
  *     summary: Create a new digital certificate
  *     description: Create a new digital certificate for an insured vehicle
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -168,7 +168,7 @@ router.post(
  *   get:
  *     summary: List certificates
  *     description: Get a paginated list of certificates with optional filtering
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -264,7 +264,7 @@ router.get(
  *   get:
  *     summary: Get certificate by ID
  *     description: Get detailed information about a specific certificate
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -307,7 +307,7 @@ router.get(
  *   get:
  *     summary: Check certificate status
  *     description: Check the current status of a certificate from IvoryAttestation
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -357,7 +357,7 @@ router.get(
  *   get:
  *     summary: Get certificate download URL
  *     description: Get the download URL for a completed certificate
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -414,7 +414,7 @@ router.get(
  *   put:
  *     summary: Cancel certificate
  *     description: Cancel a certificate in IvoryAttestation system
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -466,7 +466,7 @@ router.put(
  *   put:
  *     summary: Suspend certificate
  *     description: Suspend a certificate in IvoryAttestation system
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -518,7 +518,7 @@ router.put(
  *   post:
  *     summary: Create multiple certificates
  *     description: Create multiple certificates in a single batch operation
- *     tags: [Certificates]
+ *     tags: [Certificate]
  *     security:
  *       - bearerAuth: []
  *     parameters:

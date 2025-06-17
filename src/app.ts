@@ -9,9 +9,9 @@ import swaggerUi from 'swagger-ui-express';
 import { globalExceptionHandler } from '@middlewares/globalExceptionHandler';
 import { requestLogger } from '@middlewares/requestLogger';
 import { rateLimiter } from '@middlewares/rateLimiter';
-import { routes } from './routes';
-import { swaggerSpec } from '@config/swagger';
+import routes from './routes';
 import { Environment } from '@config/environment';
+import {setupSwagger} from "@config/swagger";
 
 // Initialize i18next
 i18next
@@ -55,20 +55,8 @@ app.use(requestLogger as express.RequestHandler);
 app.use(i18nextMiddleware.handle(i18next));
 
 // API Documentation
-app.use('/config', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/routes', routes)
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        environment: Environment.NODE_ENV,
-    });
-});
-
-// API routes
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+app.use(Environment.API_PREFIX, routes)
+setupSwagger(app);
 
 // 404 handler
 app.use('*', (req, res) => {

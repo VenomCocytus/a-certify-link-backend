@@ -5,6 +5,8 @@ import { sequelize } from './models';
 import { Environment } from '@config/environment';
 
 const PORT = Environment.PORT || 3000;
+const API_PREFIX = Environment.API_PREFIX || '/api/v1';
+const ENV = Environment.NODE_ENV || 'development';
 
 async function startServer(): Promise<void> {
     try {
@@ -21,8 +23,10 @@ async function startServer(): Promise<void> {
         // Start server
         const server = app.listen(PORT, () => {
             logger.info(`🚀 Server running on port ${PORT}`);
-            logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+            logger.info(`📚 API Documentation: http://localhost:${PORT}${API_PREFIX}/docs`);
             logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
+            logger.info(`🔗 API base URL: http://localhost:${PORT}${API_PREFIX}`);
+            logger.info(`📊 Environment: ${ENV}`);
         });
 
         // Graceful shutdown
@@ -46,8 +50,6 @@ async function startServer(): Promise<void> {
         logger.error('Failed to start server:', error);
         process.exit(1);
     }
-
-    console.log('Happy developing ✨')
 }
 
 startServer()

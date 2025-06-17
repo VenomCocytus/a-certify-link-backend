@@ -9,6 +9,8 @@ export const Environment = {
     // Application
     NODE_ENV: process.env.NODE_ENV || 'development',
     PORT: parseInt(process.env.PORT || '3000', 10),
+    API_PREFIX: process.env.API_PREFIX || '/api/v1',
+    API_VERSION: process.env.API_VERSION || '1.0.0',
 
     // Database
     DB_HOST: process.env.DB_HOST || 'localhost',

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { certificateRoutes } from './certificateRoutes';
 // import { healthRoutes } from './healthRoutes';
 // import { auditRoutes } from './auditRoutes';
-import { authRoutes } from './authRoutes';
+import authRoutes from './authRoutes';
 
 const router = Router();
 
@@ -49,4 +49,47 @@ router.use('/certificates', certificateRoutes);
 // router.use('/health', healthRoutes);
 // router.use('/audit', auditRoutes);
 
-export { router as routes };
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API root endpoint
+ *     description: Returns basic API information and available endpoints
+ *     tags: [General]
+ *     responses:
+ *       200:
+ *         description: API information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Welcome to the API"
+ *                 version:
+ *                   type: string
+ *                   example: "1.0.0"
+ *                 endpoints:
+ *                   type: object
+ *                   properties:
+ *                     auth:
+ *                       type: string
+ *                       example: "/api/v1/auth"
+ *                     health:
+ *                       type: string
+ *                       example: "/api/v1/health"
+ */
+router.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'Welcome to the API',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            auth: '/api/v1/auth',
+            health: '/api/v1/health'
+        }
+    });
+});
+
+export default router;

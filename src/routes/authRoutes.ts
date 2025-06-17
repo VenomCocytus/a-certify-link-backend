@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { AuthController } from '@controllers/authController';
+import { AuthController } from '@controllers/auth.controller';
 import { validateDto } from '@middlewares/validationMiddleware';
 import { authLimiter } from '@middlewares/rateLimiter';
 import { LoginDto, RefreshTokenDto } from '@/dto/authDto';
@@ -137,4 +137,4 @@ router.post('/refresh', validateDto(RefreshTokenDto), authController.refreshToke
  */
 router.post('/logout', authController.logout);
 
-export { router as authRoutes };
+export default router;
