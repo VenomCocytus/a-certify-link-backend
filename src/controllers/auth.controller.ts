@@ -20,353 +20,304 @@ export class AuthController {
         this.userRepository = new UserRepository();
     }
 
-    login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            // Transform and validate input DTO
-            const loginDto = plainToInstance(LoginRequest, req.body);
-            const errors = await validate(loginDto);
+    login = async (req: Request, res: Response): Promise<void> => {
+        const { email, password } = req.body;
 
-            if (errors.length > 0) {
-                throw ValidationException.fromClassValidatorErrors(errors);
-            }
+        // Find a user by email
+        const user = await this.userRepository.findByEmail(email);
+        if (!user) {
+            throw new ValidationException('Invalid email or password');
+        }
 
-            const { email, password } = req.body;
+        // Check if the account is locked
+        if (user.locked_until && user.locked_until > new Date()) {
+            const lockTimeRemaining = Math.ceil((user.locked_until.getTime() - Date.now()) / 60000);
+            throw new ValidationException(`Account is locked. Try again in ${lockTimeRemaining} minutes`);
+        }
 
-            // Find a user by email
-            const user = await this.userRepository.findByEmail(email);
-            if (!user) {
-                throw new ValidationException('Invalid email or password');
-            }
+        // Check if the account is active
+        if (!user.is_active) {
+            throw new ValidationException('Account is disabled');
+        }
 
-            // Check if the account is locked
-            if (user.locked_until && user.locked_until > new Date()) {
-                const lockTimeRemaining = Math.ceil((user.locked_until.getTime() - Date.now()) / 60000);
-                throw new ValidationException(`Account is locked. Try again in ${lockTimeRemaining} minutes`);
-            }
+        // Validate password
+        const isPasswordValid = await user.validatePassword(password);
+        if (!isPasswordValid) {
+            // Increment failed login attempts
+            await this.userRepository.incrementFailedLoginAttempts(user.id);
+            throw new ValidationException('Invalid email or password');
+        }
 
-            // Check if the account is active
-            if (!user.is_active) {
-                throw new ValidationException('Account is disabled');
-            }
+        // Update last login and reset failed attempts
+        await this.userRepository.updateLastLogin(user.id);
 
-            // Validate password
-            const isPasswordValid = await user.validatePassword(password);
-            if (!isPasswordValid) {
-                // Increment failed login attempts
-                await this.userRepository.incrementFailedLoginAttempts(user.id);
-                throw new ValidationException('Invalid email or password');
-            }
+        // Generate JWT token
+        const tokenPayload = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            companyCode: user.company_code,
+            agentCode: user.agent_code,
+            permissions: user.permissions,
+        };
 
-            // Update last login and reset failed attempts
-            await this.userRepository.updateLastLogin(user.id);
+        // Define time base on the user role
+        const expiresIn = parseInt(Environment.JWT_EXPIRES_IN, 10);
 
-            // Generate JWT token
-            const tokenPayload = {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                companyCode: user.company_code,
-                agentCode: user.agent_code,
-                permissions: user.permissions,
-            };
+        const token = jwt.sign(tokenPayload, Environment.JWT_SECRET,
+            { expiresIn });
 
-            // Define time base on the user role
-            const expiresIn = parseInt(Environment.JWT_EXPIRES_IN, 10);
+        // Generate refresh token
+        const refreshToken = jwt.sign(
+            { id: user.id, type: 'refresh' },
+            Environment.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
-            const token = jwt.sign(tokenPayload, Environment.JWT_SECRET,
-                { expiresIn });
+        logger.info('User logged in successfully', {
+            userId: user.id,
+            email: user.email,
+            ip: req.ip,
+            userAgent: req.get('User-Agent'),
+        });
 
-            // Generate refresh token
-            const refreshToken = jwt.sign(
-                { id: user.id, type: 'refresh' },
-                Environment.JWT_SECRET,
-                { expiresIn: '7d' }
-            );
-
-            logger.info('User logged in successfully', {
-                userId: user.id,
-                email: user.email,
-                ip: req.ip,
-                userAgent: req.get('User-Agent'),
-            });
-
-            res.json({
-                success: true,
-                data: {
-                    token,
-                    refreshToken,
-                    expiresIn: 86400, // 24 hours in seconds
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        firstName: user.first_name,
-                        lastName: user.last_name,
-                        role: user.role,
-                        companyCode: user.company_code,
-                        agentCode: user.agent_code,
-                        permissions: user.permissions,
-                    },
+        res.json({
+            success: true,
+            data: {
+                token,
+                refreshToken,
+                expiresIn: 86400, // 24 hours in seconds
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.first_name,
+                    lastName: user.last_name,
+                    role: user.role,
+                    companyCode: user.company_code,
+                    agentCode: user.agent_code,
+                    permissions: user.permissions,
                 },
-                message: req.t('login_successful'),
-            });
-        } catch (error) {
-            next(error);
-        }
+            },
+            message: req.t('login_successful'),
+        });
     };
 
-    refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { refreshToken } = req.body;
+    refreshToken = async (req: Request, res: Response): Promise<void> => {
 
-            if (!refreshToken) {
-                throw new ValidationException('Refresh token is required');
-            }
+        const { refreshToken } = req.body;
 
-            // Verify refresh token
-            const decoded = jwt.verify(refreshToken, Environment.JWT_SECRET) as any;
+        if (!refreshToken) {
+            throw new ValidationException('Refresh token is required');
+        }
 
-            if (decoded.type !== 'refresh') {
-                throw new ValidationException('Invalid refresh token');
-            }
+        // Verify refresh token
+        const decoded = jwt.verify(refreshToken, Environment.JWT_SECRET) as any;
 
-            // Find user
-            const user = await this.userRepository.findById(decoded.id);
-            if (!user || !user.is_active) {
-                throw new NotFoundException('User not found or inactive');
-            }
+        if (decoded.type !== 'refresh') {
+            throw new ValidationException('Invalid refresh token');
+        }
 
-            // Generate a new access token
-            const tokenPayload = {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                companyCode: user.company_code,
-                agentCode: user.agent_code,
-                permissions: user.permissions,
-            };
-            const expiresIn = parseInt(Environment.JWT_EXPIRES_IN, 10);
+        // Find user
+        const user = await this.userRepository.findById(decoded.id);
+        if (!user || !user.is_active) {
+            throw new NotFoundException('User not found or inactive');
+        }
 
-            const newToken = jwt.sign(tokenPayload, Environment.JWT_SECRET, { expiresIn });
+        // Generate a new access token
+        const tokenPayload = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            companyCode: user.company_code,
+            agentCode: user.agent_code,
+            permissions: user.permissions,
+        };
+        const expiresIn = parseInt(Environment.JWT_EXPIRES_IN, 10);
 
-            // Generate a new refresh token
-            const newRefreshToken = jwt.sign(
-                { id: user.id, type: 'refresh' },
-                Environment.JWT_SECRET,
-                { expiresIn: '7d' }
-            );
+        const newToken = jwt.sign(tokenPayload, Environment.JWT_SECRET, { expiresIn });
 
-            logger.info('Token refreshed successfully', {
-                userId: user.id,
-                email: user.email,
-            });
+        // Generate a new refresh token
+        const newRefreshToken = jwt.sign(
+            { id: user.id, type: 'refresh' },
+            Environment.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
-            res.json({
-                success: true,
-                data: {
-                    token: newToken,
-                    refreshToken: newRefreshToken,
-                    expiresIn: 86400,
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        firstName: user.first_name,
-                        lastName: user.last_name,
-                        role: user.role,
-                        companyCode: user.company_code,
-                        agentCode: user.agent_code,
-                        permissions: user.permissions,
-                    },
+        logger.info('Token refreshed successfully', {
+            userId: user.id,
+            email: user.email,
+        });
+
+        res.json({
+            success: true,
+            data: {
+                token: newToken,
+                refreshToken: newRefreshToken,
+                expiresIn: 86400,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.first_name,
+                    lastName: user.last_name,
+                    role: user.role,
+                    companyCode: user.company_code,
+                    agentCode: user.agent_code,
+                    permissions: user.permissions,
                 },
-                message: req.t('token_refreshed'),
-            });
-        } catch (error) {
-            if (error instanceof jwt.JsonWebTokenError) {
-                next(new ValidationException('Invalid refresh token'));
-            } else {
-                next(error);
-            }
-        }
+            },
+            message: req.t('token_refreshed'),
+        });
     };
 
-    logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            // In a production environment, you might want to banlist the token
-            // or store active sessions in a database/cache
+    logout = async (req: Request, res: Response): Promise<void> => {
+        // In a production environment, you might want to banlist the token
+        // or store active sessions in a database/cache
 
-            logger.info('User logged out', {
-                ip: req.ip,
-                userAgent: req.get('User-Agent'),
-            });
+        logger.info('User logged out', {
+            ip: req.ip,
+            userAgent: req.get('User-Agent'),
+        });
 
-            res.json({
-                success: true,
-                message: req.t('logout_successful'),
-            });
-        } catch (error) {
-            next(error);
-        }
+        res.json({
+            success: true,
+            message: req.t('logout_successful'),
+        });
     };
 
-    getProfile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const user = req.user!;
+    getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const user = req.user!;
 
-            const userProfile = await this.userRepository.findById(user.id);
-            if (!userProfile) {
-                throw new NotFoundException('User profile not found');
-            }
-
-            res.json({
-                success: true,
-                data: {
-                    id: userProfile.id,
-                    email: userProfile.email,
-                    firstName: userProfile.first_name,
-                    lastName: userProfile.last_name,
-                    role: userProfile.role,
-                    companyCode: userProfile.company_code,
-                    agentCode: userProfile.agent_code,
-                    permissions: userProfile.permissions,
-                    isActive: userProfile.is_active,
-                    lastLoginAt: userProfile.last_login_at,
-                    createdAt: userProfile.created_at,
-                },
-            });
-        } catch (error) {
-            next(error);
+        const userProfile = await this.userRepository.findById(user.id);
+        if (!userProfile) {
+            throw new NotFoundException('User profile not found');
         }
+
+        res.json({
+            success: true,
+            data: {
+                id: userProfile.id,
+                email: userProfile.email,
+                firstName: userProfile.first_name,
+                lastName: userProfile.last_name,
+                role: userProfile.role,
+                companyCode: userProfile.company_code,
+                agentCode: userProfile.agent_code,
+                permissions: userProfile.permissions,
+                isActive: userProfile.is_active,
+                lastLoginAt: userProfile.last_login_at,
+                createdAt: userProfile.created_at,
+            },
+        });
     };
 
-    changePassword = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const user = req.user!;
-            const { currentPassword, newPassword } = req.body;
+    changePassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const user = req.user!;
+        const { currentPassword, newPassword } = req.body;
 
-            if (!currentPassword || !newPassword) {
-                throw new ValidationException('Current password and new password are required');
-            }
-
-            await this.authService.changePassword(user.id, currentPassword, newPassword);
-
-            logger.info('Password changed successfully', {
-                userId: user.id,
-                email: user.email,
-                ip: req.ip,
-            });
-
-            res.json({
-                success: true,
-                message: req.t ? req.t('password_changed') : 'Password changed successfully',
-            });
-        } catch (error) {
-            next(error);
+        if (!currentPassword || !newPassword) {
+            throw new ValidationException('Current password and new password are required');
         }
+
+        await this.authService.changePassword(user.id, currentPassword, newPassword);
+
+        logger.info('Password changed successfully', {
+            userId: user.id,
+            email: user.email,
+            ip: req.ip,
+        });
+
+        res.json({
+            success: true,
+            message: req.t ? req.t('password_changed') : 'Password changed successfully',
+        });
     };
 
     verifyToken = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { token } = req.body;
+        const { token } = req.body;
 
-            if (!token) {
-                throw new ValidationException('Token is required');
-            }
+        if (!token) {
+            throw new ValidationException('Token is required');
+        }
 
-            const user = await this.authService.getUserByToken(token);
+        const user = await this.authService.getUserByToken(token);
 
-            if (user) {
-                res.json({
-                    success: true,
-                    data: {
-                        valid: true,
-                        user: {
-                            id: user.id,
-                            email: user.email,
-                            firstName: user.first_name,
-                            lastName: user.last_name,
-                            role: user.role,
-                            companyCode: user.company_code,
-                            agentCode: user.agent_code,
-                            permissions: user.permissions,
-                        },
+        if (user) {
+            res.json({
+                success: true,
+                data: {
+                    valid: true,
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        firstName: user.first_name,
+                        lastName: user.last_name,
+                        role: user.role,
+                        companyCode: user.company_code,
+                        agentCode: user.agent_code,
+                        permissions: user.permissions,
                     },
-                });
-            } else {
-                res.status(400).json({
-                    success: false,
-                    data: {
-                        valid: false,
-                        error: 'Invalid or expired token',
-                    },
-                });
-            }
-        } catch (error) {
+                },
+            });
+        } else {
             res.status(400).json({
                 success: false,
                 data: {
                     valid: false,
-                    error: error instanceof Error ? error.message : 'Token verification failed',
+                    error: 'Invalid or expired token',
                 },
             });
         }
     };
 
-    resetPassword = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const adminUser = req.user!;
-            const { userId, newPassword } = req.body;
+    resetPassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const adminUser = req.user!;
+        const { userId, newPassword } = req.body;
 
-            if (adminUser.role !== 'admin') {
-                throw new ValidationException('Only administrators can reset passwords');
-            }
-
-            if (!userId || !newPassword) {
-                throw new ValidationException('User ID and new password are required');
-            }
-
-            await this.authService.resetPassword(userId, newPassword, adminUser.id);
-
-            logger.info('Password reset by admin', {
-                adminUserId: adminUser.id,
-                targetUserId: userId,
-                ip: req.ip,
-            });
-
-            res.json({
-                success: true,
-                message: req.t ? req.t('password_reset_successful') : 'Password reset successfully',
-            });
-        } catch (error) {
-            next(error);
+        if (adminUser.role !== 'admin') {
+            throw new ValidationException('Only administrators can reset passwords');
         }
+
+        if (!userId || !newPassword) {
+            throw new ValidationException('User ID and new password are required');
+        }
+
+        await this.authService.resetPassword(userId, newPassword, adminUser.id);
+
+        logger.info('Password reset by admin', {
+            adminUserId: adminUser.id,
+            targetUserId: userId,
+            ip: req.ip,
+        });
+
+        res.json({
+            success: true,
+            message: req.t ? req.t('password_reset_successful') : 'Password reset successfully',
+        });
     };
 
-    unlockAccount = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const adminUser = req.user!;
-            const { userId } = req.body;
+    unlockAccount = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const adminUser = req.user!;
+        const { userId } = req.body;
 
-            if (adminUser.role !== 'admin') {
-                throw new ValidationException('Only administrators can unlock accounts');
-            }
-
-            if (!userId) {
-                throw new ValidationException('User ID is required');
-            }
-
-            await this.authService.unlockAccount(userId, adminUser.id);
-
-            logger.info('Account unlocked by admin', {
-                adminUserId: adminUser.id,
-                targetUserId: userId,
-                ip: req.ip,
-            });
-
-            res.json({
-                success: true,
-                message: req.t ? req.t('account_unlocked') : 'Account unlocked successfully',
-            });
-        } catch (error) {
-            next(error);
+        if (adminUser.role !== 'admin') {
+            throw new ValidationException('Only administrators can unlock accounts');
         }
+
+        if (!userId) {
+            throw new ValidationException('User ID is required');
+        }
+
+        await this.authService.unlockAccount(userId, adminUser.id);
+
+        logger.info('Account unlocked by admin', {
+            adminUserId: adminUser.id,
+            targetUserId: userId,
+            ip: req.ip,
+        });
+
+        res.json({
+            success: true,
+            message: req.t ? req.t('account_unlocked') : 'Account unlocked successfully',
+        });
     };
 }

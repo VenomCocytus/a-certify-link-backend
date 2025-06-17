@@ -9,24 +9,25 @@ import {
     ResetPasswordDto,
     UserProfileRequest, VerifyTokenRequest
 } from '@dto/auth.dto';
+import {asyncHandler} from "@utils/async-handler";
 
 const router = Router();
 const authController = new AuthController();
 
-router.post('/login', authLimiter, validateDto(LoginRequest), authController.login);
+router.post('/login', authLimiter, validateDto(LoginRequest), asyncHandler(authController.login));
 
-router.post('/refresh', validateDto(RefreshTokenRequest), authController.refreshToken);
+router.post('/refresh', validateDto(RefreshTokenRequest), asyncHandler(authController.refreshToken));
 
 router.post('/logout', authController.logout);
 
-router.post('/change-password', validateDto(ChangePasswordRequest), authController.changePassword);
+router.post('/change-password', validateDto(ChangePasswordRequest), asyncHandler(authController.changePassword));
 
-router.post('/reset-password',validateDto(ResetPasswordDto), authController.resetPassword);
+router.post('/reset-password',validateDto(ResetPasswordDto), asyncHandler(authController.resetPassword));
 
-router.get('/profile', validateDto(UserProfileRequest), authController.getProfile);
+router.get('/profile', validateDto(UserProfileRequest), asyncHandler(authController.getProfile));
 
-router.post('/verify-token', validateDto(VerifyTokenRequest), authController.verifyToken);
+router.post('/verify-token', validateDto(VerifyTokenRequest), asyncHandler(authController.verifyToken));
 
-router.post('/unlock-account', validateDto(VerifyTokenRequest), authController.unlockAccount);
+router.post('/unlock-account', validateDto(VerifyTokenRequest), asyncHandler(authController.unlockAccount));
 
 export default router;
