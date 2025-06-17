@@ -5,7 +5,6 @@ import compression from 'compression';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
-import swaggerUi from 'swagger-ui-express';
 import { globalExceptionHandlerMiddleware } from '@middlewares/globalExceptionHandler.middleware';
 import { requestLoggerMiddleware } from '@middlewares/requestLogger.middleware';
 import { rateLimiterMiddleware } from '@middlewares/rateLimiter.middleware';

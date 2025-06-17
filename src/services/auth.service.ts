@@ -6,7 +6,6 @@ import { Environment } from '@config/environment';
 import { ValidationException } from '@exceptions/validation.exception';
 import { NotFoundException } from '@exceptions/notFound.exception';
 import { logger } from '@utils/logger';
-import {string} from "joi";
 
 export interface LoginCredentials {
     email: string;

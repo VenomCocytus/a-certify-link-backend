@@ -564,7 +564,7 @@ export class AuthController {
      *                       type: string
      *                       example: Token has expired
      */
-    verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    verifyToken = async (req: Request, res: Response): Promise<void> => {
         try {
             const { token } = req.body;
 

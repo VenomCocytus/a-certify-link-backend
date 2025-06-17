@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ValidationError } from 'sequelize';
 import { BaseException } from '@exceptions/base.exception';
 import { logger } from '@utils/logger';
