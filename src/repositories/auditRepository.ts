@@ -135,11 +135,11 @@ export class AuditRepository extends BaseRepository<CertificateAuditLogModel> im
     ): Promise<CertificateAuditLogModel> {
         try {
             const auditData = {
-                certificate_id: data.resourceId,
-                user_id: data.userId,
+                certificateId: data.resourceId,
+                userId: data.userId,
                 action: data.action as any,
-                old_values: data.oldValues || null,
-                new_values: data.newValues || null,
+                oldValues: data.oldValues || null,
+                newValues: data.newValues || null,
                 details: data.metadata || null,
                 timestamp: new Date(),
             };

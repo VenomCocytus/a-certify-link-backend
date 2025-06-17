@@ -2,13 +2,12 @@ import { Router } from 'express';
 import { certificateRoutes } from './certificateRoutes';
 // import { healthRoutes } from './healthRoutes';
 // import { auditRoutes } from './auditRoutes';
-// import { authRoutes } from './authRoutes';
+import { authRoutes } from './authRoutes';
 
 const router = Router();
 
 /**
  * @swagger
- * /api/v1:
  *   get:
  *     summary: API Information
  *     description: Get basic information about the API
@@ -45,7 +44,7 @@ router.get('/', (req, res) => {
 });
 
 // Mount route modules
-// router.use('/auth', authRoutes);
+router.use('/auth', authRoutes);
 router.use('/certificates', certificateRoutes);
 // router.use('/health', healthRoutes);
 // router.use('/audit', auditRoutes);

@@ -55,7 +55,8 @@ app.use(requestLogger as express.RequestHandler);
 app.use(i18nextMiddleware.handle(i18next));
 
 // API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/config', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/routes', routes)
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -67,7 +68,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/v1', routes);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 // 404 handler
 app.use('*', (req, res) => {

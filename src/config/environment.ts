@@ -9,7 +9,6 @@ export const Environment = {
     // Application
     NODE_ENV: process.env.NODE_ENV || 'development',
     PORT: parseInt(process.env.PORT || '3000', 10),
-    API_PREFIX: process.env.API_PREFIX || '/api/v1',
 
     // Database
     DB_HOST: process.env.DB_HOST || 'localhost',
@@ -25,7 +24,7 @@ export const Environment = {
 
     // JWT
     JWT_SECRET: process.env.JWT_SECRET || 'your_super_secret_jwt_key',
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h',
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h', // store seconds
 
     // External APIs
     ORASS_BASE_URL: process.env.ORASS_BASE_URL || 'https://orass-api.example.com',

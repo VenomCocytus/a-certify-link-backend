@@ -48,6 +48,7 @@ export interface AuditLogData {
     newValues?: Record<string, unknown>;
     metadata?: Record<string, unknown>;
     timestamp: Date;
+    ipAddress: string;
 }
 
 export interface IdempotencyKey {
