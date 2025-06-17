@@ -26,10 +26,13 @@
       "@utils/*": ["./utils/*"],
       "@middlewares/*": ["./middlewares/*"],
       "@interfaces/*": ["./interfaces/*"],
-      "@dtos/*": ["./dtos/*"],
+      "@dto/*": ["./dto/*"],
       "@exceptions/*": ["./exceptions/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    ".env"
+  ],
   "exclude": ["node_modules", "dist", "tests"]
 }

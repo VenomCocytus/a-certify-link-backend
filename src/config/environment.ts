@@ -1,6 +1,9 @@
-import { config } from 'dotenv';
+import dotenv from 'dotenv';
+import path from 'path';
 
-config();
+dotenv.config({
+    path: path.resolve(__dirname, '../../.env') // Load environment variables from .env file
+});
 
 export const Environment = {
     // Application
