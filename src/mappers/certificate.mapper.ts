@@ -1,6 +1,6 @@
 import { CertificateModel } from '@/models';
-import { CertificateResponseDto } from '@/dto/certificateDto';
-import { CertificateData, CertificateStatus } from '@interfaces/certificateInterfaces';
+import { CertificateResponseDto } from '@dto/certificate.dto';
+import { CertificateData, CertificateStatus } from '@interfaces/certificate.interfaces';
 import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
 

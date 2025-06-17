@@ -6,9 +6,9 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import swaggerUi from 'swagger-ui-express';
-import { globalExceptionHandler } from '@middlewares/globalExceptionHandler';
-import { requestLogger } from '@middlewares/requestLogger';
-import { rateLimiter } from '@middlewares/rateLimiter';
+import { globalExceptionHandlerMiddleware } from '@middlewares/globalExceptionHandler.middleware';
+import { requestLoggerMiddleware } from '@middlewares/requestLogger.middleware';
+import { rateLimiterMiddleware } from '@middlewares/rateLimiter.middleware';
 import routes from './routes';
 import { Environment } from '@config/environment';
 import {setupSwagger} from "@config/swagger";
@@ -46,10 +46,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 
 // Rate limiting
-app.use(rateLimiter);
+app.use(rateLimiterMiddleware);
 
 // Request logging
-app.use(requestLogger as express.RequestHandler);
+app.use(requestLoggerMiddleware as express.RequestHandler);
 
 // i18n middleware
 app.use(i18nextMiddleware.handle(i18next));
@@ -70,6 +70,6 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler (must be last)
-app.use(globalExceptionHandler);
+app.use(globalExceptionHandlerMiddleware);
 
 export { app };

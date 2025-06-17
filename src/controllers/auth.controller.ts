@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AuthService } from '@services/authService';
-import { UserRepository } from '@/repositories/userRepository';
-import { ValidationException } from '@exceptions/validationException';
-import { NotFoundException } from '@exceptions/notFoundException';
+import { AuthService } from '@services/auth.service';
+import { UserRepository } from '@/repositories/user.repository';
+import { ValidationException } from '@exceptions/validation.exception';
+import { NotFoundException } from '@exceptions/notFound.exception';
 import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
-import {AuthenticatedRequest} from "@interfaces/middlewareInterfaces";
+import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 
 export class AuthController {
     private authService: AuthService;

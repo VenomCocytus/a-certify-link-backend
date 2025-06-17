@@ -3,7 +3,7 @@ import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
 
 // General rate limiter
-export const rateLimiter = rateLimit({
+export const rateLimiterMiddleware = rateLimit({
     windowMs: Environment.RATE_LIMIT_WINDOW_MS, // 15 minutes
     max: Environment.RATE_LIMIT_MAX_REQUESTS, // limit each IP to 100 requests per windowMs
     message: {

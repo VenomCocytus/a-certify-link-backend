@@ -1,4 +1,4 @@
-import { OrassPolicyData, OrassInsuredData } from './orassInterfaces';
+import { OrassPolicyData, OrassInsuredData } from './orass.interfaces';
 
 export interface CertificateCreationRequest {
     policyNumber: string;

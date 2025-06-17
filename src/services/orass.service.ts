@@ -5,12 +5,12 @@ import {
     OrassQueryParams,
     OrassApiResponse,
     OrassAuthResponse
-} from '@interfaces/orassInterfaces';
-import { PaginatedResponse } from '@interfaces/common';
+} from '@interfaces/orass.interfaces';
+import { PaginatedResponse } from '@interfaces/common.interfaces';
 import { HttpClient } from '@utils/httpClient';
 import { orassCircuitBreaker } from '@utils/circuitBreaker';
 import { Environment } from '@config/environment';
-import { ExternalApiException } from '@exceptions/externalApiException';
+import { ExternalApiException } from '@exceptions/externalApi.exception';
 import { logger } from '@utils/logger';
 
 export class OrassService implements OrassServiceInterface {

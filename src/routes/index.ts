@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { certificateRoutes } from './certificateRoutes';
+import { certificateRoutes } from './certificate.routes';
 // import { healthRoutes } from './healthRoutes';
 // import { auditRoutes } from './auditRoutes';
-import authRoutes from './authRoutes';
+import authRoutes from './auth.routes';
 
 const router = Router();
 

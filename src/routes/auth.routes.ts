@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { AuthController } from '@controllers/auth.controller';
-import { validateDto } from '@middlewares/validationMiddleware';
-import { authLimiter } from '@middlewares/rateLimiter';
-import { LoginDto, RefreshTokenDto } from '@/dto/authDto';
+import { validateDto } from '@middlewares/validation.middleware';
+import { authLimiter } from '@middlewares/rateLimiter.middleware';
+import { LoginDto, RefreshTokenDto } from '@dto/auth.dto';
 
 const router = Router();
 const authController = new AuthController();

@@ -1,5 +1,5 @@
 import {Op, Transaction} from 'sequelize';
-import { BaseRepository } from './baseRepository';
+import { BaseRepository } from './base.repository';
 import { User, UserModel } from '@/models';
 import { logger } from '@utils/logger';
 

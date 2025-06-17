@@ -1,5 +1,5 @@
 import { WhereOptions, Transaction, Order } from 'sequelize';
-import { PaginationParams, PaginatedResponse } from './common';
+import { PaginationParams, PaginatedResponse } from './common.interfaces';
 
 export interface BaseRepositoryInterface<T, K = string> {
     findById(id: K, transaction?: Transaction): Promise<T | null>;

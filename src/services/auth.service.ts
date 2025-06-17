@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { UserRepository } from '@/repositories/userRepository';
-import { AuditService } from './auditService';
+import { UserRepository } from '@/repositories/user.repository';
+import { AuditService } from './audit.service';
 import { UserModel } from '@/models';
 import { Environment } from '@config/environment';
-import { ValidationException } from '@exceptions/validationException';
-import { NotFoundException } from '@exceptions/notFoundException';
+import { ValidationException } from '@exceptions/validation.exception';
+import { NotFoundException } from '@exceptions/notFound.exception';
 import { logger } from '@utils/logger';
 import {string} from "joi";
 

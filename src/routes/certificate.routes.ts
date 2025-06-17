@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { CertificateController } from '@controllers/certificateController';
-import { authMiddleware, requirePermissions, requireRoles } from '@middlewares/authMiddleware';
-import { validateDto, validateQuery } from '@middlewares/validationMiddleware';
-import { idempotencyMiddleware } from '@middlewares/idempotencyMiddleware';
-import { certificateCreationLimiter } from '@middlewares/rateLimiter';
-import { CreateCertificateRequestDto } from '@/dto/certificateDto';
+import { CertificateController } from '@controllers/certificate.controller';
+import { authMiddleware, requirePermissions, requireRoles } from '@middlewares/auth.middleware';
+import { validateDto, validateQuery } from '@middlewares/validation.middleware';
+import { idempotencyMiddleware } from '@middlewares/idempotency.middleware';
+import { certificateCreationLimiter } from '@middlewares/rateLimiter.middleware';
+import { CreateCertificateRequestDto } from '@dto/certificate.dto';
 import Joi from 'joi';
 
 const router = Router();

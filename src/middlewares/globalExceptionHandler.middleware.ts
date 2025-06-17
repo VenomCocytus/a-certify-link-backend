@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from 'sequelize';
-import { BaseException } from '@exceptions/baseException';
+import { BaseException } from '@exceptions/base.exception';
 import { logger } from '@utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,7 +15,7 @@ interface ErrorResponse {
     [key: string]: unknown;
 }
 
-export const globalExceptionHandler = (
+export const globalExceptionHandlerMiddleware = (
     error: Error,
     req: Request,
     res: Response

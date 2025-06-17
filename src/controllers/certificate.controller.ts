@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { CertificateService } from '@services/certificateService';
-import { CreateCertificateRequestDto } from '@/dto/certificateDto';
-import { CertificateMapper } from '@/mappers/certificateMapper';
-import { NotFoundException } from '@exceptions/notFoundException';
-import { ValidationException } from '@exceptions/validationException';
+import { CertificateService } from '@services/certificate.service';
+import { CreateCertificateRequestDto } from '@dto/certificate.dto';
+import { CertificateMapper } from '@/mappers/certificate.mapper';
+import { NotFoundException } from '@exceptions/notFound.exception';
+import { ValidationException } from '@exceptions/validation.exception';
 import { Helpers } from '@utils/helpers';
 import { logger } from '@utils/logger';
 

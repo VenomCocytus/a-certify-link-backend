@@ -5,7 +5,7 @@ import {
     OrassPolicyData,
     // OrassInsuredDto,
     // OrassPolicyDto
-} from '@interfaces/orassInterfaces';
+} from '@interfaces/orass.interfaces';
 import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';
 
 export class OrassMapper {

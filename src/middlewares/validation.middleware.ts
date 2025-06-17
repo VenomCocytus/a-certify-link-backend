@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Schema } from 'joi';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { ValidationException } from '@exceptions/validationException';
+import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 
 // Joi validation middleware

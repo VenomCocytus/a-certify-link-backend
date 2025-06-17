@@ -7,7 +7,7 @@ interface RequestWithLogging extends Request {
     startTime: number;
 }
 
-export const requestLogger = (
+export const requestLoggerMiddleware = (
     req: RequestWithLogging,
     res: Response,
     next: NextFunction

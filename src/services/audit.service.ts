@@ -1,8 +1,8 @@
 import { Transaction } from 'sequelize';
 import { AuditServiceInterface } from '@interfaces/serviceInterfaces';
-import { PaginatedResponse, PaginationParams, AuditLogData } from '@interfaces/common';
-import { AuditRepository } from '@/repositories/auditRepository';
-import { AuditMapper } from '@/mappers/auditMapper';
+import { PaginatedResponse, PaginationParams, AuditLogData } from '@interfaces/common.interfaces';
+import { AuditRepository } from '@/repositories/audit.repository';
+import { AuditMapper } from '@/mappers/audit.mapper';
 import { logger } from '@utils/logger';
 
 export interface AuditLogEntry {

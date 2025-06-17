@@ -8,8 +8,8 @@ import {
     CertificateSearchCriteria,
     BulkCertificateRequest,
     BulkCertificateResult
-} from './certificateInterfaces';
-import { OrassPolicyData, OrassInsuredData, OrassQueryParams } from './orassInterfaces';
+} from './certificate.interfaces';
+import { OrassPolicyData, OrassInsuredData, OrassQueryParams } from './orass.interfaces';
 import {
     IvoryAttestationEditionRequest,
     IvoryAttestationEditionResponse,
@@ -17,8 +17,8 @@ import {
     IvoryAttestationVerificationResponse,
     IvoryAttestationUpdateStatusRequest,
     IvoryAttestationUpdateStatusResponse
-} from './ivoryAttestationInterfaces';
-import { PaginatedResponse, PaginationParams, HealthCheckResult } from './common';
+} from './ivoryAttestation.interfaces';
+import { PaginatedResponse, PaginationParams, HealthCheckResult } from './common.interfaces';
 
 export interface CertificateServiceInterface {
     createCertificate(request: CertificateCreationRequest, transaction?: Transaction): Promise<CertificateCreationResult>;

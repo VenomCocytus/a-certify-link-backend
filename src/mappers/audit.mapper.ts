@@ -1,5 +1,5 @@
 import { CertificateAuditLogModel } from '@/models';
-import { AuditLogData } from '@interfaces/common';
+import { AuditLogData } from '@interfaces/common.interfaces';
 import { UserModel } from '@/models';
 import { CertificateModel } from '@/models';
 

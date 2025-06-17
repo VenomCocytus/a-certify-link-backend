@@ -1,7 +1,7 @@
 import { Transaction, Op } from 'sequelize';
-import { BaseRepository } from './baseRepository';
+import { BaseRepository } from './base.repository';
 import { AuditRepositoryInterface, FindAndCountAllOptions } from '@interfaces/repositoryInterfaces';
-import { PaginatedResponse } from '@interfaces/common';
+import { PaginatedResponse } from '@interfaces/common.interfaces';
 import { CertificateAuditLog, CertificateAuditLogModel, User, Certificate } from '@/models';
 import { logger } from '@utils/logger';
 

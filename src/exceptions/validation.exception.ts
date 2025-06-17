@@ -1,4 +1,4 @@
-import { BaseException } from './baseException';
+import { BaseException } from './base.exception';
 import { ErrorCodes } from '@/constants/errorCodes';
 
 export class ValidationException extends BaseException {

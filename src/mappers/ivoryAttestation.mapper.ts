@@ -1,13 +1,13 @@
-import { CreateCertificateRequestDto } from '@/dto/certificateDto';
+import { CreateCertificateRequestDto } from '@dto/certificate.dto';
 import {
     IvoryAttestationEditionRequest,
     IvoryAttestationEditionResponse,
     IvoryAttestationInfo
-} from '@interfaces/ivoryAttestationInterfaces';
+} from '@interfaces/ivoryAttestation.interfaces';
 import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
 import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';
-import { OrassMapper } from './orassMapper';
+import { OrassMapper } from './orass.mapper';
 import { Helpers } from '@utils/helpers';
 
 export class IvoryAttestationMapper {

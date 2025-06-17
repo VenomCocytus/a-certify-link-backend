@@ -6,13 +6,13 @@ import {
     IvoryAttestationUpdateStatusResponse,
     IvoryAttestationVerificationRequest,
     IvoryAttestationVerificationResponse,
-} from '@interfaces/ivoryAttestationInterfaces';
+} from '@interfaces/ivoryAttestation.interfaces';
 import {HttpClient} from '@utils/httpClient';
 import {ivoryAttestationCircuitBreaker} from '@utils/circuitBreaker';
 import {Environment} from '@config/environment';
 import {IvoryAttestationConstants} from '@/constants/ivoryAttestation';
-import {ExternalApiException} from '@exceptions/externalApiException';
-import {ValidationException} from '@exceptions/validationException';
+import {ExternalApiException} from '@exceptions/externalApi.exception';
+import {ValidationException} from '@exceptions/validation.exception';
 import {logger} from '@utils/logger';
 import {ErrorCodes} from "@/constants/errorCodes";
 

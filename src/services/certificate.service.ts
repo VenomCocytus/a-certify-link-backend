@@ -1,8 +1,8 @@
 import {Transaction} from 'sequelize';
 import {OrassInsured, OrassPolicy, sequelize} from '@/models';
-import {CertificateRepository} from '@/repositories/certificateRepository';
-import {OrassService} from './orassService';
-import {IvoryAttestationService} from './ivoryAttestationService';
+import {CertificateRepository} from '@/repositories/certificate.repository';
+import {OrassService} from './orass.service';
+import {IvoryAttestationService} from './ivoryAttestation.service';
 // import { AuditService } from './auditService';
 // import { IdempotencyService } from './idempotencyService';
 import {
@@ -14,14 +14,14 @@ import {
     CertificateOperationRequest,
     CertificateOperationResult,
     CertificateSearchCriteria, CertificateStatus
-} from '@interfaces/certificateInterfaces';
+} from '@interfaces/certificate.interfaces';
 import {CertificateServiceInterface} from '@interfaces/serviceInterfaces';
-import {PaginatedResponse, PaginationParams} from '@/interfaces/common';
-import {CertificateMapper} from '@/mappers/certificateMapper';
-import {IvoryAttestationMapper} from '@/mappers/ivoryAttestationMapper';
-import {NotFoundException} from '@exceptions/notFoundException';
-import {ValidationException} from '@exceptions/validationException';
-import {ExternalApiException} from '@exceptions/externalApiException';
+import {PaginatedResponse, PaginationParams} from '@interfaces/common.interfaces';
+import {CertificateMapper} from '@/mappers/certificate.mapper';
+import {IvoryAttestationMapper} from '@/mappers/ivoryAttestation.mapper';
+import {NotFoundException} from '@exceptions/notFound.exception';
+import {ValidationException} from '@exceptions/validation.exception';
+import {ExternalApiException} from '@exceptions/externalApi.exception';
 import {Helpers} from '@utils/helpers';
 import {logger} from '@utils/logger';
 import {ErrorCodes} from "@/constants/errorCodes";

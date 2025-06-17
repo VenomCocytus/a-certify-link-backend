@@ -6,12 +6,12 @@ import { logger } from '@utils/logger';
 export const sequelize = new Sequelize(sequelizeConfig);
 
 // Import models
-import { OrassInsuredModel, initOrassInsuredModel } from './orassInsured';
-import { OrassPolicyModel, initOrassPolicyModel } from './orassPolicy';
-import { CertificateModel, initCertificateModel } from './certificate';
-import { UserModel, initUserModel } from './user';
-import { CertificateAuditLogModel, initCertificateAuditLogModel } from './certificateAuditLog';
-import { IdempotencyKeyModel, initIdempotencyKeyModel } from './idempotencyKey';
+import { OrassInsuredModel, initOrassInsuredModel } from './orassInsured.model';
+import { OrassPolicyModel, initOrassPolicyModel } from './orassPolicy.model';
+import { CertificateModel, initCertificateModel } from './certificate.model';
+import { UserModel, initUserModel } from './user.model';
+import { CertificateAuditLogModel, initCertificateAuditLogModel } from './certificateAuditLog.model';
+import { IdempotencyKeyModel, initIdempotencyKeyModel } from './idempotencyKey.model';
 
 // Initialize models
 const OrassInsured = initOrassInsuredModel(sequelize);
