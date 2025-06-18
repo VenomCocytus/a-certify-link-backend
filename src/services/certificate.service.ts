@@ -146,6 +146,41 @@ export class CertificateService implements CertificateServiceInterface {
         return CertificateMapper.toCertificateData(certificate, policy || undefined, insured || undefined);
     }
 
+    async listCertificates(user: { role: string; companyCode?: string; id: string }, query: any) {
+        // Parse pagination params from query
+        const pagination: PaginationParams = Helpers.parsePaginationParams(query);
+
+        // Build search criteria based on user role and query filters
+        const criteria: any = {};
+
+        if (user.role !== 'admin') {
+            criteria.companyCode = user.companyCode;
+        }
+
+        if (query.status) criteria.status = query.status;
+        if (query.companyCode && user.role === 'admin') criteria.companyCode = query.companyCode;
+        if (query.policyNumber) criteria.policyNumber = query.policyNumber;
+        if (query.registrationNumber) criteria.registrationNumber = query.registrationNumber;
+        if (query.dateFrom) criteria.dateFrom = new Date(query.dateFrom);
+        if (query.dateTo) criteria.dateTo = new Date(query.dateTo);
+
+        if (user.role === 'agent') {
+            criteria.requestedBy = user.id;
+        }
+
+        // Query repository with criteria and pagination
+        const result = await this.searchCertificates(criteria, pagination);
+
+        // Map entities to response DTOs
+        const mappedData = result.data.map(cert => CertificateMapper.toResponseDto(cert as any));
+
+        return {
+            success: true,
+            data: mappedData,
+            meta: result.meta,
+        };
+    }
+
     /**
      * Search certificates with pagination
      */
