@@ -2,6 +2,7 @@ export enum ErrorCodes {
     // General errors
     INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
     VALIDATION_ERROR = 'VALIDATION_ERROR',
+    INVALID_DATA = 'INVALID_DATA',
     NOT_FOUND = 'NOT_FOUND',
     UNAUTHORIZED = 'UNAUTHORIZED',
     FORBIDDEN = 'FORBIDDEN',
@@ -40,6 +41,7 @@ export enum ErrorCodes {
 export const ErrorMessages: Record<ErrorCodes, string> = {
     [ErrorCodes.INTERNAL_SERVER_ERROR]: 'An unexpected error occurred',
     [ErrorCodes.VALIDATION_ERROR]: 'The provided data is invalid',
+    [ErrorCodes.INVALID_DATA]: 'Invalid data provided',
     [ErrorCodes.NOT_FOUND]: 'The requested resource was not found',
     [ErrorCodes.UNAUTHORIZED]: 'Authentication is required',
     [ErrorCodes.FORBIDDEN]: 'Access to this resource is forbidden',

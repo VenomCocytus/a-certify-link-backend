@@ -10,7 +10,7 @@ export class AuditMapper {
     static toAuditLogData(
         auditLog: CertificateAuditLogModel,
         user?: UserModel,
-        certificate?: CertificateModel
+        certificate?: CertificateModel,
     ): AuditLogData & {
         id: string;
         user?: {
@@ -37,8 +37,8 @@ export class AuditMapper {
             newValues: auditLog.new_values || undefined,
             metadata: auditLog.details || undefined,
             timestamp: auditLog.timestamp,
-            ipAddress: auditLog.ip_address || undefined,
-            userAgent: auditLog.user_agent || undefined,
+            ...(auditLog.ip_address ? { ipAddress: auditLog.ip_address } : {}),
+            ...(auditLog.user_agent ? { userAgent: auditLog.user_agent } : {}),
             user: user ? {
                 id: user.id,
                 email: user.email,

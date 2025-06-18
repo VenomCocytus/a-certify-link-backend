@@ -50,7 +50,7 @@ export const authMiddleware = async (
         // Verify JWT token
         const decoded = jwt.verify(token, Environment.JWT_SECRET) as JwtPayload;
 
-        // Fetch user from database to ensure account is still active
+        // Fetch user from database to ensure the account is still active
         const user = await User.findByPk(decoded.id);
 
         if (!user || !user.is_active) {
@@ -64,7 +64,7 @@ export const authMiddleware = async (
             return;
         }
 
-        // Check if account is locked
+        // Check if the account is locked
         if (user.locked_until && user.locked_until > new Date()) {
             res.status(423).json({
                 type: 'https://tools.ietf.org/html/rfc4918#section-11.3',

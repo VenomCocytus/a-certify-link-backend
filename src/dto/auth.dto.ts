@@ -38,7 +38,11 @@ export class ChangePasswordRequest {
     newPassword!: string;
 }
 
-export class ResetPasswordDto {
+export class ResetPasswordRequest {
+    @IsUUID()
+    @IsNotEmpty()
+    userId!: string;
+
     @IsString()
     @IsNotEmpty()
     @MinLength(8)
@@ -58,40 +62,35 @@ export class UnlockAccountRequest {
 }
 
 export class UserProfileRequest {
-    @IsUUID()
-    id!: string;
-
-    @IsEmail()
-    email!: string;
-
     @IsString()
-    firstName!: string;
+    @IsNotEmpty()
+    token!: string;
+}
 
-    @IsString()
-    lastName!: string;
+export interface AuthResponse {
+    user: {
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        role: string;
+        companyCode?: string;
+        agentCode?: string;
+        permissions: string[];
+    };
+    token: string;
+    refreshToken: string;
+    expiresIn: number;
+}
 
-    @IsString()
-    role!: string;
-
-    @IsOptional()
-    @IsString()
-    companyCode?: string | null;
-
-    @IsOptional()
-    @IsString()
-    agentCode?: string | null;
-
-    @IsArray()
-    @IsString({ each: true })
-    permissions!: string[];
-
-    @IsBoolean()
-    isActive!: boolean;
-
-    @IsOptional()
-    @IsDate()
-    lastLoginAt?: Date | null;
-
-    @IsDate()
-    createdAt!: Date;
+export interface TokenPayload {
+    id: string;
+    email: string;
+    role: string;
+    companyCode?: string;
+    agentCode?: string;
+    permissions: string[];
+    type?: 'access' | 'refresh';
+    iat: number;
+    exp: number;
 }
