@@ -24,6 +24,14 @@ export class AuthService {
         this.auditService = new AuditService();
     }
 
+    //TODO: Obliger le user a changer son mot de passe lors de la première connexion
+    //TODO: Sauvegarder les 05 derniers mots de passe, le nouveau doit etre différent des 05 derniers
+    //TODO: Historiser les mots de passe
+    //TODO: Historiser les addresses Ip
+    //TODO: Historiser les derniers tentatives de connexion
+    //TODO: Changer la date du dernier changement de mot de passe lors de la connexion
+    //TODO: Bloquer le tentative de connexion echouees
+
     /**
      * Authenticate a user with email and password
      */

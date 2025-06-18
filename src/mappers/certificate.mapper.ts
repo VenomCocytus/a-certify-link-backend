@@ -1,5 +1,5 @@
 import { CertificateModel } from '@/models';
-import { CertificateResponseDto } from '@dto/certificate.dto';
+import { AsaciAttestationEditionResponse } from '@dto/asaci.dto';
 import { CertificateData, CertificateStatus } from '@interfaces/certificate.interfaces';
 import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
@@ -8,19 +8,9 @@ export class CertificateMapper {
     /**
      * Map Certificate model to response DTO
      */
-    static toResponseDto(certificate: CertificateModel): CertificateResponseDto {
+    static toResponseDto(certificate: CertificateModel): AsaciAttestationEditionResponse {
         return {
-            id: certificate.id,
-            referenceNumber: certificate.reference_number,
-            ivoryRequestNumber: certificate.ivory_request_number || undefined,
-            status: certificate.status as CertificateStatus,
-            certificateNumber: certificate.certificate_number || undefined,
-            downloadUrl: certificate.download_url || undefined,
-            createdAt: certificate.created_at,
-            updatedAt: certificate.updated_at,
-            policyNumber: certificate.policy_number,
-            registrationNumber: certificate.registration_number,
-            companyCode: certificate.company_code,
+            infos: [], numero_demande: "", statut: 0,
         };
     }
 
@@ -54,7 +44,7 @@ export class CertificateMapper {
     /**
      * Map array of Certificate models to response DTOs
      */
-    static toResponseDtoArray(certificates: CertificateModel[]): CertificateResponseDto[] {
+    static toResponseDtoArray(certificates: CertificateModel[]): AsaciAttestationEditionResponse[] {
         return certificates.map(cert => this.toResponseDto(cert));
     }
 

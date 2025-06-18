@@ -10,6 +10,8 @@ export interface AuthenticatedRequest extends Request {
         agentCode?: string;
         permissions: string[];
     };
+    idempotencyKey?: string;
+    isIdempotentReplay?: boolean;
 }
 
 export interface I18nRequest extends Request {

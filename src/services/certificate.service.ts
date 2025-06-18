@@ -3,12 +3,11 @@ import {OrassInsured, OrassPolicy, sequelize} from '@/models';
 import {CertificateRepository} from '@/repositories/certificate.repository';
 import {OrassService} from './orass.service';
 import {IvoryAttestationService} from './ivoryAttestation.service';
-// import { AuditService } from './auditService';
-// import { IdempotencyService } from './idempotencyService';
+import { AuditService } from './audit.service';
+import { IdempotencyService } from './idempotency.service';
 import {
     BulkCertificateRequest,
     BulkCertificateResult,
-    CertificateCreationRequest,
     CertificateCreationResult,
     CertificateData,
     CertificateOperationRequest,
@@ -25,24 +24,21 @@ import {ExternalApiException} from '@exceptions/externalApi.exception';
 import {Helpers} from '@utils/helpers';
 import {logger} from '@utils/logger';
 import {ErrorCodes} from "@/constants/errorCodes";
+import {CertificateCreationRequest} from "@dto/certificate.dto";
 
 export class CertificateService implements CertificateServiceInterface {
     private certificateRepository: CertificateRepository;
     private orassService: OrassService;
     private ivoryAttestationService: IvoryAttestationService;
-    // private auditService: AuditService;
-    // private idempotencyService: IdempotencyService;
+    private auditService: AuditService;
+    private idempotencyService: IdempotencyService;
 
     constructor() {
         this.certificateRepository = new CertificateRepository();
         this.orassService = new OrassService();
         this.ivoryAttestationService = new IvoryAttestationService();
-        // this.auditService = new AuditService();
-        // this.idempotencyService = new IdempotencyService();
-    }
-
-    processIdempotentRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
-        throw new Error('Method not implemented.');
+        this.auditService = new AuditService();
+        this.idempotencyService = new IdempotencyService();
     }
 
     /**
@@ -50,14 +46,24 @@ export class CertificateService implements CertificateServiceInterface {
      */
     async createCertificate(
         request: CertificateCreationRequest,
-        transaction?: Transaction
+        transaction?: Transaction,
+        context?: {
+            ipAddress?: string;
+            userAgent?: string;
+            sessionId?: string;
+        }
     ): Promise<CertificateCreationResult> {
         const t = transaction || await sequelize.transaction();
 
-        try {
-            // Validate request
-            await this.validateCertificateRequest(request);
+        // Update certificate creation request
+        request.update({
+            metadata: request.metadata || {
+                userAgent: context?.userAgent,
+                ipAddress: context?.ipAddress,
+            },
+        })
 
+        try {
             // Check for existing active certificates
             await this.checkForDuplicates(request, t);
 
@@ -68,19 +74,19 @@ export class CertificateService implements CertificateServiceInterface {
             const certificate = await this.createCertificateRecord(request, policy, insured, t);
 
             // Create audit log
-            // await this.auditService.logAction({
-            //     userId: request.requestedBy,
-            //     action: 'created',
-            //     resourceType: 'certificate',
-            //     resourceId: certificate.id,
-            //     newValues: {
-            //         referenceNumber: certificate.reference_number,
-            //         policyNumber: certificate.policy_number,
-            //         registrationNumber: certificate.registration_number,
-            //         status: certificate.status,
-            //     },
-            //     metadata: request.metadata,
-            // }, t);
+            await this.auditService.logAction({
+                userId: request.requestedBy,
+                action: 'created',
+                resourceType: 'certificate',
+                resourceId: certificate.id,
+                newValues: {
+                    referenceNumber: certificate.reference_number,
+                    policyNumber: certificate.policy_number,
+                    registrationNumber: certificate.registration_number,
+                    status: certificate.status,
+                },
+                metadata: request.metadata,
+            }, t);
 
             // Start async processing (don't wait for completion)
             await this.processCertificateAsync(certificate.id, policy, insured, request.companyCode, request.agentCode);
@@ -88,6 +94,13 @@ export class CertificateService implements CertificateServiceInterface {
             if (!transaction) {
                 await t.commit();
             }
+
+            logger.info('Certificate creation initiated', {
+                certificateId: certificate.certificateId,
+                referenceNumber: certificate.referenceNumber,
+                userId: certificate.id,
+                policyNumber: certificate.policyNumber,
+            });
 
             return {
                 certificateId: certificate.id,
@@ -187,17 +200,17 @@ export class CertificateService implements CertificateServiceInterface {
         }
 
         // Create audit log
-        // if (userId) {
-        //     await this.auditService.logAction({
-        //         userId,
-        //         action: 'updated',
-        //         resourceType: 'certificate',
-        //         resourceId: id,
-        //         oldValues: { status: oldStatus },
-        //         newValues: { status },
-        //         metadata,
-        //     });
-        // }
+        if (userId) {
+            await this.auditService.logAction({
+                userId,
+                action: 'updated',
+                resourceType: 'certificate',
+                resourceId: id,
+                oldValues: { status: oldStatus },
+                newValues: { status },
+                metadata,
+            });
+        }
 
         // Fetch updated policy and insured data
         const policy = await OrassPolicy.findByPk(updatedCertificate.policy_id);
@@ -399,29 +412,11 @@ export class CertificateService implements CertificateServiceInterface {
     /**
      * Process idempotent request
      */
-    // async processIdempotentRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
-    //     return this.idempotencyService.processIdempotentRequest(key, 'certificate-request', requestFn);
-    // }
+    async processIdempotentRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
+        return this.idempotencyService.processIdempotentRequest(key, 'certificate-request', requestFn);
+    }
 
     // Private helper methods
-
-    private async validateCertificateRequest(request: CertificateCreationRequest): Promise<void> {
-        if (!request.policyNumber) {
-            throw new ValidationException('Policy number is required');
-        }
-
-        if (!request.registrationNumber) {
-            throw new ValidationException('Registration number is required');
-        }
-
-        if (!request.companyCode) {
-            throw new ValidationException('Company code is required');
-        }
-
-        if (!request.requestedBy) {
-            throw new ValidationException('Requested by user ID is required');
-        }
-    }
 
     private async checkForDuplicates(request: CertificateCreationRequest, transaction: Transaction): Promise<void> {
         const existingCertificates = await this.certificateRepository.findDuplicates(
@@ -570,15 +565,15 @@ export class CertificateService implements CertificateServiceInterface {
             }, userId);
 
             // Create audit log
-            // await this.auditService.logAction({
-            //     userId,
-            //     action: operation === 'cancel' ? 'cancelled': 'suspended',
-            //     resourceType: 'certificate',
-            //     resourceId: certificateId,
-            //     oldValues: { status: certificate.status },
-            //     newValues: { status: newStatus },
-            //     metadata: { reason, operationCode },
-            // });
+            await this.auditService.logAction({
+                userId,
+                action: operation === 'cancel' ? 'cancelled': 'suspended',
+                resourceType: 'certificate',
+                resourceId: certificateId,
+                oldValues: { status: certificate.status },
+                newValues: { status: newStatus },
+                metadata: { reason, operationCode },
+            });
         } catch (error) {
             logger.error(`Failed to ${operation} certificate ${certificateId}:`, error);
             throw new ExternalApiException(

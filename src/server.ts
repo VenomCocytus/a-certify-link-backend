@@ -9,6 +9,10 @@ const ENV = Environment.NODE_ENV || 'development';
 
 async function startServer(): Promise<void> {
     try {
+        //TODO: add a callback to Jira and Insight
+        //TODO: add a callback when calling asa-ci
+
+
         // // Test database connection
         // awaits sequelize.authenticate();
         // logger.info('Database connection established successfully');
@@ -52,3 +56,6 @@ async function startServer(): Promise<void> {
 }
 
 startServer()
+
+//TODO: Add application Insight
+//TODO: Add Jira

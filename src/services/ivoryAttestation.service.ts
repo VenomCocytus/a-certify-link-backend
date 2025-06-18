@@ -1,11 +1,11 @@
 import {IvoryAttestationServiceInterface} from '@interfaces/serviceInterfaces';
 import {
-    IvoryAttestationEditionRequest,
-    IvoryAttestationEditionResponse,
-    IvoryAttestationUpdateStatusRequest,
-    IvoryAttestationUpdateStatusResponse,
-    IvoryAttestationVerificationRequest,
-    IvoryAttestationVerificationResponse,
+    AsaciAttestationEditionRequest,
+    AsaciAttestationEditionResponse,
+    AsaciAttestationUpdateStatusRequest,
+    AsaciAttestationUpdateStatusResponse,
+    AsaciAttestationVerificationRequest,
+    AsaciAttestationVerificationResponse,
 } from '@interfaces/ivoryAttestation.interfaces';
 import {HttpClient} from '@utils/httpClient';
 import {ivoryAttestationCircuitBreaker} from '@utils/circuitBreaker';
@@ -18,7 +18,7 @@ import {ErrorCodes} from "@/constants/errorCodes";
 
 // Define the type for the validation entries
 interface CodeValidation {
-    field: keyof IvoryAttestationEditionRequest;
+    field: keyof AsaciAttestationEditionRequest;
     validValues: string[];
 }
 
@@ -40,7 +40,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
     /**
      * Create digital attestation
      */
-    async createAttestation(request: IvoryAttestationEditionRequest): Promise<IvoryAttestationEditionResponse> {
+    async createAttestation(request: AsaciAttestationEditionRequest): Promise<AsaciAttestationEditionResponse> {
         // Validate request before submission
         const validation = await this.validateRequest(request);
         if (!validation.isValid) {
@@ -51,7 +51,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
 
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
-                const response = await this.httpClient.post<IvoryAttestationEditionResponse>(
+                const response = await this.httpClient.post<AsaciAttestationEditionResponse>(
                     IvoryAttestationConstants.ENDPOINTS.EDITION,
                     request
                 );
@@ -74,10 +74,10 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
     /**
      * Check attestation status
      */
-    async checkAttestationStatus(request: IvoryAttestationVerificationRequest): Promise<IvoryAttestationVerificationResponse> {
+    async checkAttestationStatus(request: AsaciAttestationVerificationRequest): Promise<AsaciAttestationVerificationResponse> {
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
-                return await this.httpClient.post<IvoryAttestationVerificationResponse>(
+                return await this.httpClient.post<AsaciAttestationVerificationResponse>(
                     IvoryAttestationConstants.ENDPOINTS.VERIFICATION,
                     request
                 );
@@ -93,10 +93,10 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
     /**
      * Update attestation status (cancel/suspend)
      */
-    async updateAttestationStatus(request: IvoryAttestationUpdateStatusRequest): Promise<IvoryAttestationUpdateStatusResponse> {
+    async updateAttestationStatus(request: AsaciAttestationUpdateStatusRequest): Promise<AsaciAttestationUpdateStatusResponse> {
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
-                const response = await this.httpClient.post<IvoryAttestationUpdateStatusResponse>(
+                const response = await this.httpClient.post<AsaciAttestationUpdateStatusResponse>(
                     IvoryAttestationConstants.ENDPOINTS.UPDATE_STATUS,
                     request
                 );
@@ -178,7 +178,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
     /**
      * Validate IvoryAttestation request
      */
-    async validateRequest(request: IvoryAttestationEditionRequest): Promise<{ isValid: boolean; errors: string[] }> {
+    async validateRequest(request: AsaciAttestationEditionRequest): Promise<{ isValid: boolean; errors: string[] }> {
         const errors: string[] = [];
 
         // Required fields validation
@@ -213,7 +213,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         ];
 
         requiredFields.forEach(field => {
-            if (!request[field as keyof IvoryAttestationEditionRequest]) {
+            if (!request[field as keyof AsaciAttestationEditionRequest]) {
                 errors.push(`${field} is required`);
             }
         });
@@ -221,7 +221,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         // Date format validation
         const dateFields = ['date_demande_edition', 'date_souscription', 'date_effet', 'date_echeance'];
         dateFields.forEach(field => {
-            const value = request[field as keyof IvoryAttestationEditionRequest] as string;
+            const value = request[field as keyof AsaciAttestationEditionRequest] as string;
             if (value && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
                 errors.push(`${field} must be in YYYY-MM-DD format`);
             }
@@ -230,7 +230,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         // Email validation
         const emailFields = ['adresse_mail_souscripteur', 'adresse_mail_assure'];
         emailFields.forEach(field => {
-            const value = request[field as keyof IvoryAttestationEditionRequest] as string;
+            const value = request[field as keyof AsaciAttestationEditionRequest] as string;
             if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                 errors.push(`${field} must be a valid email address`);
             }
@@ -249,7 +249,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         ];
 
         codeValidations.forEach(({ field, validValues }) => {
-            const value = request[field as keyof IvoryAttestationEditionRequest] as string;
+            const value = request[field as keyof AsaciAttestationEditionRequest] as string;
             if (value && !validValues.includes(value)) {
                 errors.push(`${field} value '${value}' is not valid`);
             }

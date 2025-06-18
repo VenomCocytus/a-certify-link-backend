@@ -50,7 +50,7 @@ export const authMiddleware = async (
         // Verify JWT token
         const decoded = jwt.verify(token, Environment.JWT_SECRET) as JwtPayload;
 
-        // Fetch user from database to ensure the account is still active
+        // Fetch user from the database to ensure the account is still active
         const user = await User.findByPk(decoded.id);
 
         if (!user || !user.is_active) {

@@ -11,12 +11,12 @@ import {
 } from './certificate.interfaces';
 import { OrassPolicyData, OrassInsuredData, OrassQueryParams } from './orass.interfaces';
 import {
-    IvoryAttestationEditionRequest,
-    IvoryAttestationEditionResponse,
-    IvoryAttestationVerificationRequest,
-    IvoryAttestationVerificationResponse,
-    IvoryAttestationUpdateStatusRequest,
-    IvoryAttestationUpdateStatusResponse
+    AsaciAttestationEditionRequest,
+    AsaciAttestationEditionResponse,
+    AsaciAttestationVerificationRequest,
+    AsaciAttestationVerificationResponse,
+    AsaciAttestationUpdateStatusRequest,
+    AsaciAttestationUpdateStatusResponse
 } from './ivoryAttestation.interfaces';
 import { PaginatedResponse, PaginationParams, HealthCheckResult } from './common.interfaces';
 
@@ -45,11 +45,11 @@ export interface OrassServiceInterface {
 }
 
 export interface IvoryAttestationServiceInterface {
-    createAttestation(request: IvoryAttestationEditionRequest): Promise<IvoryAttestationEditionResponse>;
-    checkAttestationStatus(request: IvoryAttestationVerificationRequest): Promise<IvoryAttestationVerificationResponse>;
-    updateAttestationStatus(request: IvoryAttestationUpdateStatusRequest): Promise<IvoryAttestationUpdateStatusResponse>;
+    createAttestation(request: AsaciAttestationEditionRequest): Promise<AsaciAttestationEditionResponse>;
+    checkAttestationStatus(request: AsaciAttestationVerificationRequest): Promise<AsaciAttestationVerificationResponse>;
+    updateAttestationStatus(request: AsaciAttestationUpdateStatusRequest): Promise<AsaciAttestationUpdateStatusResponse>;
     downloadAttestation(companyCode: string, requestNumber: string): Promise<{ url: string; type: string }[]>;
-    validateRequest(request: IvoryAttestationEditionRequest): Promise<{ isValid: boolean; errors: string[] }>;
+    validateRequest(request: AsaciAttestationEditionRequest): Promise<{ isValid: boolean; errors: string[] }>;
     checkConnection(): Promise<boolean>;
     getStatusCodeDescription(statusCode: number): string;
 }

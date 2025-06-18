@@ -4,8 +4,9 @@ import { authMiddleware, requirePermissions, requireRoles } from '@middlewares/a
 import { validateDto, validateQuery } from '@middlewares/validation.middleware';
 import { idempotencyMiddleware } from '@middlewares/idempotency.middleware';
 import { certificateCreationLimiter } from '@middlewares/rateLimiter.middleware';
-import { CreateCertificateRequestDto } from '@dto/certificate.dto';
 import Joi from 'joi';
+import {asyncHandler} from "@utils/async-handler";
+import {CertificateCreationRequest} from "@dto/certificate.dto";
 
 const router = Router();
 const certificateController = new CertificateController();
@@ -156,10 +157,10 @@ router.use(authMiddleware);
 router.post(
     '/',
     certificateCreationLimiter,
-    idempotencyMiddleware({ ttlHours: 24 }),
+    idempotencyMiddleware({ ttlHours: 24 }), //TODO: To review
     requirePermissions(['certificate:create']),
-    validateDto(CreateCertificateRequestDto),
-    certificateController.createCertificate
+    validateDto(CertificateCreationRequest),
+    asyncHandler(certificateController.createCertificate)
 );
 
 /**
@@ -255,7 +256,7 @@ router.get(
         dateFrom: Joi.date().iso(),
         dateTo: Joi.date().iso().min(Joi.ref('dateFrom')),
     })),
-    certificateController.listCertificates
+    asyncHandler(certificateController.listCertificates)
 );
 
 /**
@@ -298,7 +299,7 @@ router.get(
     validateQuery(Joi.object({
         id: Joi.string().uuid().required(),
     })),
-    certificateController.getCertificateById
+    asyncHandler(certificateController.getCertificateById)
 );
 
 /**
@@ -348,7 +349,7 @@ router.get(
 router.get(
     '/:id/status',
     requirePermissions(['certificate:read']),
-    certificateController.checkCertificateStatus
+    asyncHandler(certificateController.checkCertificateStatus)
 );
 
 /**
@@ -405,7 +406,7 @@ router.get(
 router.get(
     '/:id/download',
     requirePermissions(['certificate:download']),
-    certificateController.downloadCertificate
+    asyncHandler(certificateController.downloadCertificate)
 );
 
 /**
@@ -457,7 +458,7 @@ router.get(
 router.put(
     '/:id/cancel',
     requirePermissions(['certificate:cancel']),
-    certificateController.cancelCertificate
+    asyncHandler(certificateController.cancelCertificate)
 );
 
 /**
@@ -509,7 +510,7 @@ router.put(
 router.put(
     '/:id/suspend',
     requirePermissions(['certificate:suspend']),
-    certificateController.suspendCertificate
+    asyncHandler(certificateController.suspendCertificate)
 );
 
 /**
@@ -575,7 +576,7 @@ router.post(
     requireRoles(['admin', 'company_admin']),
     requirePermissions(['certificate:bulk_create']),
     idempotencyMiddleware({ ttlHours: 48 }),
-    certificateController.createBulkCertificates
+    asyncHandler(certificateController.createBulkCertificates)
 );
 
 export { router as certificateRoutes };

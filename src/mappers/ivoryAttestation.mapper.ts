@@ -1,8 +1,8 @@
-import { CreateCertificateRequestDto } from '@dto/certificate.dto';
+import { AsaciAttestationEditionRequest } from '@dto/asaci.dto';
 import {
-    IvoryAttestationEditionRequest,
-    IvoryAttestationEditionResponse,
-    IvoryAttestationInfo
+    AsaciAttestationEditionRequest,
+    AsaciAttestationEditionResponse,
+    AsaciAttestationInfo
 } from '@interfaces/ivoryAttestation.interfaces';
 import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
@@ -15,12 +15,12 @@ export class IvoryAttestationMapper {
      * Map certificate request and Orass data to IvoryAttestation request format
      */
     static toIvoryEditionRequest(
-        certificateRequest: CreateCertificateRequestDto,
+        certificateRequest: AsaciAttestationEditionRequest,
         policy: OrassPolicyModel,
         insured: OrassInsuredModel,
         companyCode: string,
         agentCode?: string
-    ): IvoryAttestationEditionRequest {
+    ): AsaciAttestationEditionRequest {
         return {
             code_compagnie: companyCode,
             date_demande_edition: Helpers.formatDateForIvory(new Date()),
@@ -99,10 +99,10 @@ export class IvoryAttestationMapper {
     /**
      * Map IvoryAttestation response to internal format
      */
-    static fromIvoryEditionResponse(response: IvoryAttestationEditionResponse): {
+    static fromIvoryEditionResponse(response: AsaciAttestationEditionResponse): {
         success: boolean;
         requestNumber?: string;
-        certificateInfo?: IvoryAttestationInfo[];
+        certificateInfo?: AsaciAttestationInfo[];
         errorCode?: number;
         errorMessage?: string;
     } {

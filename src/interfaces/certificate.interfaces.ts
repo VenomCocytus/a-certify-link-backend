@@ -1,14 +1,5 @@
 import { OrassPolicyData, OrassInsuredData } from './orass.interfaces';
-
-export interface CertificateCreationRequest {
-    policyNumber: string;
-    registrationNumber: string;
-    companyCode: string;
-    agentCode?: string;
-    requestedBy: string;
-    idempotencyKey?: string;
-    metadata?: Record<string, unknown>;
-}
+import {CertificateCreationRequest} from "@dto/certificate.dto";
 
 export interface CertificateCreationResult {
     certificateId: string;
