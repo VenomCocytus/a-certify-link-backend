@@ -1,6 +1,5 @@
 import { Transaction } from 'sequelize';
 import {
-    CertificateCreationRequest,
     CertificateCreationResult,
     CertificateOperationRequest,
     CertificateOperationResult,
@@ -10,15 +9,13 @@ import {
     BulkCertificateResult
 } from './certificate.interfaces';
 import { OrassPolicyData, OrassInsuredData, OrassQueryParams } from './orass.interfaces';
-import {
-    AsaciAttestationEditionRequest,
-    AsaciAttestationEditionResponse,
-    AsaciAttestationVerificationRequest,
-    AsaciAttestationVerificationResponse,
-    AsaciAttestationUpdateStatusRequest,
-    AsaciAttestationUpdateStatusResponse
-} from './ivoryAttestation.interfaces';
 import { PaginatedResponse, PaginationParams, HealthCheckResult } from './common.interfaces';
+import {
+    AsaciAttestationEditionRequest, AsaciAttestationEditionResponse,
+    AsaciAttestationUpdateStatusRequest,
+    AsaciAttestationUpdateStatusResponse, AsaciAttestationVerificationRequest, AsaciAttestationVerificationResponse
+} from "@dto/asaci.dto";
+import {CertificateCreationRequest} from "@dto/certificate.dto";
 
 export interface CertificateServiceInterface {
     createCertificate(request: CertificateCreationRequest, transaction?: Transaction): Promise<CertificateCreationResult>;

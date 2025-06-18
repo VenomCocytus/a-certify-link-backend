@@ -1,11 +1,11 @@
 import { Response } from 'express';
 import { CertificateService } from '@services/certificate.service';
-import { AsaciAttestationEditionRequest } from '@dto/asaci.dto';
-import { CertificateMapper } from '@/mappers/certificate.mapper';
-import { NotFoundException } from '@exceptions/notFound.exception';
-import { ValidationException } from '@exceptions/validation.exception';
-import { Helpers } from '@utils/helpers';
-import { logger } from '@utils/logger';
+// import { AsaciAttestationEditionRequest } from '@dto/asaci.dto';
+// import { CertificateMapper } from '@/mappers/certificate.mapper';
+// import { NotFoundException } from '@exceptions/notFound.exception';
+// import { ValidationException } from '@exceptions/validation.exception';
+// import { Helpers } from '@utils/helpers';
+// import { logger } from '@utils/logger';
 import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 import {CertificateCreationRequest} from "@dto/certificate.dto";
 
@@ -55,7 +55,7 @@ export class CertificateController {
     // };
     //
     // /**
-    //  * Get certificate by ID
+    //  * Get a certificate by ID
     //  */
     // getCertificateById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     //     const { id } = req.params;
