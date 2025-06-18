@@ -1,9 +1,4 @@
-import { AsaciAttestationEditionRequest } from '@dto/asaci.dto';
-import {
-    AsaciAttestationEditionRequest,
-    AsaciAttestationEditionResponse,
-    AsaciAttestationInfo
-} from '@interfaces/ivoryAttestation.interfaces';
+import {AsaciAttestationEditionRequest, AsaciAttestationEditionResponse, AsaciAttestationInfo} from '@dto/asaci.dto';
 import { OrassPolicyModel } from '@/models';
 import { OrassInsuredModel } from '@/models';
 import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';

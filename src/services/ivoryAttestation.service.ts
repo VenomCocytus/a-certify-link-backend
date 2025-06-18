@@ -1,12 +1,4 @@
 import {IvoryAttestationServiceInterface} from '@interfaces/serviceInterfaces';
-import {
-    AsaciAttestationEditionRequest,
-    AsaciAttestationEditionResponse,
-    AsaciAttestationUpdateStatusRequest,
-    AsaciAttestationUpdateStatusResponse,
-    AsaciAttestationVerificationRequest,
-    AsaciAttestationVerificationResponse,
-} from '@interfaces/ivoryAttestation.interfaces';
 import {HttpClient} from '@utils/httpClient';
 import {ivoryAttestationCircuitBreaker} from '@utils/circuitBreaker';
 import {Environment} from '@config/environment';
@@ -15,6 +7,11 @@ import {ExternalApiException} from '@exceptions/externalApi.exception';
 import {ValidationException} from '@exceptions/validation.exception';
 import {logger} from '@utils/logger';
 import {ErrorCodes} from "@/constants/errorCodes";
+import {
+    AsaciAttestationEditionRequest,
+    AsaciAttestationEditionResponse, AsaciAttestationUpdateStatusRequest, AsaciAttestationUpdateStatusResponse,
+    AsaciAttestationVerificationRequest, AsaciAttestationVerificationResponse
+} from "@dto/asaci.dto";
 
 // Define the type for the validation entries
 interface CodeValidation {

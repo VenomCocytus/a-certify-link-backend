@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response } from 'express';
 import { CertificateService } from '@services/certificate.service';
 import { AsaciAttestationEditionRequest } from '@dto/asaci.dto';
 import { CertificateMapper } from '@/mappers/certificate.mapper';
@@ -44,7 +44,7 @@ export class CertificateController {
     /**
      * List certificates with pagination and filtering
      */
-    listCertificates = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    listCertificates = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const query = req.query as any;
         const user = req.user!;
         const pagination = Helpers.parsePaginationParams(query);
@@ -85,7 +85,7 @@ export class CertificateController {
     /**
      * Get certificate by ID
      */
-    getCertificateById = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    getCertificateById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { id } = req.params;
         const user = req.user!;
 
@@ -115,7 +115,7 @@ export class CertificateController {
     /**
      * Check certificate status
      */
-    checkCertificateStatus = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    checkCertificateStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { id } = req.params;
         const user = req.user!;
 
@@ -147,7 +147,7 @@ export class CertificateController {
     /**
      * Download certificate
      */
-    downloadCertificate = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    downloadCertificate = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { id } = req.params;
         const { type = 'PDF' } = req.query;
         const user = req.user!;
@@ -184,7 +184,7 @@ export class CertificateController {
     /**
      * Cancel certificate
      */
-    cancelCertificate = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    cancelCertificate = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { id } = req.params;
         const { reason } = req.body;
         const user = req.user!;
@@ -228,7 +228,7 @@ export class CertificateController {
     /**
      * Suspend certificate
      */
-    suspendCertificate = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    suspendCertificate = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { id } = req.params;
         const { reason } = req.body;
         const user = req.user!;
@@ -272,7 +272,7 @@ export class CertificateController {
     /**
      * Create bulk certificates
      */
-    createBulkCertificates = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    createBulkCertificates = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { certificates } = req.body;
         const user = req.user!;
 
