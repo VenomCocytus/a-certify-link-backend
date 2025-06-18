@@ -1,15 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 import { AuthService } from '@services/auth.service';
 import { UserRepository } from '@/repositories/user.repository';
-import { ValidationException } from '@exceptions/validation.exception';
-import { NotFoundException } from '@exceptions/notFound.exception';
-import { Environment } from '@config/environment';
-import { logger } from '@utils/logger';
 import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
-import {validate} from "class-validator";
-import {LoginRequest} from "@dto/auth.dto";
-import {plainToInstance} from "class-transformer";
 import {UserMapper} from "@/mappers/user.mapper";
 
 export class AuthController {

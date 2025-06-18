@@ -3,11 +3,7 @@ import {
     IsEmail,
     IsNotEmpty,
     MinLength,
-    IsUUID,
-    IsOptional,
-    IsArray,
-    IsBoolean,
-    IsDate
+    IsUUID
 } from 'class-validator';
 
 export class LoginRequest {
