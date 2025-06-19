@@ -1,0 +1,35 @@
+export declare const Environment: {
+    NODE_ENV: string;
+    PORT: number;
+    API_PREFIX: string;
+    API_VERSION: string;
+    DB_HOST: string;
+    DB_PORT: number;
+    DB_NAME: string;
+    DB_USERNAME: string;
+    DB_PASSWORD: string;
+    DB_DIALECT: string;
+    DB_TRUSTED_CONNECTION: string;
+    DB_POOL_MAX: number;
+    DB_POOL_MIN: number;
+    DB_POOL_ACQUIRE: number;
+    DB_POOL_IDLE: number;
+    JWT_SECRET: string;
+    JWT_EXPIRES_IN: string;
+    ORASS_BASE_URL: string;
+    ORASS_API_KEY: string;
+    ORASS_TIMEOUT: number;
+    IVORY_ATTESTATION_BASE_URL: string;
+    IVORY_ATTESTATION_TOKEN: string;
+    IVORY_ATTESTATION_TIMEOUT: number;
+    RATE_LIMIT_WINDOW_MS: number;
+    RATE_LIMIT_MAX_REQUESTS: number;
+    CIRCUIT_BREAKER_TIMEOUT: number;
+    CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE: number;
+    CIRCUIT_BREAKER_RESET_TIMEOUT: number;
+    LOG_LEVEL: string;
+    LOG_FILE: string;
+    DEFAULT_LANGUAGE: string;
+    SUPPORTED_LANGUAGES: string;
+};
+//# sourceMappingURL=environment.d.ts.map
