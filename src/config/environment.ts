@@ -19,6 +19,7 @@ export const Environment = {
     DB_USERNAME: process.env.DB_USERNAME || 'sa',
     DB_PASSWORD: process.env.DB_PASSWORD || '',
     DB_DIALECT: process.env.DB_DIALECT || 'mssql',
+    DB_TRUSTED_CONNECTION: process.env.DB_TRUSTED_CONNECTION || 'true',
     DB_POOL_MAX: parseInt(process.env.DB_POOL_MAX || '5', 10),
     DB_POOL_MIN: parseInt(process.env.DB_POOL_MIN || '0', 10),
     DB_POOL_ACQUIRE: parseInt(process.env.DB_POOL_ACQUIRE || '30000', 10),

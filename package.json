@@ -15,7 +15,11 @@
     "format": "prettier --write src/**/*.ts",
     "db:migrate": "sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
-    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && sequelize-cli db:migrate && sequelize-cli db:seed:all"
+    "db:seed:undo": "sequelize-cli db:seed:undo:all",
+    "db:seed:status": "sequelize-cli db:seed:status",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && npm run db:setup",
+    "seed:run": "node seeders/run-seeders.js"
   },
   "dependencies": {
     "axios": "^1.6.2",

@@ -82,14 +82,35 @@ module.exports = {
         });
 
         // Add indexes
-        await queryInterface.addIndex('users', ['email'], { unique: true });
-        await queryInterface.addIndex('users', ['role']);
-        await queryInterface.addIndex('users', ['company_code']);
-        await queryInterface.addIndex('users', ['agent_code']);
-        await queryInterface.addIndex('users', ['is_active']);
+        // Add indexes
+        await queryInterface.addIndex('users', ['email'], {
+            unique: true,
+            name: 'idx_users_email_unique'
+        });
+        await queryInterface.addIndex('users', ['role'], {
+            name: 'idx_users_role'
+        });
+        await queryInterface.addIndex('users', ['company_code'], {
+            name: 'idx_users_company_code'
+        });
+        await queryInterface.addIndex('users', ['agent_code'], {
+            name: 'idx_users_agent_code'
+        });
+        await queryInterface.addIndex('users', ['is_active'], {
+            name: 'idx_users_is_active'
+        });
+        await queryInterface.addIndex('users', ['created_at'], {
+            name: 'idx_users_created_at'
+        });
+        await queryInterface.addIndex('users', ['locked_until'], {
+            name: 'idx_users_locked_until'
+        });
+
+        console.log('✅ Users table created with indexes');
     },
 
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('users');
-    },
+        console.log('❌ Users table dropped');
+    }
 };
