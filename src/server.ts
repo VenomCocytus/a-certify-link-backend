@@ -13,11 +13,12 @@ async function startServer(): Promise<void> {
         //TODO: add a callback when calling asa-ci
 
 
-        // // Test database connection
-        // awaits sequelize.authenticate();
-        // logger.info('Database connection established successfully');
-        //
-        // // Sync database models (only in development)
+        // Test database connection
+        await sequelize.authenticate();
+        logger.info('Database connection established successfully');
+
+        //TODO: Determine the purpose
+        // Sync database models (only in development)
         // if (Environment.NODE_ENV === 'development') {
         //     await sequelize.sync({ alter: true });
         //     logger.info('Database models synchronized');

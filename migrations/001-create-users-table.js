@@ -39,7 +39,7 @@ module.exports = {
                 allowNull: true,
             },
             permissions: {
-                type: Sequelize.JSON,
+                type: Sequelize.STRING(255),
                 allowNull: false,
                 defaultValue: '[]',
             },

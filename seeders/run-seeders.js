@@ -8,13 +8,6 @@ const { execSync } = require('child_process');
  */
 async function runSeeders() {
     const seeders = [
-        '001-create-admin-user.js',
-        '002-create-sample-companies.js',
-        '003-create-sample-insured.js',
-        '004-create-sample-policies.js',
-        '005-create-sample-certificates.js',
-        '006-create-sample-audit-logs.js',
-        '007-create-idempotency-keys.js'
     ];
 
     console.log('🌱 Starting database seeding...\n');

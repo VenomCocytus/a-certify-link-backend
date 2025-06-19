@@ -7,12 +7,14 @@ const sequelizeConfig: Options = {
     host: Environment.DB_HOST,
     port: Environment.DB_PORT,
     database: Environment.DB_NAME,
-    dialect: 'mssql' as const,
+    username: Environment.DB_USERNAME,
+    password: Environment.DB_PASSWORD,
+    dialect: 'mssql',
     ...(isTrusted
             ? {
                 dialectOptions: {
                     options: {
-                        encrypt: true,
+                        encrypt: false,
                         trustServerCertificate: true,
                         enableArithAbort: true,
                         validateBulkLoadParameters: false,

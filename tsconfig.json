@@ -32,7 +32,8 @@
   },
   "include": [
     "src/**/*",
-    ".env"
+    ".env",
+    "src/config/*.ts"
   ],
   "exclude": ["node_modules", "dist", "tests"]
 }
