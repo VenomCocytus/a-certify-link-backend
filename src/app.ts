@@ -6,7 +6,6 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { globalExceptionHandlerMiddleware } from '@middlewares/globalExceptionHandler.middleware';
-import { requestLoggerMiddleware } from '@middlewares/requestLogger.middleware';
 import { rateLimiterMiddleware } from '@middlewares/rateLimiter.middleware';
 import routes from './routes';
 import { Environment } from '@config/environment';
@@ -46,9 +45,6 @@ app.use(compression());
 
 // Rate limiting
 app.use(rateLimiterMiddleware);
-
-// Request logging
-app.use(requestLoggerMiddleware as express.RequestHandler);
 
 // i18n middleware
 app.use(i18nextMiddleware.handle(i18next));

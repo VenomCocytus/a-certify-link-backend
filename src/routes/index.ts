@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { certificateRoutes } from './certificate.routes';
+// import { certificateRoutes } from './certificate.routes';
 // import { healthRoutes } from './healthRoutes';
 // import { auditRoutes } from './auditRoutes';
-import authRoutes from './auth.routes';
+// import authRoutes from './auth.routes';
 
 const router = Router();
 
@@ -44,8 +44,8 @@ router.get('/', (req, res) => {
 });
 
 // Mount route modules
-router.use('/auth', authRoutes);
-router.use('/certificates', certificateRoutes);
+// router.use('/auth', authRoutes);
+// router.use('/certificates', certificateRoutes);
 // router.use('/health', healthRoutes);
 // router.use('/audit', auditRoutes);
 
