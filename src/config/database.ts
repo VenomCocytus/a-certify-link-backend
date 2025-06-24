@@ -125,40 +125,6 @@ const sequelizeConfig: Options = {
 // Create Sequelize instance
 export const sequelize = new Sequelize(sequelizeConfig);
 
-// Connection event handlers
-sequelize.authenticate()
-    .then(() => {
-        logger.info('✅ Database connection established successfully');
-        logger.info(`📊 Database: ${Environment.DB_NAME} on ${Environment.DB_HOST}:${Environment.DB_PORT}`);
-    })
-    .catch((error: Error) => {
-        logger.error('❌ Unable to connect to the database:', error);
-    });
-
-// Handle connection events
-sequelize.addHook('beforeConnect', (config: any) => {
-    logger.debug('🔄 Attempting database connection...');
-});
-
-sequelize.addHook('afterConnect', (connection: any, config: any) => {
-    logger.debug('✅ Database connection established');
-});
-
-sequelize.addHook('beforeDisconnect', (connection: any) => {
-    logger.debug('🔄 Disconnecting from database...');
-});
-
-sequelize.addHook('afterDisconnect', (connection: any) => {
-    logger.debug('✅ Database disconnected');
-});
-
-// Error handling for connection issues
-sequelize.addHook('beforeQuery', (options: any, query: any) => {
-    if (Environment.NODE_ENV === 'development') {
-        logger.debug(`🔍 Executing query: ${query.sql?.substring(0, 100)}...`);
-    }
-});
-
 // Database utility functions
 export const databaseUtils = {
     /**
@@ -249,7 +215,7 @@ export const databaseUtils = {
         try {
             const [results, metadata] = await sequelize.query(sql, {
                 replacements,
-                type:QueryTypes.SELECT,
+                type: QueryTypes.SELECT,
             });
             return results;
         } catch (error) {
@@ -340,8 +306,50 @@ export const databaseUtils = {
     },
 };
 
+// Initialize connection with proper error handling
+async function initializeConnection(): Promise<void> {
+    try {
+        await sequelize.authenticate();
+        logger.info('✅ Database connection established successfully');
+        logger.info(`📊 Database: ${Environment.DB_NAME} on ${Environment.DB_HOST}:${Environment.DB_PORT}`);
+    } catch (error: any) {
+        logger.error('❌ Unable to connect to the database:', error);
+        throw error;
+    }
+}
+
+// Connection event handlers
+sequelize.addHook('beforeConnect', (config: any) => {
+    logger.debug('🔄 Attempting database connection...');
+});
+
+sequelize.addHook('afterConnect', (connection: any, config: any) => {
+    logger.debug('✅ Database connection established');
+});
+
+sequelize.addHook('beforeDisconnect', (connection: any) => {
+    logger.debug('🔄 Disconnecting from database...');
+});
+
+sequelize.addHook('afterDisconnect', (connection: any) => {
+    logger.debug('✅ Database disconnected');
+});
+
+// Error handling for connection issues
+sequelize.addHook('beforeQuery', (options: any, query: any) => {
+    if (Environment.NODE_ENV === 'development') {
+        logger.debug(`🔍 Executing query: ${query.sql?.substring(0, 100)}...`);
+    }
+});
+
 // Export configuration for backward compatibility
 export { sequelizeConfig };
+
+// Initialize connection immediately
+initializeConnection().catch(error => {
+    logger.error('Failed to initialize database connection:', error);
+    process.exit(1);
+});
 
 // Export default sequelize instance
 export default sequelize;

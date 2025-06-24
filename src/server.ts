@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { createApp, App } from './app';
 import { logger } from '@utils/logger';
-import { sequelize } from './models';
+import {initializeDatabase, sequelize} from './models';
 import { Environment } from '@config/environment';
 import {validateEnvironment} from "@config/asaci-endpoints";
 
@@ -16,26 +16,6 @@ const config = {
 // Application instance
 let app: App;
 let server: any;
-
-/**
- * Initialize database connection
- */
-async function initializeDatabase(): Promise<void> {
-    try {
-        // Test database connection
-        await sequelize.authenticate();
-        logger.info('✅ Database connection established successfully');
-
-        // Sync database models (only in development)
-        if (Environment.NODE_ENV === 'development') {
-            await sequelize.sync({ alter: true });
-            logger.info('✅ Database models synchronized');
-        }
-    } catch (error: any) {
-        logger.error('❌ Database initialization failed:', error.message);
-        throw error;
-    }
-}
 
 /**
  * Initialize application

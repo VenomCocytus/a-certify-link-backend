@@ -1,5 +1,4 @@
-import {DataTypes, Model, Op, Optional, WhereAttributeHash} from 'sequelize';
-import {sequelize} from '@config/database';
+import { DataTypes, Model, Op, Optional, WhereAttributeHash, Sequelize } from 'sequelize';
 
 // Add TypeScript interface for the return type
 interface PerformanceMetrics {
@@ -74,7 +73,7 @@ export interface OperationLogCreationAttributes extends Optional<OperationLogAtt
     'executionTimeMs' | 'memoryUsageMb' | 'ipAddress' | 'userAgent' | 'sessionId' |
     'correlationId' | 'metadata' | 'createdAt'> {}
 
-export class OperationLog extends Model<OperationLogAttributes, OperationLogCreationAttributes>
+export class OperationLogModel extends Model<OperationLogAttributes, OperationLogCreationAttributes>
     implements OperationLogAttributes {
 
     public id!: string;
@@ -132,8 +131,8 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
         requestData?: object,
         responseData?: object,
         error?: Error
-    ): Promise<OperationLog> {
-        return OperationLog.create({
+    ): Promise<OperationLogModel> {
+        return this.create({
             userId,
             productionRequestId,
             operation: OperationType.ORASS_FETCH,
@@ -159,8 +158,8 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
         responseData?: object,
         responseStatus?: number,
         error?: Error
-    ): Promise<OperationLog> {
-        return OperationLog.create({
+    ): Promise<OperationLogModel> {
+        return this.create({
             userId,
             productionRequestId,
             operation,
@@ -186,8 +185,8 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
         sessionId?: string,
         metadata?: object,
         error?: Error
-    ): Promise<OperationLog> {
-        return OperationLog.create({
+    ): Promise<OperationLogModel> {
+        return this.create({
             userId,
             operation,
             status,
@@ -201,6 +200,7 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
     }
 
     public static async getOperationStats(
+        sequelize: Sequelize,
         operation?: OperationType,
         startDate?: Date,
         endDate?: Date
@@ -214,7 +214,7 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
             whereClause.createdAt[Op.lte] = endDate;
         }
 
-        return await OperationLog.findAll({
+        return await this.findAll({
             where: whereClause,
             attributes: [
                 'operation',
@@ -230,6 +230,7 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
     }
 
     public static async getErrorAnalysis(
+        sequelize: Sequelize,
         operation?: OperationType,
         days: number = 7
     ): Promise<any> {
@@ -243,7 +244,7 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
 
         if (operation) whereClause.operation = operation;
 
-        return await OperationLog.findAll({
+        return await this.findAll({
             where: whereClause,
             attributes: [
                 'operation',
@@ -258,21 +259,22 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
     }
 
     public static async getPerformanceMetrics(
+        sequelize: Sequelize,
         operation: OperationType,
         hours: number = 24
     ): Promise<PerformanceMetrics> {
         const startDate = new Date();
         startDate.setHours(startDate.getHours() - hours);
 
-        const metrics = await OperationLog.findAll({
+        const metrics = await this.findAll({
             where: {
                 operation,
                 status: OperationStatus.SUCCESS,
                 createdAt: { [Op.gte]: startDate },
                 executionTimeMs: {
                     [Op.ne]: null,
-                    [Op.gt]: 0  // Additional filter to ensure positive numbers
-                } as unknown as WhereAttributeHash<number>  // Type assertion
+                    [Op.gt]: 0
+                } as unknown as WhereAttributeHash<number>
             },
             attributes: [
                 [sequelize.fn('AVG', sequelize.col('execution_time_ms')), 'avgTime'],
@@ -283,10 +285,7 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
             raw: true
         });
 
-        // For percentile calculations (database-specific)
-        // Note: PERCENTILE_CONT might need database-specific implementation
         const result = metrics[0] || {};
-
         return result as PerformanceMetrics;
     }
 
@@ -294,154 +293,159 @@ export class OperationLog extends Model<OperationLogAttributes, OperationLogCrea
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
-        return await OperationLog.destroy({
+        return await this.destroy({
             where: {
-                createdAt: {[Op.lt]: cutoffDate}
+                createdAt: { [Op.lt]: cutoffDate }
             }
         });
     }
 }
 
-OperationLog.init({
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    userId: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-            model: 'users',
-            key: 'id'
+// Model initialization function
+export function initOperationLogModel(sequelize: Sequelize): typeof OperationLogModel {
+    OperationLogModel.init({
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+        },
+        userId: {
+            type: DataTypes.UUID,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
+        productionRequestId: {
+            type: DataTypes.UUID,
+            allowNull: true,
+            references: {
+                model: 'production_requests',
+                key: 'id'
+            }
+        },
+        operation: {
+            type: DataTypes.ENUM(...Object.values(OperationType)),
+            allowNull: false
+        },
+        status: {
+            type: DataTypes.ENUM(...Object.values(OperationStatus)),
+            allowNull: false
+        },
+
+        // Request/Response tracking
+        method: {
+            type: DataTypes.STRING(10),
+            allowNull: true
+        },
+        endpoint: {
+            type: DataTypes.STRING(500),
+            allowNull: true
+        },
+        requestData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        responseData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        responseStatus: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+
+        // Error tracking
+        errorMessage: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        errorCode: {
+            type: DataTypes.STRING(50),
+            allowNull: true
+        },
+        errorDetails: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+
+        // Performance tracking
+        executionTimeMs: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        memoryUsageMb: {
+            type: DataTypes.FLOAT,
+            allowNull: true
+        },
+
+        // Context
+        ipAddress: {
+            type: DataTypes.STRING(45), // IPv6 max length
+            allowNull: true
+        },
+        userAgent: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        sessionId: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        correlationId: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+
+        // Metadata
+        metadata: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
-    },
-    productionRequestId: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-            model: 'production_requests',
-            key: 'id'
-        }
-    },
-    operation: {
-        type: DataTypes.ENUM(...Object.values(OperationType)),
-        allowNull: false
-    },
-    status: {
-        type: DataTypes.ENUM(...Object.values(OperationStatus)),
-        allowNull: false
-    },
+    }, {
+        sequelize,
+        modelName: 'OperationLog',
+        tableName: 'operation_logs',
+        timestamps: false, // Only createdAt, no updatedAt
+        indexes: [
+            {
+                fields: ['userId']
+            },
+            {
+                fields: ['productionRequestId']
+            },
+            {
+                fields: ['operation']
+            },
+            {
+                fields: ['status']
+            },
+            {
+                fields: ['createdAt']
+            },
+            {
+                fields: ['operation', 'status']
+            },
+            {
+                fields: ['operation', 'createdAt']
+            },
+            {
+                fields: ['userId', 'operation']
+            },
+            {
+                fields: ['correlationId']
+            }
+        ]
+    });
 
-    // Request/Response tracking
-    method: {
-        type: DataTypes.STRING(10),
-        allowNull: true
-    },
-    endpoint: {
-        type: DataTypes.STRING(500),
-        allowNull: true
-    },
-    requestData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    responseData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    responseStatus: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
+    return OperationLogModel;
+}
 
-    // Error tracking
-    errorMessage: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    errorCode: {
-        type: DataTypes.STRING(50),
-        allowNull: true
-    },
-    errorDetails: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-
-    // Performance tracking
-    executionTimeMs: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    memoryUsageMb: {
-        type: DataTypes.FLOAT,
-        allowNull: true
-    },
-
-    // Context
-    ipAddress: {
-        type: DataTypes.STRING(45), // IPv6 max length
-        allowNull: true
-    },
-    userAgent: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    sessionId: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    correlationId: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-
-    // Metadata
-    metadata: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    }
-}, {
-    sequelize,
-    modelName: 'OperationLog',
-    tableName: 'operation_logs',
-    timestamps: false, // Only createdAt, no updatedAt
-    indexes: [
-        {
-            fields: ['userId']
-        },
-        {
-            fields: ['productionRequestId']
-        },
-        {
-            fields: ['operation']
-        },
-        {
-            fields: ['status']
-        },
-        {
-            fields: ['createdAt']
-        },
-        {
-            fields: ['operation', 'status']
-        },
-        {
-            fields: ['operation', 'createdAt']
-        },
-        {
-            fields: ['userId', 'operation']
-        },
-        {
-            fields: ['correlationId']
-        }
-    ]
-});
-
-export default OperationLog;
+export default OperationLogModel;

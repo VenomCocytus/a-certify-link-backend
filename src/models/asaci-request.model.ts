@@ -1,5 +1,4 @@
-import {DataTypes, Model, Op, Optional} from 'sequelize';
-import { sequelize } from '@config/database';
+import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
 
 // Enums for better type safety
 export enum AsaciRequestStatus {
@@ -59,7 +58,7 @@ export interface ContractData {
 }
 
 // Production Request attributes interface
-export interface ProductionRequestAttributes {
+export interface AsaciRequestAttributes {
     id: string;
     userId: string;
 
@@ -112,7 +111,7 @@ export interface ProductionRequestAttributes {
 }
 
 // Optional attributes for creation
-export interface ProductionRequestCreationAttributes extends Optional<ProductionRequestAttributes,
+export interface AsaciRequestCreationAttributes extends Optional<AsaciRequestAttributes,
     'id' | 'orassReference' | 'orassData' | 'orassFetchedAt' | 'asaciReference' |
     'asaciRequestPayload' | 'asaciResponsePayload' | 'asaciSubmittedAt' | 'asaciCompletedAt' |
     'emailNotification' | 'generatedBy' | 'status' | 'statusMessage' | 'vehicleData' |
@@ -120,8 +119,8 @@ export interface ProductionRequestCreationAttributes extends Optional<Production
     'downloadCount' | 'lastDownloadAt' | 'errorMessage' | 'errorDetails' | 'retryCount' |
     'maxRetries' | 'createdAt' | 'updatedAt' | 'completedAt'> {}
 
-export class AsaciRequest extends Model<ProductionRequestAttributes, ProductionRequestCreationAttributes>
-    implements ProductionRequestAttributes {
+export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciRequestCreationAttributes>
+    implements AsaciRequestAttributes {
 
     public id!: string;
     public userId!: string;
@@ -195,7 +194,7 @@ export class AsaciRequest extends Model<ProductionRequestAttributes, ProductionR
     public async updateStatus(
         status: AsaciRequestStatus,
         message?: string,
-        additionalData?: Partial<ProductionRequestAttributes>
+        additionalData?: Partial<AsaciRequestAttributes>
     ): Promise<void> {
         const updateData: any = {
             status,
@@ -266,24 +265,24 @@ export class AsaciRequest extends Model<ProductionRequestAttributes, ProductionR
     }
 
     // Static methods
-    public static async findByStatus(status: AsaciRequestStatus): Promise<AsaciRequest[]> {
-        return AsaciRequest.findAll({
+    public static async findByStatus(status: AsaciRequestStatus): Promise<AsaciRequestModel[]> {
+        return this.findAll({
             where: { status },
             include: ['user'],
             order: [['createdAt', 'DESC']]
         });
     }
 
-    public static async findByUser(userId: string, limit: number = 10): Promise<AsaciRequest[]> {
-        return AsaciRequest.findAll({
+    public static async findByUser(userId: string, limit: number = 10): Promise<AsaciRequestModel[]> {
+        return this.findAll({
             where: { userId },
             order: [['createdAt', 'DESC']],
             limit
         });
     }
 
-    public static async findPendingRetries(): Promise<AsaciRequest[]> {
-        return AsaciRequest.findAll({
+    public static async findPendingRetries(sequelize: Sequelize): Promise<AsaciRequestModel[]> {
+        return this.findAll({
             where: {
                 status: AsaciRequestStatus.FAILED,
                 retryCount: {
@@ -294,8 +293,8 @@ export class AsaciRequest extends Model<ProductionRequestAttributes, ProductionR
         });
     }
 
-    public static async getStatsByUser(userId: string): Promise<any> {
-        const stats = await AsaciRequest.findAll({
+    public static async getStatsByUser(userId: string, sequelize: Sequelize): Promise<any> {
+        const stats = await this.findAll({
             where: { userId },
             attributes: [
                 'status',
@@ -312,209 +311,214 @@ export class AsaciRequest extends Model<ProductionRequestAttributes, ProductionR
     }
 }
 
-AsaciRequest.init({
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    userId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
-    },
-
-    // Orass Integration
-    orassReference: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    orassData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    orassFetchedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-
-    // Asaci Integration
-    asaciReference: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    asaciRequestPayload: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    asaciResponsePayload: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    asaciSubmittedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    asaciCompletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-
-    // Request Details
-    officeCode: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
-    },
-    organizationCode: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
-    },
-    certificateType: {
-        type: DataTypes.ENUM(...Object.values(CertificateType)),
-        allowNull: false
-    },
-    emailNotification: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-        validate: {
-            isEmail: true
-        }
-    },
-    generatedBy: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    channel: {
-        type: DataTypes.ENUM('api', 'web'),
-        allowNull: false,
-        defaultValue: 'web'
-    },
-
-    // Status Tracking
-    status: {
-        type: DataTypes.ENUM(...Object.values(AsaciRequestStatus)),
-        allowNull: false,
-        defaultValue: AsaciRequestStatus.ORASS_FETCHING
-    },
-    statusMessage: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-
-    // Vehicle/Insurance Data
-    vehicleData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    insuredData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    subscriberData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    contractData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-
-    // Results
-    certificateUrl: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    certificateData: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    downloadCount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    lastDownloadAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-
-    // Error Handling
-    errorMessage: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    errorDetails: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    retryCount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    maxRetries: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 3
-    },
-
-    // Audit
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
-    completedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    }
-}, {
-    sequelize,
-    modelName: 'ProductionRequest',
-    tableName: 'production_requests',
-    timestamps: true,
-    indexes: [
-        {
-            fields: ['userId']
+// Model initialization function
+export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequestModel {
+    AsaciRequestModel.init({
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
         },
-        {
-            fields: ['status']
+        userId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
         },
-        {
-            fields: ['certificateType']
-        },
-        {
-            fields: ['orassReference']
-        },
-        {
-            fields: ['asaciReference']
-        },
-        {
-            fields: ['createdAt']
-        },
-        {
-            fields: ['status', 'retryCount']
-        }
-    ],
-    hooks: {
-        beforeUpdate: (productionRequest: AsaciRequest) => {
-            productionRequest.updatedAt = new Date();
-        }
-    }
-});
 
-export default AsaciRequest;
+        // Orass Integration
+        orassReference: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        orassData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        orassFetchedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+
+        // Asaci Integration
+        asaciReference: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        asaciRequestPayload: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        asaciResponsePayload: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        asaciSubmittedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        asaciCompletedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+
+        // Request Details
+        officeCode: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        organizationCode: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        certificateType: {
+            type: DataTypes.ENUM(...Object.values(CertificateType)),
+            allowNull: false
+        },
+        emailNotification: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            validate: {
+                isEmail: true
+            }
+        },
+        generatedBy: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        channel: {
+            type: DataTypes.ENUM('api', 'web'),
+            allowNull: false,
+            defaultValue: 'web'
+        },
+
+        // Status Tracking
+        status: {
+            type: DataTypes.ENUM(...Object.values(AsaciRequestStatus)),
+            allowNull: false,
+            defaultValue: AsaciRequestStatus.ORASS_FETCHING
+        },
+        statusMessage: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+
+        // Vehicle/Insurance Data
+        vehicleData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        insuredData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        subscriberData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        contractData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+
+        // Results
+        certificateUrl: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        certificateData: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        downloadCount: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        lastDownloadAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+
+        // Error Handling
+        errorMessage: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        errorDetails: {
+            type: DataTypes.JSON,
+            allowNull: true
+        },
+        retryCount: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        maxRetries: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 3
+        },
+
+        // Audit
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
+        },
+        completedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        }
+    }, {
+        sequelize,
+        modelName: 'AsaciRequest',
+        tableName: 'asaci_requests',
+        timestamps: true,
+        indexes: [
+            {
+                fields: ['userId']
+            },
+            {
+                fields: ['status']
+            },
+            {
+                fields: ['certificateType']
+            },
+            {
+                fields: ['orassReference']
+            },
+            {
+                fields: ['asaciReference']
+            },
+            {
+                fields: ['createdAt']
+            },
+            {
+                fields: ['status', 'retryCount']
+            }
+        ],
+        hooks: {
+            beforeUpdate: (asaciRequest: AsaciRequestModel) => {
+                asaciRequest.updatedAt = new Date();
+            }
+        }
+    });
+
+    return AsaciRequestModel;
+}
+
+export default AsaciRequestModel;

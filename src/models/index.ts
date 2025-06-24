@@ -1,95 +1,123 @@
-import {Op} from 'sequelize';
+import { Op } from 'sequelize';
 import { sequelize } from '@config/database';
 
-// Import all models
-import User from './user.model';
-import Role from './role.model';
-import PasswordHistory from './password-history.model';
-import AsaciRequest from './asaci-request.model';
-import OperationLog from './operation-log.model';
+// Import model definitions (not instances)
+import { UserModel, initUserModel } from './user.model';
+import { RoleModel, initRoleModel } from './role.model';
+import { PasswordHistoryModel, initPasswordHistoryModel } from './password-history.model';
+import { AsaciRequestModel, initAsaciRequestModel } from './asaci-request.model';
+import { OperationLogModel, initOperationLogModel } from './operation-log.model';
+
+// Initialize all models with the sequelize instance immediately
+const User = initUserModel(sequelize);
+const Role = initRoleModel(sequelize);
+const PasswordHistory = initPasswordHistoryModel(sequelize);
+const AsaciRequest = initAsaciRequestModel(sequelize);
+const OperationLog = initOperationLogModel(sequelize);
+
+// Initialize models function
+function initializeModels(): void {
+    try {
+        console.log('🔄 Models already initialized...');
+        console.log('✅ Models ready for use');
+    } catch (error) {
+        console.error('❌ Error with models:', error);
+        throw error;
+    }
+}
 
 // Define model relationships
 function defineAssociations(): void {
+    try {
+        console.log('🔄 Defining model associations...');
 
-    // User <-> Role relationship (Many-to-One)
-    User.belongsTo(Role, {
-        foreignKey: 'roleId',
-        as: 'role',
-        onDelete: 'RESTRICT',
-        onUpdate: 'CASCADE'
-    });
+        // User <-> Role relationship (Many-to-One)
+        User.belongsTo(Role, {
+            foreignKey: 'roleId',
+            as: 'role',
+            onDelete: 'RESTRICT',
+            onUpdate: 'CASCADE'
+        });
 
-    Role.hasMany(User, {
-        foreignKey: 'roleId',
-        as: 'users',
-        onDelete: 'RESTRICT',
-        onUpdate: 'CASCADE'
-    });
+        Role.hasMany(User, {
+            foreignKey: 'roleId',
+            as: 'users',
+            onDelete: 'RESTRICT',
+            onUpdate: 'CASCADE'
+        });
 
-    // User <-> PasswordHistory relationship (One-to-Many)
-    User.hasMany(PasswordHistory, {
-        foreignKey: 'userId',
-        as: 'passwordHistories',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        // User <-> PasswordHistory relationship (One-to-Many)
+        User.hasMany(PasswordHistory, {
+            foreignKey: 'userId',
+            as: 'passwordHistories',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
 
-    PasswordHistory.belongsTo(User, {
-        foreignKey: 'userId',
-        as: 'user',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        PasswordHistory.belongsTo(User, {
+            foreignKey: 'userId',
+            as: 'user',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
 
-    // User <-> ProductionRequest relationship (One-to-Many)
-    User.hasMany(AsaciRequest, {
-        foreignKey: 'userId',
-        as: 'productionRequests',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        // User <-> AsaciRequest relationship (One-to-Many)
+        User.hasMany(AsaciRequest, {
+            foreignKey: 'userId',
+            as: 'asaciRequests',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
 
-    AsaciRequest.belongsTo(User, {
-        foreignKey: 'userId',
-        as: 'user',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        AsaciRequest.belongsTo(User, {
+            foreignKey: 'userId',
+            as: 'user',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
 
-    // User <-> OperationLog relationship (One-to-Many)
-    User.hasMany(OperationLog, {
-        foreignKey: 'userId',
-        as: 'operationLogs',
-        onDelete: 'SET NULL',
-        onUpdate: 'CASCADE'
-    });
+        // User <-> OperationLog relationship (One-to-Many)
+        User.hasMany(OperationLog, {
+            foreignKey: 'userId',
+            as: 'operationLogs',
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE'
+        });
 
-    OperationLog.belongsTo(User, {
-        foreignKey: 'userId',
-        as: 'user',
-        onDelete: 'SET NULL',
-        onUpdate: 'CASCADE'
-    });
+        OperationLog.belongsTo(User, {
+            foreignKey: 'userId',
+            as: 'user',
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE'
+        });
 
-    // ProductionRequest <-> OperationLog relationship (One-to-Many)
-    AsaciRequest.hasMany(OperationLog, {
-        foreignKey: 'productionRequestId',
-        as: 'operationLogs',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        // AsaciRequest <-> OperationLog relationship (One-to-Many)
+        AsaciRequest.hasMany(OperationLog, {
+            foreignKey: 'productionRequestId',
+            as: 'operationLogs',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
 
-    OperationLog.belongsTo(AsaciRequest, {
-        foreignKey: 'productionRequestId',
-        as: 'productionRequest',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    });
+        OperationLog.belongsTo(AsaciRequest, {
+            foreignKey: 'productionRequestId',
+            as: 'asaciRequest',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
+
+        console.log('✅ Model associations defined successfully');
+    } catch (error) {
+        console.error('❌ Error defining associations:', error);
+        throw error;
+    }
 }
 
 // Initialize database with seed data
 async function seedDatabase(): Promise<void> {
     try {
+        console.log('🔄 Seeding database...');
+
         // Seed default roles
         const roles = [
             {
@@ -189,42 +217,9 @@ async function seedDatabase(): Promise<void> {
             }
         }
 
+        console.log('✅ Database seeded successfully');
     } catch (error) {
         console.error('❌ Error seeding database:', error);
-        throw error;
-    }
-}
-
-// Database initialization function
-export async function initializeDatabase(): Promise<void> {
-    try {
-        console.log('🔄 Initializing database...');
-
-        // Test database connection
-        await sequelize.authenticate();
-        console.log('✅ Database connection established');
-
-        // Define model relationships
-        defineAssociations();
-        console.log('✅ Model relationships defined');
-
-        // Sync database (create tables if they don't exist)
-        await sequelize.sync({
-            alter: process.env.NODE_ENV === 'development',
-            force: false // Never force in production
-        });
-        console.log('✅ Database synchronized');
-
-        // Seed initial data
-        await seedDatabase();
-        console.log('✅ Database seeded with initial data');
-
-        // Setup cleanup jobs
-        await setupCleanupJobs();
-        console.log('✅ Cleanup jobs scheduled');
-
-    } catch (error) {
-        console.error('❌ Database initialization failed:', error);
         throw error;
     }
 }
@@ -261,6 +256,43 @@ async function setupCleanupJobs(): Promise<void> {
     }, timeUntil2AM);
 }
 
+// Database initialization function
+export async function initializeDatabase(): Promise<void> {
+    try {
+        console.log('🔄 Initializing database...');
+
+        // Test database connection
+        await sequelize.authenticate();
+        console.log('✅ Database connection established');
+
+        // Initialize models
+        initializeModels();
+
+        // Define model relationships
+        defineAssociations();
+        console.log('✅ Model relationships defined');
+
+        // Sync database (create tables if they don't exist)
+        await sequelize.sync({
+            alter: process.env.NODE_ENV === 'development',
+            force: false // Never force in production
+        });
+        console.log('✅ Database synchronized');
+
+        // Seed initial data
+        await seedDatabase();
+        console.log('✅ Database seeded with initial data');
+
+        // Setup cleanup jobs
+        await setupCleanupJobs();
+        console.log('✅ Cleanup jobs scheduled');
+
+    } catch (error) {
+        console.error('❌ Database initialization failed:', error);
+        throw error;
+    }
+}
+
 // Database health check
 export async function checkDatabaseHealth(): Promise<{
     status: 'healthy' | 'unhealthy';
@@ -273,7 +305,7 @@ export async function checkDatabaseHealth(): Promise<{
         // Test table access
         const userCount = await User.count();
         const roleCount = await Role.count();
-        const productionCount = await AsaciRequest.count();
+        const asaciRequestCount = await AsaciRequest.count();
         const logCount = await OperationLog.count({
             where: {
                 createdAt: {
@@ -288,7 +320,7 @@ export async function checkDatabaseHealth(): Promise<{
                 connection: 'active',
                 users: userCount,
                 roles: roleCount,
-                productionRequests: productionCount,
+                asaciRequests: asaciRequestCount,
                 recentLogs: logCount,
                 timestamp: new Date().toISOString()
             }
@@ -306,7 +338,7 @@ export async function checkDatabaseHealth(): Promise<{
     }
 }
 
-// Export all models and utilities
+// Export all models and utilities after initialization
 export {
     sequelize,
     User,
@@ -325,7 +357,7 @@ export const models = {
     OperationLog
 };
 
-// Initialize associations
+// Initialize everything when this module is loaded
 defineAssociations();
 
 export default models;

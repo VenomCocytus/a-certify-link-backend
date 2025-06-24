@@ -1,5 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '@config/database';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 
 // Role attributes interface
 export interface RoleAttributes {
@@ -16,7 +15,7 @@ export interface RoleAttributes {
 export interface RoleCreationAttributes extends Optional<RoleAttributes,
     'id' | 'description' | 'isActive' | 'createdAt' | 'updatedAt'> {}
 
-export class Role extends Model<RoleAttributes, RoleCreationAttributes> implements RoleAttributes {
+export class RoleModel extends Model<RoleAttributes, RoleCreationAttributes> implements RoleAttributes {
     public id!: string;
     public name!: string;
     public description?: string;
@@ -39,79 +38,85 @@ export class Role extends Model<RoleAttributes, RoleCreationAttributes> implemen
     }
 
     // Static methods
-    public static async findByName(name: string): Promise<Role | null> {
-        return Role.findOne({
+    public static async findByName(name: string): Promise<RoleModel | null> {
+        return this.findOne({
             where: { name, isActive: true }
         });
     }
 
-    public static async getDefaultRole(): Promise<Role | null> {
-        return Role.findOne({
+    public static async getDefaultRole(): Promise<RoleModel | null> {
+        return this.findOne({
             where: { name: 'USER', isActive: true }
         });
     }
 }
 
-Role.init({
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    name: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
-        unique: true,
-        validate: {
-            len: [2, 50],
-            notEmpty: true,
-            isUppercase: true
-        }
-    },
-    description: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    permissions: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: [],
-        validate: {
-            isArray: {
-                msg: 'Permissions must be an array',  // Validation message
-                args: true  // Indicates we want array validation
-            }
-        }
-    },
-    isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        allowNull: false
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    }
-}, {
-    sequelize,
-    modelName: 'Role',
-    tableName: 'roles',
-    timestamps: true,
-    indexes: [
-        {
-            unique: true,
-            fields: ['name']
+// Model initialization function
+export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
+    RoleModel.init({
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
         },
-        {
-            fields: ['isActive']
+        name: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            unique: true,
+            validate: {
+                len: [2, 50],
+                notEmpty: true,
+                isUppercase: true
+            }
+        },
+        description: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        permissions: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            defaultValue: [],
+            validate: {
+                isArrayValidator(value: any) {
+                    if (!Array.isArray(value)) {
+                        throw new Error('Permissions must be an array');
+                    }
+                }
+            }
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allowNull: false
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
-    ]
-});
+    }, {
+        sequelize,
+        modelName: 'Role',
+        tableName: 'roles',
+        timestamps: true,
+        indexes: [
+            {
+                unique: true,
+                fields: ['name']
+            },
+            {
+                fields: ['isActive']
+            }
+        ]
+    });
 
-export default Role;
+    return RoleModel;
+}
+
+export default RoleModel;

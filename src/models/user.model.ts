@@ -1,6 +1,4 @@
-import {DataTypes, Model, Op, Optional} from 'sequelize';
-import { PasswordHistory } from './password-history.model';
-import { sequelize } from '@config/database';
+import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
 // User attributes interface
@@ -36,7 +34,7 @@ export interface UserCreationAttributes extends Optional<UserAttributes,
     'passwordChangedAt' | 'resetPasswordToken' | 'resetPasswordExpiresAt' |
     'twoFactorEnabled' | 'twoFactorSecret' | 'createdAt' | 'updatedAt'> {}
 
-export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+export class UserModel extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public id!: string;
     public email!: string;
     public firstName!: string;
@@ -85,8 +83,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
         });
 
         // Create a password history entry
-        const { PasswordHistory } = require('./password-history.model');
-        await PasswordHistory.create({
+        const { PasswordHistoryModel } = require('./password-history.model');
+        await PasswordHistoryModel.create({
             userId: this.id,
             passwordHash: hashedPassword,
             changedAt: new Date()
@@ -94,10 +92,10 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     }
 
     public async canChangePassword(newPassword: string): Promise<boolean> {
-        const { PasswordHistory } = require('./password-history.model');
+        const { PasswordHistoryModel } = require('./password-history.model');
 
         // Get last 5 passwords
-        const recentPasswords = await PasswordHistory.findAll({
+        const recentPasswords = await PasswordHistoryModel.findAll({
             where: { userId: this.id },
             order: [['createdAt', 'DESC']],
             limit: 5
@@ -158,17 +156,17 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     }
 
     // Static methods
-    public static async findByEmail(email: string): Promise<User | null> {
-        return User.findOne({
+    public static async findByEmail(email: string): Promise<UserModel | null> {
+        return this.findOne({
             where: { email: email.toLowerCase() },
             include: ['role']
         });
     }
 
-    public static async createUser(userData: UserCreationAttributes): Promise<User> {
+    public static async createUser(userData: UserCreationAttributes): Promise<UserModel> {
         const hashedPassword = await bcrypt.hash(userData.password, 12);
 
-        const user = await User.create({
+        const user = await this.create({
             ...userData,
             email: userData.email.toLowerCase(),
             password: hashedPassword,
@@ -176,7 +174,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
         });
 
         // Create an initial password history entry
-        await PasswordHistory.create({
+        const { PasswordHistoryModel } = require('./password-history.model');
+        await PasswordHistoryModel.create({
             userId: user.id,
             passwordHash: hashedPassword
         });
@@ -185,7 +184,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     }
 
     public static async cleanupExpiredBlocks(): Promise<void> {
-        await User.update(
+        await this.update(
             {
                 isBlocked: false,
                 blockedAt: null as unknown as Date,
@@ -204,162 +203,167 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     }
 }
 
-User.init({
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    email: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-        unique: true,
-        validate: {
-            isEmail: true,
-            len: [5, 255]
+// Model initialization function
+export function initUserModel(sequelize: Sequelize): typeof UserModel {
+    UserModel.init({
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
         },
-        set(value: string) {
-            this.setDataValue('email', value.toLowerCase());
-        }
-    },
-    firstName: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        validate: {
-            len: [1, 100],
-            notEmpty: true
-        }
-    },
-    lastName: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        validate: {
-            len: [1, 100],
-            notEmpty: true
-        }
-    },
-    phoneNumber: {
-        type: DataTypes.STRING(20),
-        allowNull: true,
-        validate: {
-            len: [10, 20]
-        }
-    },
-    password: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-        validate: {
-            len: [8, 255]
-        }
-    },
-    roleId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: 'roles',
-            key: 'id'
-        }
-    },
-    isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        allowNull: false
-    },
-    isEmailVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
-    },
-    emailVerifiedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    lastLoginAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    loginAttempts: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-        allowNull: false
-    },
-    isBlocked: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
-    },
-    blockedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    blockedUntil: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    passwordChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    resetPasswordToken: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    resetPasswordExpiresAt: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    twoFactorEnabled: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
-    },
-    twoFactorSecret: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    }
-}, {
-    sequelize,
-    modelName: 'User',
-    tableName: 'users',
-    timestamps: true,
-    indexes: [
-        {
+        email: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
             unique: true,
-            fields: ['email']
-        },
-        {
-            fields: ['roleId']
-        },
-        {
-            fields: ['isActive']
-        },
-        {
-            fields: ['isBlocked']
-        },
-        {
-            fields: ['resetPasswordToken']
-        }
-    ],
-    hooks: {
-        beforeValidate: (user: User) => {
-            if (user.email) {
-                user.email = user.email.toLowerCase();
+            validate: {
+                isEmail: true,
+                len: [5, 255]
+            },
+            set(value: string) {
+                this.setDataValue('email', value.toLowerCase());
             }
         },
-        beforeUpdate: (user: User) => {
-            user.setDataValue('updatedAt', new Date());
+        firstName: {
+            type: DataTypes.STRING(100),
+            allowNull: false,
+            validate: {
+                len: [1, 100],
+                notEmpty: true
+            }
+        },
+        lastName: {
+            type: DataTypes.STRING(100),
+            allowNull: false,
+            validate: {
+                len: [1, 100],
+                notEmpty: true
+            }
+        },
+        phoneNumber: {
+            type: DataTypes.STRING(20),
+            allowNull: true,
+            validate: {
+                len: [10, 20]
+            }
+        },
+        password: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            validate: {
+                len: [8, 255]
+            }
+        },
+        roleId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            references: {
+                model: 'roles',
+                key: 'id'
+            }
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allowNull: false
+        },
+        isEmailVerified: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
+        },
+        emailVerifiedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        lastLoginAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        loginAttempts: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            allowNull: false
+        },
+        isBlocked: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
+        },
+        blockedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        blockedUntil: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        passwordChangedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        resetPasswordToken: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        resetPasswordExpiresAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        twoFactorEnabled: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
+        },
+        twoFactorSecret: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
-    }
-});
+    }, {
+        sequelize,
+        modelName: 'User',
+        tableName: 'users',
+        timestamps: true,
+        indexes: [
+            {
+                unique: true,
+                fields: ['email']
+            },
+            {
+                fields: ['roleId']
+            },
+            {
+                fields: ['isActive']
+            },
+            {
+                fields: ['isBlocked']
+            },
+            {
+                fields: ['resetPasswordToken']
+            }
+        ],
+        hooks: {
+            beforeValidate: (user: UserModel) => {
+                if (user.email) {
+                    user.email = user.email.toLowerCase();
+                }
+            },
+            beforeUpdate: (user: UserModel) => {
+                user.setDataValue('updatedAt', new Date());
+            }
+        }
+    });
 
-export default User;
+    return UserModel;
+}
+
+export default UserModel;
