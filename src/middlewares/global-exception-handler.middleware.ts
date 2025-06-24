@@ -95,6 +95,18 @@ export const globalExceptionHandlerMiddleware = (
             timestamp,
         };
     }
+    // Handle network errors
+    else if (error.name === 'ECONNREFUSED' || error.name === 'ENOTFOUND') {
+        errorResponse = {
+            type: 'https://tools.ietf.org/html/rfc7235#section-3.1',
+            title: 'Service Unavailable',
+            status: 503,
+            detail: 'Connection to external service failed',
+            instance,
+            traceId,
+            timestamp,
+        };
+    }
     // Handle rate limiting errors
     else if (error.message === 'Too many requests') {
         errorResponse = {

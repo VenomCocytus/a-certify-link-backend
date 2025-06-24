@@ -6,7 +6,7 @@ export abstract class BaseException extends Error {
     public readonly details?: Record<string, unknown>;
     public readonly instance?: string;
 
-    constructor(
+    protected constructor(
         message: string,
         code: ErrorCodes,
         statusCode: number,

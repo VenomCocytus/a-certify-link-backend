@@ -19,23 +19,11 @@ export interface I18nRequest extends Request {
     language: string;
 }
 
-export interface RequestWithLogging extends Request {
-    requestId: string;
-    startTime: number;
-}
-
 export interface RateLimitInfo {
     limit: number;
     remaining: number;
     resetTime: Date;
     retryAfter?: number;
-}
-
-export interface IdempotencyInfo {
-    key: string;
-    isReplay: boolean;
-    originalResponse?: unknown;
-    createdAt: Date;
 }
 
 export interface ValidationErrorDetail {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Schema } from 'joi';
-import { validate } from 'class-validator';
+import {validate, ValidationError} from 'class-validator';
 import {plainToInstance} from 'class-transformer';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
@@ -39,7 +39,7 @@ export const validateDto = <T extends object>(DtoClass: new () => T) => {
             const dto = plainToInstance(DtoClass, req.body);
 
             // Validate the DTO
-            const errors = await validate(dto);
+            const errors: ValidationError[] = await validate(dto);
 
             if (errors.length > 0) {
                 const validationErrors: Record<string, string> = {};
@@ -57,7 +57,7 @@ export const validateDto = <T extends object>(DtoClass: new () => T) => {
                 });
 
                 const validationException = new ValidationException(
-                    'Validation failed',
+                    'Validation Error',
                     { validationErrors },
                     req.originalUrl
                 );

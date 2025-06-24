@@ -1,4 +1,3 @@
-import { HttpClient } from '../utils/http-client';
 import {
     GenerateTokenDto,
     OtpValidateDto,
@@ -7,9 +6,11 @@ import {
     ResendWelcomeDto,
     SetInitialPasswordDto,
     RevokeTokensDto
-} from '../dto/asaci.dto';
+} from '@dto/asaci.dto';
+import {HttpClient} from "@utils/httpClient";
+import {ASACI_ENDPOINTS} from "@config/asaci-endpoints";
 
-export class AsaciAuthService {
+export class AsaciAuthenticationService {
     private httpClient: HttpClient;
     private accessToken: string | null = null;
 
@@ -29,9 +30,10 @@ export class AsaciAuthService {
     }
 
     async generateAccessToken(generateTokenDto: GenerateTokenDto): Promise<any> {
-        const response = await this.httpClient.post('auth/tokens', generateTokenDto);
+        const response = await this.httpClient
+            .post(ASACI_ENDPOINTS.AUTH_TOKENS, generateTokenDto) as { token?: string };
 
-        // Store the token for later requests
+        // Store the token for further requests
         if (response && response.token) {
             this.setAuthToken(response.token);
         }
@@ -40,69 +42,71 @@ export class AsaciAuthService {
     }
 
     async validateOtp(otpValidateDto: OtpValidateDto): Promise<any> {
-        return this.httpClient.post('auth/otp-validate', otpValidateDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_OTP_VALIDATE, otpValidateDto);
     }
 
     async resendOtp(otpValidateDto: OtpValidateDto): Promise<any> {
-        return this.httpClient.post('auth/otp-resend', otpValidateDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_OTP_RESEND, otpValidateDto);
     }
 
     async requestPasswordReset(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
-        return this.httpClient.post('auth/forgot-password', forgotPasswordDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_FORGOT_PASSWORD, forgotPasswordDto);
     }
 
     async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<any> {
-        return this.httpClient.post('auth/reset-password', resetPasswordDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_RESET_PASSWORD, resetPasswordDto);
     }
 
     async resendWelcomeEmail(resendWelcomeDto: ResendWelcomeDto): Promise<any> {
-        return this.httpClient.post('auth/welcome/send-welcome', resendWelcomeDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_WELCOME_SEND, resendWelcomeDto);
     }
 
     async setInitialPassword(userId: string, setInitialPasswordDto: SetInitialPasswordDto): Promise<any> {
-        return this.httpClient.post(`auth/welcome/${userId}`, setInitialPasswordDto);
+        const endpoint = ASACI_ENDPOINTS.AUTH_WELCOME_SET_PASSWORD.replace('{userId}', userId);
+        return this.httpClient.post(endpoint, setInitialPasswordDto);
     }
 
     async getCurrentUser(): Promise<any> {
-        return this.httpClient.get('auth/user');
+        return this.httpClient.get(ASACI_ENDPOINTS.AUTH_USER);
     }
 
     async getUserTokens(): Promise<any> {
-        return this.httpClient.get('auth/tokens');
+        return this.httpClient.get(ASACI_ENDPOINTS.AUTH_TOKENS);
     }
 
     async revokeUserTokens(revokeTokensDto: RevokeTokensDto): Promise<any> {
-        return this.httpClient.post('auth/tokens/revoke', revokeTokensDto);
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_TOKENS_REVOKE, revokeTokensDto);
     }
 
     async deleteCurrentToken(): Promise<any> {
-        const response = await this.httpClient.delete('auth/tokens');
+        const response = await this.httpClient.delete(ASACI_ENDPOINTS.AUTH_TOKENS);
         this.accessToken = null; // Clear stored token
         return response;
     }
 
     async resendEmailVerification(): Promise<any> {
-        return this.httpClient.get('auth/email/send-verification');
+        return this.httpClient.get(ASACI_ENDPOINTS.AUTH_EMAIL_VERIFICATION);
     }
 
     async verifyEmail(id: string, hash: string): Promise<any> {
-        return this.httpClient.get(`auth/email/verify/${id}/${hash}`);
+        const endpoint = ASACI_ENDPOINTS.AUTH_EMAIL_VERIFY.replace('{id}', id).replace('{hash}', hash);
+        return this.httpClient.get(endpoint);
     }
 
     async getBrowserSessions(): Promise<any> {
-        return this.httpClient.get('auth/browser-sessions');
+        return this.httpClient.get(ASACI_ENDPOINTS.AUTH_BROWSER_SESSIONS);
     }
 
     async getLastActivity(): Promise<any> {
-        return this.httpClient.get('auth/browser-sessions/last-activity');
+        return this.httpClient.get(ASACI_ENDPOINTS.AUTH_BROWSER_SESSIONS_LAST_ACTIVITY);
     }
 
     async logoutBrowserSessions(password: string): Promise<any> {
-        return this.httpClient.post('auth/logout-browser-sessions', { password });
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_LOGOUT_BROWSER_SESSIONS, { password });
     }
 
     async generatePrivateToken(): Promise<any> {
-        return this.httpClient.post('auth/tokens/private');
+        return this.httpClient.post(ASACI_ENDPOINTS.AUTH_TOKENS_PRIVATE);
     }
 
     getAccessToken(): string | null {
