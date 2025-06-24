@@ -1,5 +1,5 @@
 import {IsString, IsEmail, IsDateString, IsOptional, IsEnum, IsArray, IsNotEmpty, IsNumber} from 'class-validator';
-import { IvoryAttestationConstants } from '@/constants/ivoryAttestation';
+import { AsaciConstants } from '@/constants/asaci-constants';
 
 export class AsaciAttestationEditionRequest {
     @IsString()
@@ -19,7 +19,7 @@ export class AsaciAttestationEditionRequest {
     date_echeance!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.VEHICLE_GENRES))
+    @IsEnum(Object.values(AsaciConstants.VEHICLE_GENRES))
     genre_vehicule!: string;
 
     @IsString()
@@ -27,7 +27,7 @@ export class AsaciAttestationEditionRequest {
     numero_immatriculation!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.VEHICLE_TYPES))
+    @IsEnum(Object.values(AsaciConstants.VEHICLE_TYPES))
     type_vehicule!: string;
 
     @IsString()
@@ -35,15 +35,15 @@ export class AsaciAttestationEditionRequest {
     model_vehicule!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.VEHICLE_CATEGORIES))
+    @IsEnum(Object.values(AsaciConstants.VEHICLE_CATEGORIES))
     categorie_vehicule!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.VEHICLE_USAGE))
+    @IsEnum(Object.values(AsaciConstants.VEHICLE_USAGE))
     usage_vehicule!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.ENERGY_SOURCES))
+    @IsEnum(Object.values(AsaciConstants.ENERGY_SOURCES))
     source_energie!: string;
 
     @IsString()
@@ -79,7 +79,7 @@ export class AsaciAttestationEditionRequest {
     nom_souscripteur!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.SUBSCRIBER_TYPES))
+    @IsEnum(Object.values(AsaciConstants.SUBSCRIBER_TYPES))
     type_souscripteur!: string;
 
     @IsEmail()
@@ -94,7 +94,7 @@ export class AsaciAttestationEditionRequest {
     boite_postale_souscripteur?: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.INSURED_TYPES))
+    @IsEnum(Object.values(AsaciConstants.INSURED_TYPES))
     @IsOptional()
     type_assure?: string;
 
@@ -118,7 +118,7 @@ export class AsaciAttestationEditionRequest {
     numero_telephone_assure!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.PROFESSIONS))
+    @IsEnum(Object.values(AsaciConstants.PROFESSIONS))
     profession_assure!: string;
 
     @IsString()
@@ -138,7 +138,7 @@ export class AsaciAttestationEditionRequest {
     rc!: string;
 
     @IsString()
-    @IsEnum(Object.values(IvoryAttestationConstants.CERTIFICATE_COLORS))
+    @IsEnum(Object.values(AsaciConstants.CERTIFICATE_COLORS))
     code_nature_attestation!: string;
 
     @IsString()

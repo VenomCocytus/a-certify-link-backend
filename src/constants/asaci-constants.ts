@@ -1,12 +1,4 @@
-// Based on the IvoryAttestation documentation
-export const IvoryAttestationConstants = {
-    // API Endpoints
-    ENDPOINTS: {
-        EDITION: '/edition/1.0/Apiediton',
-        VERIFICATION: '/Verification-statutdemande-edition/1.0/Api-Verification-statut-demande-edition',
-        UPDATE_STATUS: '/actualisation-dustatut-dattestation/1.0/apiactualisation-statut-attestation',
-        DOWNLOAD: '/recuperationAttestation/',
-    },
+export const AsaciConstants = {
 
     // Vehicle Categories
     VEHICLE_CATEGORIES: {

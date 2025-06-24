@@ -1,5 +1,5 @@
 import {Includeable, Model, ModelStatic, Transaction, WhereOptions} from 'sequelize';
-import {BaseRepositoryInterface, FindAndCountAllOptions} from '@interfaces/repositoryInterfaces';
+import {BaseRepositoryInterface, FindAndCountAllOptions} from '@interfaces/repository.interfaces';
 import {PaginatedResponse} from '@interfaces/common.interfaces';
 import {Helpers} from '@utils/helpers';
 import {logger} from '@utils/logger';

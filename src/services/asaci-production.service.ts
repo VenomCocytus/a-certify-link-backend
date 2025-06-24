@@ -1,12 +1,12 @@
-import {IvoryAttestationServiceInterface} from '@interfaces/serviceInterfaces';
+import {IvoryAttestationServiceInterface} from '@interfaces/service.interfaces';
 import {HttpClient} from '@utils/httpClient';
 import {ivoryAttestationCircuitBreaker} from '@utils/circuitBreaker';
 import {Environment} from '@config/environment';
-import {IvoryAttestationConstants} from '@/constants/ivoryAttestation';
-import {ExternalApiException} from '@exceptions/externalApi.exception';
+import {AsaciConstants} from '@/constants/asaci-constants';
+import {ExternalApiException} from '@exceptions/external-api.exception';
 import {ValidationException} from '@exceptions/validation.exception';
 import {logger} from '@utils/logger';
-import {ErrorCodes} from "@/constants/errorCodes";
+import {ErrorCodes} from "@/constants/error-codes";
 import {
     AsaciAttestationEditionRequest,
     AsaciAttestationEditionResponse, AsaciAttestationUpdateStatusRequest, AsaciAttestationUpdateStatusResponse,
@@ -19,7 +19,7 @@ interface CodeValidation {
     validValues: string[];
 }
 
-export class IvoryAttestationService implements IvoryAttestationServiceInterface {
+export class AsaciProductionService implements IvoryAttestationServiceInterface {
     private httpClient: HttpClient;
 
     constructor() {
@@ -49,7 +49,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
                 const response = await this.httpClient.post<AsaciAttestationEditionResponse>(
-                    IvoryAttestationConstants.ENDPOINTS.EDITION,
+                    AsaciConstants.ENDPOINTS.EDITION,
                     request
                 );
 
@@ -75,7 +75,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
                 return await this.httpClient.post<AsaciAttestationVerificationResponse>(
-                    IvoryAttestationConstants.ENDPOINTS.VERIFICATION,
+                    AsaciConstants.ENDPOINTS.VERIFICATION,
                     request
                 );
             } catch (error) {
@@ -94,11 +94,11 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
                 const response = await this.httpClient.post<AsaciAttestationUpdateStatusResponse>(
-                    IvoryAttestationConstants.ENDPOINTS.UPDATE_STATUS,
+                    AsaciConstants.ENDPOINTS.UPDATE_STATUS,
                     request
                 );
 
-                if (response.statut !== IvoryAttestationConstants.STATUS_CODES.SUCCESS) {
+                if (response.statut !== AsaciConstants.STATUS_CODES.SUCCESS) {
                     throw new ExternalApiException(
                         'IvoryAttestation',
                         `Status update failed: ${this.getStatusCodeDescription(response.statut)}`,
@@ -123,7 +123,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
         const circuitBreaker = ivoryAttestationCircuitBreaker(async () => {
             try {
                 const response = await this.httpClient.post<any>(
-                    IvoryAttestationConstants.ENDPOINTS.DOWNLOAD,
+                    AsaciConstants.ENDPOINTS.DOWNLOAD,
                     {
                         code_demandeur: 'SYSTEM', // Should be configurable
                         code_compagnie: companyCode,
@@ -131,7 +131,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
                     }
                 );
 
-                if (response.statut !== IvoryAttestationConstants.STATUS_CODES.SUCCESS) {
+                if (response.statut !== AsaciConstants.STATUS_CODES.SUCCESS) {
                     throw new ExternalApiException(
                         'IvoryAttestation',
                         `Download failed: ${this.getStatusCodeDescription(response.statut)}`,
@@ -235,14 +235,14 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
 
         // Code validation against constants
         const codeValidations: CodeValidation[] = [
-            { field: 'genre_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_GENRES) as string[] },
-            { field: 'type_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_TYPES) as string[] },
-            { field: 'categorie_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_CATEGORIES) as string[] },
-            { field: 'usage_vehicule', validValues: Object.values(IvoryAttestationConstants.VEHICLE_USAGE) as string[] },
-            { field: 'source_energie', validValues: Object.values(IvoryAttestationConstants.ENERGY_SOURCES) as string[] },
-            { field: 'type_souscripteur', validValues: Object.values(IvoryAttestationConstants.SUBSCRIBER_TYPES) as string[] },
-            { field: 'profession_assure', validValues: Object.values(IvoryAttestationConstants.PROFESSIONS) as string[] },
-            { field: 'code_nature_attestation', validValues: Object.values(IvoryAttestationConstants.CERTIFICATE_COLORS) as string[] },
+            { field: 'genre_vehicule', validValues: Object.values(AsaciConstants.VEHICLE_GENRES) as string[] },
+            { field: 'type_vehicule', validValues: Object.values(AsaciConstants.VEHICLE_TYPES) as string[] },
+            { field: 'categorie_vehicule', validValues: Object.values(AsaciConstants.VEHICLE_CATEGORIES) as string[] },
+            { field: 'usage_vehicule', validValues: Object.values(AsaciConstants.VEHICLE_USAGE) as string[] },
+            { field: 'source_energie', validValues: Object.values(AsaciConstants.ENERGY_SOURCES) as string[] },
+            { field: 'type_souscripteur', validValues: Object.values(AsaciConstants.SUBSCRIBER_TYPES) as string[] },
+            { field: 'profession_assure', validValues: Object.values(AsaciConstants.PROFESSIONS) as string[] },
+            { field: 'code_nature_attestation', validValues: Object.values(AsaciConstants.CERTIFICATE_COLORS) as string[] },
         ];
 
         codeValidations.forEach(({ field, validValues }) => {
@@ -269,7 +269,7 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
                 reference_demande: 'HC001',
             };
 
-            await this.httpClient.post(IvoryAttestationConstants.ENDPOINTS.VERIFICATION, testRequest);
+            await this.httpClient.post(AsaciConstants.ENDPOINTS.VERIFICATION, testRequest);
             return true;
         } catch (error) {
             logger.error('IvoryAttestation connection check failed:', error);
@@ -282,38 +282,38 @@ export class IvoryAttestationService implements IvoryAttestationServiceInterface
      */
     getStatusCodeDescription(statusCode: number): string {
         const descriptions: Record<number, string> = {
-            [IvoryAttestationConstants.STATUS_CODES.SUCCESS]: 'Operation completed successfully',
-            [IvoryAttestationConstants.STATUS_CODES.PENDING]: 'Attestation generation pending',
-            [IvoryAttestationConstants.STATUS_CODES.GENERATING]: 'Attestation being generated',
-            [IvoryAttestationConstants.STATUS_CODES.READY_FOR_TRANSFER]: 'Attestation ready for transfer',
-            [IvoryAttestationConstants.STATUS_CODES.TRANSFERRED]: 'Attestation transferred successfully',
+            [AsaciConstants.STATUS_CODES.SUCCESS]: 'Operation completed successfully',
+            [AsaciConstants.STATUS_CODES.PENDING]: 'Attestation generation pending',
+            [AsaciConstants.STATUS_CODES.GENERATING]: 'Attestation being generated',
+            [AsaciConstants.STATUS_CODES.READY_FOR_TRANSFER]: 'Attestation ready for transfer',
+            [AsaciConstants.STATUS_CODES.TRANSFERRED]: 'Attestation transferred successfully',
 
             // Error codes
-            [IvoryAttestationConstants.STATUS_CODES.UNAUTHORIZED]: 'Unauthorized to use the edition API',
-            [IvoryAttestationConstants.STATUS_CODES.DUPLICATE_EXISTS]: 'Duplicate attestation exists in database',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_CIRCULATION_ZONE]: 'Invalid circulation zone code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIBER_TYPE]: 'Invalid subscriber type code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_INSURED_TYPE]: 'Invalid insured type code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_PROFESSION]: 'Invalid profession code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_TYPE]: 'Invalid vehicle type code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_USAGE]: 'Invalid vehicle usage code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_GENRE]: 'Invalid vehicle genre code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_ENERGY_SOURCE]: 'Invalid energy source code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_VEHICLE_CATEGORY]: 'Invalid vehicle category code',
-            [IvoryAttestationConstants.STATUS_CODES.NO_INTERMEDIARY_RELATION]: 'No relationship between intermediary and company',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_INSURED_EMAIL]: 'Invalid insured email address',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIBER_EMAIL]: 'Invalid subscriber email address',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_CERTIFICATE_COLOR]: 'Invalid certificate color code',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_SUBSCRIPTION_DATE]: 'Subscription date is before edition request date',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_EFFECT_DATE]: 'Effect date is before subscription date',
-            [IvoryAttestationConstants.STATUS_CODES.INVALID_DATE_FORMAT]: 'Invalid date format',
-            [IvoryAttestationConstants.STATUS_CODES.DATA_ERROR]: 'Data error in request',
-            [IvoryAttestationConstants.STATUS_CODES.SYSTEM_ERROR]: 'System error',
-            [IvoryAttestationConstants.STATUS_CODES.SAVE_ERROR]: 'Save error',
-            [IvoryAttestationConstants.STATUS_CODES.EDITION_FAILED]: 'Edition failed',
-            [IvoryAttestationConstants.STATUS_CODES.AUTHORIZATION_ERROR]: 'Certificate authorization error',
-            [IvoryAttestationConstants.STATUS_CODES.AUTHENTICATION_ERROR]: 'Authentication error',
-            [IvoryAttestationConstants.STATUS_CODES.RATE_LIMIT_EXCEEDED]: 'Rate limit exceeded, please try again later',
+            [AsaciConstants.STATUS_CODES.UNAUTHORIZED]: 'Unauthorized to use the edition API',
+            [AsaciConstants.STATUS_CODES.DUPLICATE_EXISTS]: 'Duplicate attestation exists in database',
+            [AsaciConstants.STATUS_CODES.INVALID_CIRCULATION_ZONE]: 'Invalid circulation zone code',
+            [AsaciConstants.STATUS_CODES.INVALID_SUBSCRIBER_TYPE]: 'Invalid subscriber type code',
+            [AsaciConstants.STATUS_CODES.INVALID_INSURED_TYPE]: 'Invalid insured type code',
+            [AsaciConstants.STATUS_CODES.INVALID_PROFESSION]: 'Invalid profession code',
+            [AsaciConstants.STATUS_CODES.INVALID_VEHICLE_TYPE]: 'Invalid vehicle type code',
+            [AsaciConstants.STATUS_CODES.INVALID_VEHICLE_USAGE]: 'Invalid vehicle usage code',
+            [AsaciConstants.STATUS_CODES.INVALID_VEHICLE_GENRE]: 'Invalid vehicle genre code',
+            [AsaciConstants.STATUS_CODES.INVALID_ENERGY_SOURCE]: 'Invalid energy source code',
+            [AsaciConstants.STATUS_CODES.INVALID_VEHICLE_CATEGORY]: 'Invalid vehicle category code',
+            [AsaciConstants.STATUS_CODES.NO_INTERMEDIARY_RELATION]: 'No relationship between intermediary and company',
+            [AsaciConstants.STATUS_CODES.INVALID_INSURED_EMAIL]: 'Invalid insured email address',
+            [AsaciConstants.STATUS_CODES.INVALID_SUBSCRIBER_EMAIL]: 'Invalid subscriber email address',
+            [AsaciConstants.STATUS_CODES.INVALID_CERTIFICATE_COLOR]: 'Invalid certificate color code',
+            [AsaciConstants.STATUS_CODES.INVALID_SUBSCRIPTION_DATE]: 'Subscription date is before edition request date',
+            [AsaciConstants.STATUS_CODES.INVALID_EFFECT_DATE]: 'Effect date is before subscription date',
+            [AsaciConstants.STATUS_CODES.INVALID_DATE_FORMAT]: 'Invalid date format',
+            [AsaciConstants.STATUS_CODES.DATA_ERROR]: 'Data error in request',
+            [AsaciConstants.STATUS_CODES.SYSTEM_ERROR]: 'System error',
+            [AsaciConstants.STATUS_CODES.SAVE_ERROR]: 'Save error',
+            [AsaciConstants.STATUS_CODES.EDITION_FAILED]: 'Edition failed',
+            [AsaciConstants.STATUS_CODES.AUTHORIZATION_ERROR]: 'Certificate authorization error',
+            [AsaciConstants.STATUS_CODES.AUTHENTICATION_ERROR]: 'Authentication error',
+            [AsaciConstants.STATUS_CODES.RATE_LIMIT_EXCEEDED]: 'Rate limit exceeded, please try again later',
         };
 
         return descriptions[statusCode] || `Unknown status code: ${statusCode}`;

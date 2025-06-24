@@ -1,0 +1,123 @@
+// asaci-endpoints.config.ts
+
+export interface AsaciEndpoints {
+    // Authentication endpoints
+    AUTH_TOKENS: string;
+    AUTH_OTP_VALIDATE: string;
+    AUTH_OTP_RESEND: string;
+    AUTH_FORGOT_PASSWORD: string;
+    AUTH_RESET_PASSWORD: string;
+    AUTH_WELCOME_SEND: string;
+    AUTH_WELCOME_SET_PASSWORD: string;
+    AUTH_USER: string;
+    AUTH_TOKENS_REVOKE: string;
+    AUTH_EMAIL_VERIFICATION: string;
+    AUTH_EMAIL_VERIFY: string;
+    AUTH_BROWSER_SESSIONS: string;
+    AUTH_BROWSER_SESSIONS_LAST_ACTIVITY: string;
+    AUTH_LOGOUT_BROWSER_SESSIONS: string;
+    AUTH_TOKENS_PRIVATE: string;
+
+    // Production endpoints
+    PRODUCTIONS: string;
+    PRODUCTIONS_DOWNLOAD: string;
+    PRODUCTIONS_FETCH: string;
+
+    // Order endpoints
+    ORDERS: string;
+    ORDERS_STATUSES: string;
+    ORDERS_APPROVE: string;
+    ORDERS_REJECT: string;
+    ORDERS_CANCEL: string;
+    ORDERS_SUSPEND: string;
+    ORDERS_SUBMIT_CONFIRMATION: string;
+    ORDERS_CONFIRM_DELIVERY: string;
+    ORDERS_STATISTIC_DELIVERED: string;
+
+    // Certificate endpoints
+    CERTIFICATES: string;
+    CERTIFICATES_DOWNLOAD: string;
+    CERTIFICATES_CANCEL: string;
+    CERTIFICATES_SUSPEND: string;
+    CERTIFICATES_CHECK: string;
+    CERTIFICATES_RELATED: string;
+    CERTIFICATES_RELATED_DOWNLOAD: string;
+    CERTIFICATE_TYPES: string;
+    CERTIFICATE_VARIANTS: string;
+    CERTIFICATES_STATISTICS_USAGE: string;
+    CERTIFICATES_STATISTIC_AVAILABLE: string;
+    CERTIFICATES_STATISTIC_USED: string;
+
+    // Transaction endpoints
+    TRANSACTIONS: string;
+    TRANSACTIONS_APPROVE: string;
+    TRANSACTIONS_REJECT: string;
+    TRANSACTIONS_CANCEL: string;
+    TRANSACTIONS_STATISTICS_USAGE: string;
+    TRANSACTIONS_STATISTIC_DEPOSITS: string;
+}
+
+const getRequiredAsaciEnvVar = (key: string): string => {
+    const value = process.env[key];
+    if (!value || value.trim() === '') {
+        throw new Error(`Missing required environment variable: ${key}. Please check your .env file.`);
+    }
+    return value.trim();
+};
+
+export const ASACI_ENDPOINTS: AsaciEndpoints = {
+    // Authentication endpoints
+    AUTH_TOKENS: getRequiredAsaciEnvVar('ASACI_AUTH_TOKENS'),
+    AUTH_OTP_VALIDATE: getRequiredAsaciEnvVar('ASACI_AUTH_OTP_VALIDATE'),
+    AUTH_OTP_RESEND: getRequiredAsaciEnvVar('ASACI_AUTH_OTP_RESEND'),
+    AUTH_FORGOT_PASSWORD: getRequiredAsaciEnvVar('ASACI_AUTH_FORGOT_PASSWORD'),
+    AUTH_RESET_PASSWORD: getRequiredAsaciEnvVar('ASACI_AUTH_RESET_PASSWORD'),
+    AUTH_WELCOME_SEND: getRequiredAsaciEnvVar('ASACI_AUTH_WELCOME_SEND'),
+    AUTH_WELCOME_SET_PASSWORD: getRequiredAsaciEnvVar('ASACI_AUTH_WELCOME_SET_PASSWORD'),
+    AUTH_USER: getRequiredAsaciEnvVar('ASACI_AUTH_USER'),
+    AUTH_TOKENS_REVOKE: getRequiredAsaciEnvVar('ASACI_AUTH_TOKENS_REVOKE'),
+    AUTH_EMAIL_VERIFICATION: getRequiredAsaciEnvVar('ASACI_AUTH_EMAIL_VERIFICATION'),
+    AUTH_EMAIL_VERIFY: getRequiredAsaciEnvVar('ASACI_AUTH_EMAIL_VERIFY'),
+    AUTH_BROWSER_SESSIONS: getRequiredAsaciEnvVar('ASACI_AUTH_BROWSER_SESSIONS'),
+    AUTH_BROWSER_SESSIONS_LAST_ACTIVITY: getRequiredAsaciEnvVar('ASACI_AUTH_BROWSER_SESSIONS_LAST_ACTIVITY'),
+    AUTH_LOGOUT_BROWSER_SESSIONS: getRequiredAsaciEnvVar('ASACI_AUTH_LOGOUT_BROWSER_SESSIONS'),
+    AUTH_TOKENS_PRIVATE: getRequiredAsaciEnvVar('ASACI_AUTH_TOKENS_PRIVATE'),
+
+    // Production endpoints
+    PRODUCTIONS: getRequiredAsaciEnvVar('ASACI_PRODUCTIONS'),
+    PRODUCTIONS_DOWNLOAD: getRequiredAsaciEnvVar('ASACI_PRODUCTIONS_DOWNLOAD'),
+    PRODUCTIONS_FETCH: getRequiredAsaciEnvVar('ASACI_PRODUCTIONS_FETCH'),
+
+    // Order endpoints
+    ORDERS: getRequiredAsaciEnvVar('ASACI_ORDERS'),
+    ORDERS_STATUSES: getRequiredAsaciEnvVar('ASACI_ORDERS_STATUSES'),
+    ORDERS_APPROVE: getRequiredAsaciEnvVar('ASACI_ORDERS_APPROVE'),
+    ORDERS_REJECT: getRequiredAsaciEnvVar('ASACI_ORDERS_REJECT'),
+    ORDERS_CANCEL: getRequiredAsaciEnvVar('ASACI_ORDERS_CANCEL'),
+    ORDERS_SUSPEND: getRequiredAsaciEnvVar('ASACI_ORDERS_SUSPEND'),
+    ORDERS_SUBMIT_CONFIRMATION: getRequiredAsaciEnvVar('ASACI_ORDERS_SUBMIT_CONFIRMATION'),
+    ORDERS_CONFIRM_DELIVERY: getRequiredAsaciEnvVar('ASACI_ORDERS_CONFIRM_DELIVERY'),
+    ORDERS_STATISTIC_DELIVERED: getRequiredAsaciEnvVar('ASACI_ORDERS_STATISTIC_DELIVERED'),
+
+    // Certificate endpoints
+    CERTIFICATES: getRequiredAsaciEnvVar('ASACI_CERTIFICATES'),
+    CERTIFICATES_DOWNLOAD: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_DOWNLOAD'),
+    CERTIFICATES_CANCEL: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_CANCEL'),
+    CERTIFICATES_SUSPEND: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_SUSPEND'),
+    CERTIFICATES_CHECK: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_CHECK'),
+    CERTIFICATES_RELATED: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_RELATED'),
+    CERTIFICATES_RELATED_DOWNLOAD: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_RELATED_DOWNLOAD'),
+    CERTIFICATE_TYPES: getRequiredAsaciEnvVar('ASACI_CERTIFICATE_TYPES'),
+    CERTIFICATE_VARIANTS: getRequiredAsaciEnvVar('ASACI_CERTIFICATE_VARIANTS'),
+    CERTIFICATES_STATISTICS_USAGE: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_STATISTICS_USAGE'),
+    CERTIFICATES_STATISTIC_AVAILABLE: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_STATISTIC_AVAILABLE'),
+    CERTIFICATES_STATISTIC_USED: getRequiredAsaciEnvVar('ASACI_CERTIFICATES_STATISTIC_USED'),
+
+    // Transaction endpoints
+    TRANSACTIONS: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS'),
+    TRANSACTIONS_APPROVE: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS_APPROVE'),
+    TRANSACTIONS_REJECT: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS_REJECT'),
+    TRANSACTIONS_CANCEL: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS_CANCEL'),
+    TRANSACTIONS_STATISTICS_USAGE: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS_STATISTICS_USAGE'),
+    TRANSACTIONS_STATISTIC_DEPOSITS: getRequiredAsaciEnvVar('ASACI_TRANSACTIONS_STATISTIC_DEPOSITS'),
+};

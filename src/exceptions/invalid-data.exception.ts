@@ -1,5 +1,5 @@
 import {BaseException} from './base.exception';
-import {ErrorCodes, ErrorMessages} from "@/constants/errorCodes";
+import {ErrorCodes, ErrorMessages} from "@/constants/error-codes";
 
 /**
  * Exception thrown when invalid data is encountered

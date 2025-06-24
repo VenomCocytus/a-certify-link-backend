@@ -1,5 +1,5 @@
 import { BaseException } from './base.exception';
-import { ErrorCodes } from '@/constants/errorCodes';
+import { ErrorCodes } from '@/constants/error-codes';
 
 export class NotFoundException extends BaseException {
     constructor(
