@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { createApp, App } from './app';
 import { logger } from '@utils/logger';
 import { sequelize } from './models';
@@ -69,13 +70,13 @@ async function startHttpServer(): Promise<void> {
 
             // Display available Asaci routes
             logger.info('\n📍 Available Asaci Routes:');
-            logger.info(`   POST ${config.apiPrefix}/asaci/auth/login - Asaci Authentication`);
-            logger.info(`   GET  ${config.apiPrefix}/asaci/auth/user - Current User Info`);
-            logger.info(`   POST ${config.apiPrefix}/asaci/attestations/productions - Create Production Request`);
-            logger.info(`   GET  ${config.apiPrefix}/asaci/attestations/certificates - List Certificates`);
-            logger.info(`   POST ${config.apiPrefix}/asaci/attestations/orders - Create Order`);
-            logger.info(`   POST ${config.apiPrefix}/asaci/attestations/transactions - Create Transaction`);
-            logger.info(`   ... and more Asaci endpoints`);
+            logger.info(`POST ${config.apiPrefix}/asaci/auth/login - Asaci Authentication`);
+            logger.info(`GET  ${config.apiPrefix}/asaci/auth/user - Current User Info`);
+            logger.info(`POST ${config.apiPrefix}/asaci/attestations/productions - Create Production Request`);
+            logger.info(`GET  ${config.apiPrefix}/asaci/attestations/certificates - List Certificates`);
+            logger.info(`POST ${config.apiPrefix}/asaci/attestations/orders - Create Order`);
+            logger.info(`POST ${config.apiPrefix}/asaci/attestations/transactions - Create Transaction`);
+            logger.info(`... and more Asaci endpoints`);
 
             logger.info('\n🎯 Server ready to accept requests!');
         });

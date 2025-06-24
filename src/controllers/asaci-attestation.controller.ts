@@ -13,7 +13,7 @@ import {
     UpdateTransactionDto,
     RejectTransactionDto,
     CancelTransactionDto
-} from '../dto/asaci.dto';
+} from '@dto/asaci.dto';
 
 export class AsaciAttestationController {
     constructor(
