@@ -6,12 +6,10 @@ import {
     IsArray,
     IsEnum,
     MaxLength,
-    MinLength,
     Min,
     Max,
     IsNotEmpty,
-    ValidateNested,
-    IsBoolean
+    ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
 

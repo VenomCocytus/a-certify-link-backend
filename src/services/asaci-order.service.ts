@@ -1,4 +1,4 @@
-import { CreateOrderDto, UpdateOrderDto } from '../dto/asaci.dto';
+import { CreateOrderDto, UpdateOrderDto } from '@dto/asaci.dto';
 import {HttpClient} from "@utils/httpClient";
 import {ASACI_ENDPOINTS} from "@config/asaci-endpoints";
 

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { AsaciProductionService } from '../services/asaci-production.service';
-import { AsaciOrderService } from '../services/asaci-order.service';
-import { AsaciCertificateService } from '../services/asaci-certificate.service';
-import { AsaciTransactionService } from '../services/asaci-transaction.service';
+import { AsaciProductionService } from '@services/asaci-production.service';
+import { AsaciOrderService } from '@services/asaci-order.service';
+import { AsaciCertificateService } from '@services/asaci-certificate.service';
+import { AsaciTransactionService } from '@services/asaci-transaction.service';
 import {
     CreateProductionRequestDto,
     CreateOrderDto,

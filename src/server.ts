@@ -86,9 +86,7 @@ async function startHttpServer(): Promise<void> {
                 throw error;
             }
 
-            const bind = typeof config.port === 'string'
-                ? 'Pipe ' + config.port
-                : 'Port ' + config.port;
+            const bind = 'Port ' + config.port;
 
             switch (error.code) {
                 case 'EACCES':
