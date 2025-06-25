@@ -1,13 +1,5 @@
 import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
 
-// Add TypeScript interface for the return type
-interface PerformanceMetrics {
-    avgTime?: number;
-    maxTime?: number;
-    minTime?: number;
-    totalRequests?: number;
-}
-
 // Operation types enum
 export enum OperationType {
     ORASS_FETCH = 'ORASS_FETCH',
