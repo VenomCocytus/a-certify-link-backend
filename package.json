@@ -24,6 +24,7 @@
     "seed:run": "node seeders/run-seeders.js"
   },
   "dependencies": {
+    "@types/pg": "^8.15.4",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -41,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "mssql": "^11.0.1",
     "opossum": "^8.0.1",
+    "pg": "^8.16.2",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.35.0",
     "swagger-jsdoc": "^6.2.8",

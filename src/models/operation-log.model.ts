@@ -1,4 +1,4 @@
-import { DataTypes, Model, Op, Optional, WhereAttributeHash, Sequelize } from 'sequelize';
+import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
 
 // Add TypeScript interface for the return type
 interface PerformanceMetrics {
@@ -34,41 +34,30 @@ export enum OperationStatus {
 export interface OperationLogAttributes {
     id: string;
     userId?: string;
-    productionRequestId?: string;
+    asaciRequestId?: string;
     operation: OperationType;
     status: OperationStatus;
-
-    // Request/Response tracking
     method?: string;
     endpoint?: string;
     requestData?: object;
     responseData?: object;
     responseStatus?: number;
-
-    // Error tracking
     errorMessage?: string;
     errorCode?: string;
     errorDetails?: object;
-
-    // Performance tracking
     executionTimeMs?: number;
     memoryUsageMb?: number;
-
-    // Context
     ipAddress?: string;
     userAgent?: string;
     sessionId?: string;
     correlationId?: string;
-
-    // Metadata
     metadata?: object;
-
     createdAt: Date;
 }
 
 // Optional attributes for creation
 export interface OperationLogCreationAttributes extends Optional<OperationLogAttributes,
-    'id' | 'userId' | 'productionRequestId' | 'method' | 'endpoint' | 'requestData' |
+    'id' | 'userId' | 'asaciRequestId' | 'method' | 'endpoint' | 'requestData' |
     'responseData' | 'responseStatus' | 'errorMessage' | 'errorCode' | 'errorDetails' |
     'executionTimeMs' | 'memoryUsageMb' | 'ipAddress' | 'userAgent' | 'sessionId' |
     'correlationId' | 'metadata' | 'createdAt'> {}
@@ -78,35 +67,24 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
 
     public id!: string;
     public userId?: string;
-    public productionRequestId?: string;
+    public asaciRequestId?: string;
     public operation!: OperationType;
     public status!: OperationStatus;
-
-    // Request/Response tracking
     public method?: string;
     public endpoint?: string;
     public requestData?: object;
     public responseData?: object;
     public responseStatus?: number;
-
-    // Error tracking
     public errorMessage?: string;
     public errorCode?: string;
     public errorDetails?: object;
-
-    // Performance tracking
     public executionTimeMs?: number;
     public memoryUsageMb?: number;
-
-    // Context
     public ipAddress?: string;
     public userAgent?: string;
     public sessionId?: string;
     public correlationId?: string;
-
-    // Metadata
     public metadata?: object;
-
     public readonly createdAt!: Date;
 
     // Virtual fields
@@ -125,7 +103,7 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
     // Static methods for logging different operations
     public static async logOrassOperation(
         userId: string,
-        productionRequestId: string,
+        asaciRequestId: string,
         status: OperationStatus,
         executionTime?: number,
         requestData?: object,
@@ -134,7 +112,7 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
     ): Promise<OperationLogModel> {
         return this.create({
             userId,
-            productionRequestId,
+            asaciRequestId,
             operation: OperationType.ORASS_FETCH,
             status,
             requestData,
@@ -148,7 +126,7 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
 
     public static async logAsaciOperation(
         userId: string,
-        productionRequestId: string,
+        asaciRequestId: string,
         operation: OperationType.ASACI_REQUEST | OperationType.ASACI_DOWNLOAD,
         status: OperationStatus,
         method: string,
@@ -161,7 +139,7 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
     ): Promise<OperationLogModel> {
         return this.create({
             userId,
-            productionRequestId,
+            asaciRequestId,
             operation,
             status,
             method,
@@ -258,37 +236,6 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
         });
     }
 
-    public static async getPerformanceMetrics(
-        sequelize: Sequelize,
-        operation: OperationType,
-        hours: number = 24
-    ): Promise<PerformanceMetrics> {
-        const startDate = new Date();
-        startDate.setHours(startDate.getHours() - hours);
-
-        const metrics = await this.findAll({
-            where: {
-                operation,
-                status: OperationStatus.SUCCESS,
-                createdAt: { [Op.gte]: startDate },
-                executionTimeMs: {
-                    [Op.ne]: null,
-                    [Op.gt]: 0
-                } as unknown as WhereAttributeHash<number>
-            },
-            attributes: [
-                [sequelize.fn('AVG', sequelize.col('execution_time_ms')), 'avgTime'],
-                [sequelize.fn('MAX', sequelize.col('execution_time_ms')), 'maxTime'],
-                [sequelize.fn('MIN', sequelize.col('execution_time_ms')), 'minTime'],
-                [sequelize.fn('COUNT', sequelize.col('id')), 'totalRequests']
-            ],
-            raw: true
-        });
-
-        const result = metrics[0] || {};
-        return result as PerformanceMetrics;
-    }
-
     public static async cleanupOldLogs(daysToKeep: number = 30): Promise<number> {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
@@ -311,17 +258,19 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         },
         userId: {
             type: DataTypes.UUID,
+            field: 'user_id',
             allowNull: true,
             references: {
                 model: 'users',
                 key: 'id'
             }
         },
-        productionRequestId: {
+        asaciRequestId: {
             type: DataTypes.UUID,
+            field: 'asaci_request_id',
             allowNull: true,
             references: {
-                model: 'production_requests',
+                model: 'asaci_requests',
                 key: 'id'
             }
         },
@@ -333,8 +282,6 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             type: DataTypes.ENUM(...Object.values(OperationStatus)),
             allowNull: false
         },
-
-        // Request/Response tracking
         method: {
             type: DataTypes.STRING(10),
             allowNull: true
@@ -345,67 +292,71 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         },
         requestData: {
             type: DataTypes.JSON,
+            field: 'request_data',
             allowNull: true
         },
         responseData: {
             type: DataTypes.JSON,
+            field: 'response_data',
             allowNull: true
         },
         responseStatus: {
             type: DataTypes.INTEGER,
+            field: 'response_status',
             allowNull: true
         },
-
-        // Error tracking
         errorMessage: {
             type: DataTypes.TEXT,
+            field: 'error_message',
             allowNull: true
         },
         errorCode: {
             type: DataTypes.STRING(50),
+            field: 'error_code',
             allowNull: true
         },
         errorDetails: {
             type: DataTypes.JSON,
+            field: 'error_details',
             allowNull: true
         },
-
-        // Performance tracking
         executionTimeMs: {
             type: DataTypes.INTEGER,
+            field: 'execution_time_ms',
             allowNull: true
         },
         memoryUsageMb: {
             type: DataTypes.FLOAT,
+            field: 'memory_usage_mb',
             allowNull: true
         },
-
-        // Context
         ipAddress: {
-            type: DataTypes.STRING(45), // IPv6 max length
+            type: DataTypes.STRING(45),
+            field: 'ip_address',
             allowNull: true
         },
         userAgent: {
             type: DataTypes.TEXT,
+            field: 'user_agent',
             allowNull: true
         },
         sessionId: {
             type: DataTypes.STRING(255),
+            field: 'session_id',
             allowNull: true
         },
         correlationId: {
             type: DataTypes.STRING(255),
+            field: 'correlation_id',
             allowNull: true
         },
-
-        // Metadata
         metadata: {
             type: DataTypes.JSON,
             allowNull: true
         },
-
         createdAt: {
             type: DataTypes.DATE,
+            field: 'created_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         }
@@ -413,13 +364,14 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         sequelize,
         modelName: 'OperationLog',
         tableName: 'operation_logs',
-        timestamps: false, // Only createdAt, no updatedAt
+        timestamps: false,
+        underscored: true,
         indexes: [
             {
-                fields: ['userId']
+                fields: ['user_id']
             },
             {
-                fields: ['productionRequestId']
+                fields: ['asaci_request_id']
             },
             {
                 fields: ['operation']
@@ -428,19 +380,19 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
                 fields: ['status']
             },
             {
-                fields: ['createdAt']
+                fields: ['created_at']
             },
             {
                 fields: ['operation', 'status']
             },
             {
-                fields: ['operation', 'createdAt']
+                fields: ['operation', 'created_at']
             },
             {
-                fields: ['userId', 'operation']
+                fields: ['user_id', 'operation']
             },
             {
-                fields: ['correlationId']
+                fields: ['correlation_id']
             }
         ]
     });

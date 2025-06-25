@@ -269,14 +269,14 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
         return this.findAll({
             where: { status },
             include: ['user'],
-            order: [['createdAt', 'DESC']]
+            order: [['created_at', 'DESC']]
         });
     }
 
     public static async findByUser(userId: string, limit: number = 10): Promise<AsaciRequestModel[]> {
         return this.findAll({
-            where: { userId },
-            order: [['createdAt', 'DESC']],
+            where: { userId: userId }, // Fixed: use snake_case
+            order: [['created_at', 'DESC']], // Fixed: use snake_case
             limit
         });
     }
@@ -285,17 +285,17 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
         return this.findAll({
             where: {
                 status: AsaciRequestStatus.FAILED,
-                retryCount: {
+                retryCount: { // Fixed: use snake_case
                     [Op.lt]: sequelize.literal('max_retries')
                 }
             },
-            order: [['updatedAt', 'ASC']]
+            order: [['updated_at', 'ASC']] // Fixed: use snake_case
         });
     }
 
     public static async getStatsByUser(userId: string, sequelize: Sequelize): Promise<any> {
         const stats = await this.findAll({
-            where: { userId },
+            where: { userId: userId }, // Fixed: use snake_case
             attributes: [
                 'status',
                 [sequelize.fn('COUNT', sequelize.col('id')), 'count']
@@ -488,27 +488,29 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         modelName: 'AsaciRequest',
         tableName: 'asaci_requests',
         timestamps: true,
+        underscored: true, // This converts camelCase to snake_case
         indexes: [
             {
-                fields: ['userId']
+                // ✅ Fixed: Use snake_case column names for indexes
+                fields: ['user_id']
             },
             {
                 fields: ['status']
             },
             {
-                fields: ['certificateType']
+                fields: ['certificate_type']
             },
             {
-                fields: ['orassReference']
+                fields: ['orass_reference']
             },
             {
-                fields: ['asaciReference']
+                fields: ['asaci_reference']
             },
             {
-                fields: ['createdAt']
+                fields: ['created_at']
             },
             {
-                fields: ['status', 'retryCount']
+                fields: ['status', 'retry_count']
             }
         ],
         hooks: {

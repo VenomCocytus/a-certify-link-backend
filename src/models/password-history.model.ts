@@ -5,25 +5,25 @@ export interface PasswordHistoryAttributes {
     id: string;
     userId: string;
     passwordHash: string;
-    createdAt: Date;
+    changedAt: Date;
 }
 
 // Optional attributes for creation
 export interface PasswordHistoryCreationAttributes extends Optional<PasswordHistoryAttributes,
-    'id' | 'createdAt'> {}
+    'id' | 'changedAt'> {}
 
 export class PasswordHistoryModel extends Model<PasswordHistoryAttributes, PasswordHistoryCreationAttributes>
     implements PasswordHistoryAttributes {
     public id!: string;
     public userId!: string;
     public passwordHash!: string;
-    public readonly createdAt!: Date;
+    public readonly changedAt!: Date;
 
     // Static methods
     public static async cleanupOldPasswords(userId: string, keepCount: number = 5): Promise<void> {
         const passwords = await this.findAll({
             where: { userId },
-            order: [['createdAt', 'DESC']],
+            order: [['changedAt', 'DESC']],
             offset: keepCount
         });
 
@@ -40,7 +40,7 @@ export class PasswordHistoryModel extends Model<PasswordHistoryAttributes, Passw
     public static async getRecentPasswords(userId: string, count: number = 5): Promise<PasswordHistoryModel[]> {
         return this.findAll({
             where: { userId },
-            order: [['createdAt', 'DESC']],
+            order: [['changedAt', 'DESC']],
             limit: count
         });
     }
@@ -56,6 +56,7 @@ export function initPasswordHistoryModel(sequelize: Sequelize): typeof PasswordH
         },
         userId: {
             type: DataTypes.UUID,
+            field: 'user_id',
             allowNull: false,
             references: {
                 model: 'users',
@@ -65,10 +66,12 @@ export function initPasswordHistoryModel(sequelize: Sequelize): typeof PasswordH
         },
         passwordHash: {
             type: DataTypes.STRING(255),
+            field: 'password_hash',
             allowNull: false
         },
-        createdAt: {
+        changedAt: {
             type: DataTypes.DATE,
+            field: 'changed_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         }
@@ -76,18 +79,18 @@ export function initPasswordHistoryModel(sequelize: Sequelize): typeof PasswordH
         sequelize,
         modelName: 'PasswordHistory',
         tableName: 'password_histories',
-        timestamps: false, // Only createdAt, no updatedAt
+        timestamps: false,
+        underscored: true,
         indexes: [
             {
-                fields: ['userId']
+                fields: ['user_id']
             },
             {
-                fields: ['userId', 'createdAt']
+                fields: ['user_id', 'changed_at']
             }
         ],
         hooks: {
             afterCreate: async (passwordHistory: PasswordHistoryModel) => {
-                // Keep only the last 5 passwords
                 await PasswordHistoryModel.cleanupOldPasswords(passwordHistory.userId, 5);
             }
         }

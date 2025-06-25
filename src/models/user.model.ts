@@ -79,7 +79,7 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
             password: hashedPassword,
             passwordChangedAt: new Date(),
             resetPasswordToken: null as unknown as string,
-            resetPasswordExpiresAt: null as unknown as Date
+            resetPasswordExpiresAt: null as unknown as Date,
         });
 
         // Create a password history entry
@@ -225,6 +225,7 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         },
         firstName: {
             type: DataTypes.STRING(100),
+            field: 'first_name',
             allowNull: false,
             validate: {
                 len: [1, 100],
@@ -233,6 +234,7 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         },
         lastName: {
             type: DataTypes.STRING(100),
+            field: 'last_name',
             allowNull: false,
             validate: {
                 len: [1, 100],
@@ -241,6 +243,7 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         },
         phoneNumber: {
             type: DataTypes.STRING(20),
+            field: 'phone_number',
             allowNull: true,
             validate: {
                 len: [10, 20]
@@ -255,6 +258,7 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         },
         roleId: {
             type: DataTypes.UUID,
+            field: 'role_id',
             allowNull: false,
             references: {
                 model: 'roles',
@@ -263,68 +267,83 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         },
         isActive: {
             type: DataTypes.BOOLEAN,
+            field: 'is_active',
             defaultValue: true,
             allowNull: false
         },
         isEmailVerified: {
             type: DataTypes.BOOLEAN,
+            field: 'is_email_verified',
             defaultValue: false,
             allowNull: false
         },
         emailVerifiedAt: {
             type: DataTypes.DATE,
+            field: 'email_verified_at',
             allowNull: true
         },
         lastLoginAt: {
             type: DataTypes.DATE,
+            field: 'last_login_at',
             allowNull: true
         },
         loginAttempts: {
             type: DataTypes.INTEGER,
+            field: 'login_attempts',
             defaultValue: 0,
             allowNull: false
         },
         isBlocked: {
             type: DataTypes.BOOLEAN,
+            field: 'is_blocked',
             defaultValue: false,
             allowNull: false
         },
         blockedAt: {
             type: DataTypes.DATE,
+            field: 'blocked_at',
             allowNull: true
         },
         blockedUntil: {
             type: DataTypes.DATE,
+            field: 'blocked_until',
             allowNull: true
         },
         passwordChangedAt: {
             type: DataTypes.DATE,
+            field: 'password_changed_at',
             allowNull: true
         },
         resetPasswordToken: {
             type: DataTypes.STRING(255),
+            field: 'reset_password_token',
             allowNull: true
         },
         resetPasswordExpiresAt: {
             type: DataTypes.DATE,
+            field: 'reset_password_expires_at',
             allowNull: true
         },
         twoFactorEnabled: {
             type: DataTypes.BOOLEAN,
+            field: 'two_factor_enabled',
             defaultValue: false,
             allowNull: false
         },
         twoFactorSecret: {
             type: DataTypes.STRING(255),
+            field: 'two_factor_secret',
             allowNull: true
         },
         createdAt: {
             type: DataTypes.DATE,
+            field: 'created_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         },
         updatedAt: {
             type: DataTypes.DATE,
+            field: 'updated_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         }
@@ -333,28 +352,29 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         modelName: 'User',
         tableName: 'users',
         timestamps: true,
+        underscored: true,
         indexes: [
             {
                 unique: true,
                 fields: ['email']
             },
             {
-                fields: ['roleId']
+                fields: ['role_id']
             },
             {
-                fields: ['isActive']
+                fields: ['is_active']
             },
             {
-                fields: ['isBlocked']
+                fields: ['is_blocked']
             },
             {
-                fields: ['resetPasswordToken']
+                fields: ['reset_password_token']
             }
         ],
         hooks: {
             beforeValidate: (user: UserModel) => {
                 if (user.email) {
-                    user.email = user.email.toLowerCase();
+                    user.setDataValue('email', user.email.toLowerCase());
                 }
             },
             beforeUpdate: (user: UserModel) => {

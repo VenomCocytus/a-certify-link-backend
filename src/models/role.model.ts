@@ -87,16 +87,19 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
         },
         isActive: {
             type: DataTypes.BOOLEAN,
+            field: 'is_active',
             defaultValue: true,
             allowNull: false
         },
         createdAt: {
             type: DataTypes.DATE,
+            field: 'created_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         },
         updatedAt: {
             type: DataTypes.DATE,
+            field: 'updated_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         }
@@ -105,13 +108,14 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
         modelName: 'Role',
         tableName: 'roles',
         timestamps: true,
+        underscored: true,
         indexes: [
             {
                 unique: true,
                 fields: ['name']
             },
             {
-                fields: ['isActive']
+                fields: ['is_active']
             }
         ]
     });

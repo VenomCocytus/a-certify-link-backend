@@ -19,7 +19,7 @@ export interface AsaciConfig {
 
 export class AsaciServiceManager {
     private authService: AsaciAuthenticationService;
-    private productionService: AsaciProductionService;
+    private asaciService: AsaciProductionService;
     private orderService: AsaciOrderService;
     private certificateService: AsaciCertificateService;
     private transactionService: AsaciTransactionService;
@@ -29,7 +29,7 @@ export class AsaciServiceManager {
     constructor(config: AsaciConfig) {
         // Initialize services
         this.authService = new AsaciAuthenticationService(config.baseUrl);
-        this.productionService = new AsaciProductionService(config.baseUrl);
+        this.asaciService = new AsaciProductionService(config.baseUrl);
         this.orderService = new AsaciOrderService(config.baseUrl);
         this.certificateService = new AsaciCertificateService(config.baseUrl);
         this.transactionService = new AsaciTransactionService(config.baseUrl);
@@ -37,7 +37,7 @@ export class AsaciServiceManager {
         // Initialize controllers
         this.authController = new AsaciAuthenticationController(this.authService);
         this.attestationController = new AsaciAttestationController(
-            this.productionService,
+            this.asaciService,
             this.orderService,
             this.certificateService,
             this.transactionService
@@ -56,7 +56,7 @@ export class AsaciServiceManager {
             const token = tokenResponse.token;
 
             // Set auth token for all services
-            this.productionService.setAuthToken(token);
+            this.asaciService.setAuthToken(token);
             this.orderService.setAuthToken(token);
             this.certificateService.setAuthToken(token);
             this.transactionService.setAuthToken(token);
@@ -80,7 +80,7 @@ export class AsaciServiceManager {
     }
 
     getProductionService(): AsaciProductionService {
-        return this.productionService;
+        return this.asaciService;
     }
 
     getOrderService(): AsaciOrderService {

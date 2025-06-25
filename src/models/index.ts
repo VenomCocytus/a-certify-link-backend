@@ -1,27 +1,31 @@
 import { Op } from 'sequelize';
-import { sequelize } from '@config/database';
-
-// Import model definitions (not instances)
 import { UserModel, initUserModel } from './user.model';
 import { RoleModel, initRoleModel } from './role.model';
+import sequelize from '@config/database';
 import { PasswordHistoryModel, initPasswordHistoryModel } from './password-history.model';
 import { AsaciRequestModel, initAsaciRequestModel } from './asaci-request.model';
 import { OperationLogModel, initOperationLogModel } from './operation-log.model';
 
-// Initialize all models with the sequelize instance immediately
-const User = initUserModel(sequelize);
-const Role = initRoleModel(sequelize);
-const PasswordHistory = initPasswordHistoryModel(sequelize);
-const AsaciRequest = initAsaciRequestModel(sequelize);
-const OperationLog = initOperationLogModel(sequelize);
+let User: typeof UserModel;
+let Role: typeof RoleModel;
+let PasswordHistory: typeof PasswordHistoryModel;
+let AsaciRequest: typeof AsaciRequestModel;
+let OperationLog: typeof OperationLogModel;
 
-// Initialize models function
 function initializeModels(): void {
     try {
-        console.log('🔄 Models already initialized...');
-        console.log('✅ Models ready for use');
+        console.log('🔄 Initializing models...');
+
+        // Initialize each model with the sequelized instance
+        User = initUserModel(sequelize);
+        Role = initRoleModel(sequelize);
+        PasswordHistory = initPasswordHistoryModel(sequelize);
+        AsaciRequest = initAsaciRequestModel(sequelize);
+        OperationLog = initOperationLogModel(sequelize);
+
+        console.log('✅ Models initialized successfully');
     } catch (error) {
-        console.error('❌ Error with models:', error);
+        console.error('❌ Error initializing models:', error);
         throw error;
     }
 }
@@ -191,7 +195,7 @@ async function seedDatabase(): Promise<void> {
             console.log(`✅ Role ${role.name} initialized`);
         }
 
-        // Create default admin user if it doesn't exist
+        // Create a default admin user if it doesn't already exist
         const adminRole = await Role.findOne({ where: { name: 'ADMIN' } });
         if (adminRole) {
             const [adminUser, created] = await User.findOrCreate({
@@ -265,10 +269,10 @@ export async function initializeDatabase(): Promise<void> {
         await sequelize.authenticate();
         console.log('✅ Database connection established');
 
-        // Initialize models
+        // Initialize models first
         initializeModels();
 
-        // Define model relationships
+        // Define model relationships after initialization
         defineAssociations();
         console.log('✅ Model relationships defined');
 
@@ -338,26 +342,40 @@ export async function checkDatabaseHealth(): Promise<{
     }
 }
 
-// Export all models and utilities after initialization
 export {
-    sequelize,
-    User,
-    Role,
-    PasswordHistory,
-    AsaciRequest,
-    OperationLog
+    sequelize
 };
+export function getUser() {
+    if (!User) throw new Error('User model not initialized. Call initializeDatabase() first.');
+    return User;
+}
 
-// Export model instances for use in other parts of the application
-export const models = {
-    User,
-    Role,
-    PasswordHistory,
-    AsaciRequest,
-    OperationLog
-};
+export function getRole() {
+    if (!Role) throw new Error('Role model not initialized. Call initializeDatabase() first.');
+    return Role;
+}
 
-// Initialize everything when this module is loaded
-defineAssociations();
+export function getPasswordHistory() {
+    if (!PasswordHistory) throw new Error('PasswordHistory model not initialized. Call initializeDatabase() first.');
+    return PasswordHistory;
+}
 
-export default models;
+export function getAsaciRequest() {
+    if (!AsaciRequest) throw new Error('AsaciRequest model not initialized. Call initializeDatabase() first.');
+    return AsaciRequest;
+}
+
+export function getOperationLog() {
+    if (!OperationLog) throw new Error('OperationLog model not initialized. Call initializeDatabase() first.');
+    return OperationLog;
+}
+
+export function getModels() {
+    return {
+        User: getUser(),
+        Role: getRole(),
+        PasswordHistory: getPasswordHistory(),
+        AsaciRequest: getAsaciRequest(),
+        OperationLog: getOperationLog()
+    };
+}
