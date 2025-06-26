@@ -50,8 +50,6 @@ export interface UserProfile {
 }
 
 export class AuthenticationService {
-    private readonly tokenCache = new Map<string, any>();
-
     /**
      * Authenticate a user with email and password
      */
@@ -152,7 +150,7 @@ export class AuthenticationService {
         }
 
         // Get a default role if not provided
-        let userRole: RoleModel | null = null;
+        let userRole: RoleModel | null;
         if (roleId) {
             userRole = await RoleModel.findByPk(roleId);
             if (!userRole) {
@@ -508,18 +506,14 @@ export class AuthenticationService {
      * Refresh access token
      */
     async refreshToken(refreshToken: string): Promise<AuthTokens> {
-        try {
-            const decoded = jwt.verify(refreshToken, Environment.JWT_REFRESH_SECRET as string) as any;
+        const decoded = jwt.verify(refreshToken, Environment.JWT_REFRESH_SECRET as string) as any;
 
-            const user = await UserModel.findByPk(decoded.userId);
-            if (!user || !user.isActive) {
-                throw new ValidationException('Invalid refresh token');
-            }
-
-            return this.generateTokens(user.id);
-        } catch (error) {
+        const user = await UserModel.findByPk(decoded.userId);
+        if (!user || !user.isActive) {
             throw new ValidationException('Invalid refresh token');
         }
+
+        return this.generateTokens(user.id);
     }
 
     /**

@@ -95,7 +95,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /auth/welcome/send
      * @desc Send ASACI welcome email
-     * @access Private (Admin)
+     * @access Private
      */
     router.post('/auth/welcome/send',
         authMiddleware,
@@ -107,7 +107,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /auth/welcome/:userId/set-password
      * @desc Set initial ASACI password
-     * @access Private (Admin)
+     * @access Private
      */
     router.post('/auth/welcome/:userId/set-password',
         authMiddleware,
@@ -271,7 +271,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /orders/:reference/approve
      * @desc Approve ASACI order
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/orders/:reference/approve',
         authMiddleware,
@@ -282,7 +282,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /orders/:reference/reject
      * @desc Reject ASACI order
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/orders/:reference/reject',
         authMiddleware,
@@ -304,7 +304,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /orders/:reference/suspend
      * @desc Suspend ASACI order
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/orders/:reference/suspend',
         authMiddleware,
@@ -326,7 +326,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /orders/:reference/confirm-delivery
      * @desc Confirm ASACI order delivery
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/orders/:reference/confirm-delivery',
         authMiddleware,
@@ -372,7 +372,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /certificates/:reference/cancel
      * @desc Cancel ASACI certificate
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/certificates/:reference/cancel',
         authMiddleware,
@@ -384,7 +384,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /certificates/:reference/suspend
      * @desc Suspend ASACI certificate
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/certificates/:reference/suspend',
         authMiddleware,
@@ -477,7 +477,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /transactions/:reference/approve
      * @desc Approve ASACI transaction
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/transactions/:reference/approve',
         authMiddleware,
@@ -488,7 +488,7 @@ export function createAsaciRoutes(
     /**
      * @route POST /transactions/:reference/reject
      * @desc Reject ASACI transaction
-     * @access Private (Manager)
+     * @access Private
      */
     router.post('/transactions/:reference/reject',
         authMiddleware,

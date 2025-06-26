@@ -1,5 +1,4 @@
 import rateLimit from 'express-rate-limit';
-import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
 
 // Strict rate limiter for certificate creation

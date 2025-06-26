@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {validateDto, validateQuery} from '@middlewares/validation.middleware';
 import { AuthenticationController } from "@controllers/authentication.controller";
 import { asyncHandlerMiddleware } from '@middlewares/async-handler.middleware';
-import { authMiddleware, requireRoles, requirePermissions } from '@middlewares/auth.middleware';
+import { authMiddleware, requireRoles } from '@middlewares/auth.middleware';
 import {
     LoginDto,
     RegisterDto,
@@ -86,8 +86,8 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
 
     /**
      * @route POST /auth/refresh
-     * @desc Refresh access token
-     * @access Public (but requires refresh token)
+     * @desc Refresh access token (but requires refresh token)
+     * @access Public
      */
     router.post('/refresh',
         asyncHandlerMiddleware(authController.refreshToken.bind(authController))
@@ -186,7 +186,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
     /**
      * @route POST /auth/admin/users
      * @desc Create new user (admin only)
-     * @access Private (Admin)
+     * @access Private
      */
     router.post('/admin/users',
         authMiddleware,

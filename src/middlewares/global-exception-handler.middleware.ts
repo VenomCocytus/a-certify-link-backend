@@ -20,8 +20,7 @@ interface ErrorResponse {
 export const globalExceptionHandlerMiddleware = (
     error: Error,
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
 ): void => {
     const traceId = uuidv4();
     const timestamp = new Date().toISOString();
@@ -270,7 +269,7 @@ export const globalExceptionHandlerMiddleware = (
     // Handle multer file upload errors
     else if (error.name === 'MulterError') {
         const multerError = error as any;
-        let detail = 'File upload failed';
+        let detail: string;
 
         switch (multerError.code) {
             case 'LIMIT_FILE_SIZE':

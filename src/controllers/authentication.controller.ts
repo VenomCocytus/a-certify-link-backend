@@ -1,18 +1,8 @@
 import { Request, Response } from 'express';
 import {AuthenticationService} from '@services/authentication.service';
 import {
-    LoginDto,
-    RegisterDto,
-    ChangePasswordDto,
-    ForgotPasswordDto,
-    ResetPasswordDto,
     VerifyEmailDto,
-    ResendVerificationDto,
-    TwoFactorSetupDto,
-    TwoFactorDisableDto,
-    UpdateProfileDto,
-    LogoutDto,
-    CreateUserDto
+    LogoutDto
 } from '@dto/auth.dto';
 import {AuthenticatedRequest} from "@interfaces/common.interfaces";
 
@@ -230,8 +220,7 @@ export class AuthenticationController {
      * Create a user (admin only)
      */
     async createUser(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const createUserDto: CreateUserDto = req.body;
-        const user = await this.authService.createUser(createUserDto);
+        const user = await this.authService.createUser(req.body);
 
         res.status(201).json({
             message: 'User created successfully',

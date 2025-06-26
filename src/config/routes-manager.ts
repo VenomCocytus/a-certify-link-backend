@@ -157,7 +157,7 @@ export const createApplicationRoutes = (
  * Get default route configuration
  */
 export const getDefaultRouteConfig = (
-    authService?: AsaciServiceManager,
+    authService?: AuthenticationService,
     asaciManager?: AsaciServiceManager
 ): RouteConfig => {
     return {
