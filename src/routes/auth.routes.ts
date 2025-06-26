@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { validateDto } from '@middlewares/validation.middleware';
-import { AuthenticationController } from "@controllers/auth.controller";
+import {validateDto, validateQuery} from '@middlewares/validation.middleware';
+import { AuthenticationController } from "@controllers/authentication.controller";
 import { asyncHandlerMiddleware } from '@middlewares/async-handler.middleware';
 import { authMiddleware, requireRoles, requirePermissions } from '@middlewares/auth.middleware';
 import {
@@ -16,6 +16,7 @@ import {
     LogoutDto,
     CreateUserDto
 } from '@dto/auth.dto';
+import {authLimiter} from "@middlewares/rate-limiter.middleware";
 
 export function createAuthRoutes(authController: AuthenticationController): Router {
     const router = Router();
@@ -28,6 +29,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      * @access Public
      */
     router.post('/login',
+        authLimiter,
         validateDto(LoginDto),
         asyncHandlerMiddleware(authController.login.bind(authController))
     );
@@ -68,6 +70,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      * @access Public
      */
     router.get('/verify-email/:userId/:token',
+        validateQuery,
         asyncHandlerMiddleware(authController.verifyEmail.bind(authController))
     );
 

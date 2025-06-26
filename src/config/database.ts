@@ -16,14 +16,14 @@ const sequelizeConfig: Options = {
             rejectUnauthorized: false
         } : false,
         connectTimeout: 60000,
-        application_name: 'eattestation-api',
+        application_name: Environment.APP_NAME,
     },
 
     pool: {
-        max: Environment.DB_POOL_MAX || 20,
-        min: Environment.DB_POOL_MIN || 0,
-        acquire: Environment.DB_POOL_ACQUIRE || 30000,
-        idle: Environment.DB_POOL_IDLE || 10000,
+        max: Environment.DB_POOL_MAX,
+        min: Environment.DB_POOL_MIN,
+        acquire: Environment.DB_POOL_ACQUIRE,
+        idle: Environment.DB_POOL_IDLE,
         evict: 1000,
     },
 

@@ -509,7 +509,7 @@ export class AuthenticationService {
      */
     async refreshToken(refreshToken: string): Promise<AuthTokens> {
         try {
-            const decoded = jwt.verify(refreshToken, Environment.JWT_REFRESH_SECRET) as any;
+            const decoded = jwt.verify(refreshToken, Environment.JWT_REFRESH_SECRET as string) as any;
 
             const user = await UserModel.findByPk(decoded.userId);
             if (!user || !user.isActive) {
@@ -608,7 +608,7 @@ export class AuthenticationService {
                 type: 'access',
                 iat: Math.floor(Date.now() / 1000)
             },
-            Environment.JWT_SECRET,
+            Environment.JWT_SECRET as string,
             { expiresIn: accessTokenExpiry }
         );
 
@@ -618,7 +618,7 @@ export class AuthenticationService {
                 type: 'refresh',
                 iat: Math.floor(Date.now() / 1000)
             },
-            Environment.JWT_REFRESH_SECRET,
+            Environment.JWT_REFRESH_SECRET as string,
             { expiresIn: refreshTokenExpiry }
         );
 

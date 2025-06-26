@@ -11,19 +11,10 @@ import {
     TwoFactorSetupDto,
     TwoFactorDisableDto,
     UpdateProfileDto,
-    RefreshTokenDto,
     LogoutDto,
     CreateUserDto
 } from '@dto/auth.dto';
-
-export interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-        roleId: string;
-        role?: any;
-    };
-}
+import {AuthenticatedRequest} from "@interfaces/common.interfaces";
 
 export class AuthenticationController {
     constructor(private readonly authService: AuthenticationService) {}
@@ -32,8 +23,7 @@ export class AuthenticationController {
      * Login user
      */
     async login(req: Request, res: Response): Promise<void> {
-        const loginDto: LoginDto = req.body;
-        const result = await this.authService.login(loginDto);
+        const result = await this.authService.login(req.body);
 
         // Set HTTP-only cookie for refresh token
         res.cookie('refreshToken', result.tokens.refreshToken, {
@@ -56,8 +46,7 @@ export class AuthenticationController {
      * Register new user
      */
     async register(req: Request, res: Response): Promise<void> {
-        const registerDto: RegisterDto = req.body;
-        const result = await this.authService.register(registerDto);
+        const result = await this.authService.register(req.body);
 
         // Set HTTP-only cookie for refresh token
         res.cookie('refreshToken', result.tokens.refreshToken, {
@@ -80,10 +69,8 @@ export class AuthenticationController {
      * Change password
      */
     async changePassword(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const changePasswordDto: ChangePasswordDto = req.body;
         const userId = req.user!.id;
-
-        await this.authService.changePassword(userId, changePasswordDto);
+        await this.authService.changePassword(userId, req.body);
 
         res.status(200).json({
             message: 'Password changed successfully'
@@ -94,8 +81,7 @@ export class AuthenticationController {
      * Forgot password
      */
     async forgotPassword(req: Request, res: Response): Promise<void> {
-        const forgotPasswordDto: ForgotPasswordDto = req.body;
-        const result = await this.authService.forgotPassword(forgotPasswordDto);
+        const result = await this.authService.forgotPassword(req.body);
 
         res.status(200).json(result);
     }
@@ -104,8 +90,7 @@ export class AuthenticationController {
      * Reset password
      */
     async resetPassword(req: Request, res: Response): Promise<void> {
-        const resetPasswordDto: ResetPasswordDto = req.body;
-        const result = await this.authService.resetPassword(resetPasswordDto);
+        const result = await this.authService.resetPassword(req.body);
 
         res.status(200).json(result);
     }
@@ -126,8 +111,7 @@ export class AuthenticationController {
      * Resend email verification
      */
     async resendEmailVerification(req: Request, res: Response): Promise<void> {
-        const resendDto: ResendVerificationDto = req.body;
-        const result = await this.authService.resendEmailVerification(resendDto);
+        const result = await this.authService.resendEmailVerification(req.body);
 
         res.status(200).json(result);
     }
@@ -148,10 +132,8 @@ export class AuthenticationController {
      * Update user profile
      */
     async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const updateDto: UpdateProfileDto = req.body;
         const userId = req.user!.id;
-
-        const profile = await this.authService.updateProfile(userId, updateDto);
+        const profile = await this.authService.updateProfile(userId, req.body);
 
         res.status(200).json({
             message: 'Profile updated successfully',
@@ -160,7 +142,7 @@ export class AuthenticationController {
     }
 
     /**
-     * Setup two-factor authentication
+     * Set up two-factor authentication
      */
     async setupTwoFactor(req: AuthenticatedRequest, res: Response): Promise<void> {
         const userId = req.user!.id;
@@ -176,10 +158,8 @@ export class AuthenticationController {
      * Enable two-factor authentication
      */
     async enableTwoFactor(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const twoFactorDto: TwoFactorSetupDto = req.body;
         const userId = req.user!.id;
-
-        const result = await this.authService.enableTwoFactor(userId, twoFactorDto);
+        const result = await this.authService.enableTwoFactor(userId, req.body);
 
         res.status(200).json(result);
     }
@@ -188,10 +168,8 @@ export class AuthenticationController {
      * Disable two-factor authentication
      */
     async disableTwoFactor(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const disableDto: TwoFactorDisableDto = req.body;
         const userId = req.user!.id;
-
-        const result = await this.authService.disableTwoFactor(userId, disableDto);
+        const result = await this.authService.disableTwoFactor(userId, req.body);
 
         res.status(200).json(result);
     }
@@ -249,7 +227,7 @@ export class AuthenticationController {
     }
 
     /**
-     * Create user (admin only)
+     * Create a user (admin only)
      */
     async createUser(req: AuthenticatedRequest, res: Response): Promise<void> {
         const createUserDto: CreateUserDto = req.body;

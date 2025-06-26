@@ -10,7 +10,6 @@ import {AsaciAttestationController} from "@controllers/asaci-attestation.control
 import {createAsaciRoutes} from "@/routes/asaci.routes";
 import {globalExceptionHandlerMiddleware} from "@middlewares/global-exception-handler.middleware";
 
-// asaci-config.ts
 export interface AsaciConfig {
     baseUrl: string;
     timeout?: number;

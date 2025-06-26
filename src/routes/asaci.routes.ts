@@ -22,6 +22,7 @@ import { asyncHandlerMiddleware } from "@middlewares/async-handler.middleware";
 import { authMiddleware, requirePermissions, requireRoles } from "@middlewares/auth.middleware";
 import { AsaciAttestationController } from "@controllers/asaci-attestation.controller";
 import { AsaciAuthenticationController } from "@controllers/asaci-authentication.controller";
+import {certificateCreationLimiter} from "@middlewares/rate-limiter.middleware";
 
 export function createAsaciRoutes(
     authController: AsaciAuthenticationController,
@@ -191,6 +192,7 @@ export function createAsaciRoutes(
      */
     router.post('/productions',
         authMiddleware,
+        certificateCreationLimiter,
         requirePermissions(['asaci:productions:create']),
         validateDto(CreateProductionRequestDto),
         asyncHandlerMiddleware(attestationController.createProductionRequest.bind(attestationController))

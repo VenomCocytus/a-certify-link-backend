@@ -54,6 +54,7 @@ const options: swaggerJsdoc.Options = {
     apis: [
         path.join(__dirname, '../routes/**/*.routes.ts'),
         path.join(__dirname, '../controllers/**/*.controller.ts'),
+        //TODO: Add schema and response files if needed
         // path.join(__dirname, '../docs/schemas/*.ts'),
         // path.join(__dirname, '../docs/responses/*.ts')
     ]

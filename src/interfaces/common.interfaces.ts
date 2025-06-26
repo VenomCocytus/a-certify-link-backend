@@ -1,55 +1,26 @@
-export interface PaginationParams {
-    page: number;
-    limit: number;
-    offset: number;
-}
+import {Request} from "express";
 
-export interface PaginationMeta {
-    totalItems: number;
-    pageSize: number;
-    currentPage: number;
-    totalPages: number;
-    itemsPerPage: number;
-}
-
-export interface PaginatedResponse<T> {
-    data: T[];
-    meta: PaginationMeta;
-}
-
-export interface HealthCheckResult {
-    status: 'healthy' | 'unhealthy' | 'degraded';
-    timestamp: string;
-    services: Record<string, ServiceHealth>;
-    version?: string;
-    environment?: string;
-}
-
-export interface ServiceHealth {
-    status: 'healthy' | 'unhealthy' | 'degraded';
-    responseTime?: number;
-    message?: string;
-    lastCheck?: string;
-}
-
-export interface AuditLogData {
+export interface JwtPayload {
     userId: string;
-    action: string;
-    resourceType: string;
-    resourceId: string;
-    oldValues?: Record<string, unknown>;
-    newValues?: Record<string, unknown>;
-    metadata?: Record<string, unknown>;
-    timestamp: Date;
-    ipAddress?: string;
-    userAgent?: string;
+    type: string;
+    iat: number;
+    exp: number;
 }
 
-export interface IdempotencyKey {
-    key: string;
-    status: 'pending' | 'completed' | 'failed';
-    requestHash: string;
-    response?: unknown;
-    createdAt: Date;
-    expiresAt: Date;
+export interface AuthenticatedRequest extends Request {
+    user?: {
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        roleId: string;
+        role?: {
+            id: string;
+            name: string;
+            permissions: string[];
+        };
+        isActive: boolean;
+        isEmailVerified: boolean;
+        twoFactorEnabled: boolean;
+    };
 }

@@ -1,34 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Response, NextFunction } from 'express';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import { UserModel } from '@models/user.model';
 import { RoleModel } from '@models/role.model';
 import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
-
-interface JwtPayload {
-    userId: string;
-    type: string;
-    iat: number;
-    exp: number;
-}
-
-export interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        roleId: string;
-        role: {
-            id: string;
-            name: string;
-            permissions: string[];
-        };
-        isActive: boolean;
-        isEmailVerified: boolean;
-        twoFactorEnabled: boolean;
-    };
-}
+import {AuthenticatedRequest} from "@interfaces/common.interfaces";
 
 export const authMiddleware = async (
     req: AuthenticatedRequest,
@@ -52,7 +28,7 @@ export const authMiddleware = async (
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
         // Verify JWT token
-        const decoded = jwt.verify(token, Environment.JWT_SECRET) as JwtPayload;
+        const decoded = jwt.verify(token, Environment.JWT_SECRET as string) as JwtPayload;
 
         // Ensure it's an access token
         if (decoded.type !== 'access') {
@@ -118,7 +94,7 @@ export const authMiddleware = async (
         logger.debug('User authenticated successfully', {
             userId: user.id,
             email: user.email,
-            role: req.user.role.name,
+            role: req.user.role?.name,
         });
 
         next();
@@ -164,9 +140,9 @@ export const requirePermissions = (requiredPermissions: string[]) => {
             return;
         }
 
-        const userPermissions = req.user.role.permissions || [];
+        const userPermissions = req.user.role?.permissions || [];
         const hasRequiredPermissions = requiredPermissions.every(permission =>
-            userPermissions.includes(permission) || req.user!.role.name === 'SUPER_ADMIN'
+            userPermissions.includes(permission) || req.user!.role?.name === 'SUPER_ADMIN'
         );
 
         if (!hasRequiredPermissions) {
@@ -200,7 +176,7 @@ export const requireRoles = (allowedRoles: string[]) => {
             return;
         }
 
-        if (!allowedRoles.includes(req.user.role.name)) {
+        if (!allowedRoles.includes(<string>req.user.role?.name)) {
             res.status(403).json({
                 type: 'https://tools.ietf.org/html/rfc7231#section-6.5.3',
                 title: 'Insufficient Role',
@@ -208,7 +184,7 @@ export const requireRoles = (allowedRoles: string[]) => {
                 detail: 'User role is not authorized to access this resource',
                 instance: req.originalUrl,
                 allowedRoles,
-                userRole: req.user.role.name,
+                userRole: req.user.role?.name,
             });
             return;
         }
@@ -260,7 +236,7 @@ export const optionalAuthMiddleware = async (
         }
 
         const token = authHeader.substring(7);
-        const decoded = jwt.verify(token, Environment.JWT_SECRET) as JwtPayload;
+        const decoded = jwt.verify(token, Environment.JWT_SECRET as string) as JwtPayload;
 
         if (decoded.type === 'access') {
             const user = await UserModel.findByPk(decoded.userId, {

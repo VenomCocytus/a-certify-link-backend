@@ -2,36 +2,6 @@ import rateLimit from 'express-rate-limit';
 import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
 
-// General rate limiter
-export const rateLimiterMiddleware = rateLimit({
-    windowMs: Environment.RATE_LIMIT_WINDOW_MS, // 15 minutes
-    max: Environment.RATE_LIMIT_MAX_REQUESTS, // limit each IP to 100 requests per windowMs
-    message: {
-        type: 'https://tools.ietf.org/html/rfc6585#section-4',
-        title: 'Rate Limit Exceeded',
-        status: 429,
-        detail: 'Too many requests from this IP, please try again later.',
-    },
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    handler: (req, res) => {
-        logger.warn('Rate limit exceeded', {
-            ip: req.ip,
-            userAgent: req.get('User-Agent'),
-            url: req.originalUrl,
-            userId: (req as any).user?.id,
-        });
-
-        res.status(429).json({
-            type: 'https://tools.ietf.org/html/rfc6585#section-4',
-            title: 'Rate Limit Exceeded',
-            status: 429,
-            detail: 'Too many requests from this IP, please try again later.',
-            instance: req.originalUrl,
-        });
-    },
-});
-
 // Strict rate limiter for certificate creation
 export const certificateCreationLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute

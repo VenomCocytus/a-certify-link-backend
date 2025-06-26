@@ -5,32 +5,6 @@ import {plainToInstance} from 'class-transformer';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 
-// Joi validation middleware
-export const validateJoi = (schema: Schema) => {
-    return (req: Request, res: Response, next: NextFunction): void => {
-        const { error, value } = schema.validate(req.body, {
-            abortEarly: false,
-            stripUnknown: true,
-        });
-
-        if (error) {
-            logger.warn('Joi validation failed', {
-                url: req.originalUrl,
-                errors: error.details,
-                body: req.body,
-            });
-
-            const validationException = ValidationException.fromJoiError(error, req.originalUrl);
-            next(validationException);
-            return;
-        }
-
-        // Replace the request body with validated data
-        req.body = value;
-        next();
-    };
-};
-
 // Class-validator validation middleware
 export const validateDto = <T extends object>(DtoClass: new () => T) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {

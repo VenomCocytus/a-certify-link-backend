@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
-import { rateLimiterMiddleware } from '@middlewares/rate-limiter.middleware';
+import {authLimiter, certificateCreationLimiter,} from '@middlewares/rate-limiter.middleware';
 import { Environment } from '@config/environment';
 import { setupSwagger } from "@config/swagger";
 import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
@@ -35,7 +35,7 @@ export class App {
             .use(i18nextMiddleware.LanguageDetector)
             .init({
                 fallbackLng: Environment.DEFAULT_LANGUAGE,
-                supportedLngs: Environment.SUPPORTED_LANGUAGES.split(','),
+                supportedLngs: Environment.SUPPORTED_LANGUAGES?.split(','),
                 backend: {
                     loadPath: './src/locales/{{lng}}.json',
                 },
@@ -69,7 +69,8 @@ export class App {
         this.app.use(compression());
 
         // Rate limiting
-        this.app.use(rateLimiterMiddleware);
+        this.app.use(certificateCreationLimiter);
+        this.app.use(authLimiter);
 
         // i18n middleware
         this.app.use(i18nextMiddleware.handle(i18next));
@@ -113,7 +114,7 @@ export class App {
 
             // Create and mount application routes
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
-            this.app.use(Environment.API_PREFIX, applicationRoutes);
+            this.app.use(Environment.API_PREFIX as string, applicationRoutes);
 
             // Setup API Documentation
             setupSwagger(this.app);
