@@ -1,9 +1,12 @@
 import { Router, Express } from 'express';
 import { AsaciServiceManager } from '@config/asaci-config';
 import { logger } from '@utils/logger';
-import {AsaciAuthenticationController} from "@controllers/asaci-authentication.controller";
-import {AsaciAttestationController} from "@controllers/asaci-attestation.controller";
-import {createAsaciRoutes} from "@/routes/asaci.routes";
+import { AsaciAuthenticationController } from "@controllers/asaci-authentication.controller";
+import { AsaciAttestationController } from "@controllers/asaci-attestation.controller";
+import { createAsaciRoutes } from "@/routes/asaci.routes";
+import { createAuthRoutes } from "@/routes/auth.routes";
+import {AuthenticationService} from "@services/authentication.service";
+import {AuthenticationController} from "@controllers/auth.controller";
 
 // Import other route modules (add as needed)
 // import { createUserRoutes } from './user.routes';
@@ -11,6 +14,11 @@ import {createAsaciRoutes} from "@/routes/asaci.routes";
 // import { createAdminRoutes } from './admin.routes';
 
 export interface RouteConfig {
+    auth?: {
+        enabled?: boolean;
+        basePath?: string;
+        authService?: AuthenticationService;
+    };
     asaci?: {
         enabled?: boolean;
         basePath?: string;
@@ -46,6 +54,11 @@ export class RoutesManager {
      */
     setupRoutes(): Router {
         try {
+            // Setup Authentication routes first (required for other routes)
+            if (this.config.auth?.enabled !== false) {
+                this.setupAuthRoutes();
+            }
+
             // Setup Asaci routes if enabled
             if (this.config.asaci?.enabled !== false) {
                 this.setupAsaciRoutes();
@@ -69,6 +82,33 @@ export class RoutesManager {
 
         } catch (error: any) {
             logger.error('❌ Failed to setup routes:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Setup Authentication routes
+     */
+    private setupAuthRoutes(): void {
+        try {
+            if (!this.config.auth?.authService) {
+                throw new Error('Authentication service not provided in route config');
+            }
+
+            const authService = this.config.auth.authService;
+
+            // Create an authentication controller
+            const authController = new AuthenticationController(authService);
+
+            // Create and mount authentication routes
+            const authRoutes = createAuthRoutes(authController);
+            const basePath = this.config.auth.basePath || '/auth';
+
+            this.routes.use(basePath, authRoutes);
+
+            logger.info(`✅ Authentication routes mounted at: ${basePath}`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup Authentication routes:', error.message);
             throw error;
         }
     }
@@ -165,6 +205,45 @@ export class RoutesManager {
                 }
             });
 
+            // Authentication service health check
+            this.routes.get(`${basePath}/auth`, async (req, res) => {
+                try {
+                    res.json({
+                        status: 'healthy',
+                        service: 'authentication',
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (error: any) {
+                    res.status(503).json({
+                        status: 'unhealthy',
+                        service: 'authentication',
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            // ASACI service health check
+            if (this.config.asaci?.enabled) {
+                this.routes.get(`${basePath}/asaci`, async (req, res) => {
+                    try {
+                        // You could ping ASACI service here
+                        res.json({
+                            status: 'healthy',
+                            service: 'asaci',
+                            timestamp: new Date().toISOString()
+                        });
+                    } catch (error: any) {
+                        res.status(503).json({
+                            status: 'unhealthy',
+                            service: 'asaci',
+                            error: error.message,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                });
+            }
+
             logger.info(`✅ Health routes mounted at: ${basePath}`);
         } catch (error: any) {
             logger.error('❌ Failed to setup Health routes:', error.message);
@@ -234,8 +313,16 @@ export const createApplicationRoutes = (
 /**
  * Get default route configuration
  */
-export const getDefaultRouteConfig = (asaciManager?: AsaciServiceManager): RouteConfig => {
+export const getDefaultRouteConfig = (
+    authService?: AuthenticationService,
+    asaciManager?: AsaciServiceManager
+): RouteConfig => {
     return {
+        auth: {
+            enabled: true,
+            basePath: '/auth',
+            authService
+        },
         asaci: {
             enabled: true,
             basePath: '/asaci',
@@ -257,4 +344,4 @@ export const getDefaultRouteConfig = (asaciManager?: AsaciServiceManager): Route
 };
 
 // Export individual route creators for direct use if needed
-export { createAsaciRoutes };
+export { createAsaciRoutes, createAuthRoutes };

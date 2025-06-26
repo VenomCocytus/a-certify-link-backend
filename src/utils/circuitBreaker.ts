@@ -49,7 +49,7 @@ export const orassCircuitBreaker = <T extends unknown[], R>(fn: (...args: T) => 
         name: 'Orass API',
     });
 
-export const ivoryAttestationCircuitBreaker = <T extends unknown[], R>(fn: (...args: T) => Promise<R>) =>
+export const asaciCircuitBreaker = <T extends unknown[], R>(fn: (...args: T) => Promise<R>) =>
     createCircuitBreaker(fn, {
         timeout: Environment.CIRCUIT_BREAKER_TIMEOUT,
         errorThresholdPercentage: Environment.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,

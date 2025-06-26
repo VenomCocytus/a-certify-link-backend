@@ -162,3 +162,4 @@
 {"level":"info","message":"\n🎯 Server ready to accept requests!","service":"digital-certificate-api","timestamp":"2025-06-25 15:19:57"}
 {"level":"info","message":"📊 Startup Health Check: healthy","service":"digital-certificate-api","timestamp":"2025-06-25 15:19:59"}
 {"level":"info","message":"✅ All services are operational","service":"digital-certificate-api","timestamp":"2025-06-25 15:19:59"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"digital-certificate-api","timestamp":"2025-06-25 15:23:05"}

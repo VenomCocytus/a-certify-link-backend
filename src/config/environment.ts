@@ -11,6 +11,7 @@ export const Environment = {
     PORT: parseInt(process.env.PORT || '3000', 10),
     API_PREFIX: process.env.API_PREFIX || '/api/v1',
     API_VERSION: process.env.API_VERSION || '1.0.0',
+    APP_NAME: process.env.APP_NAME || 'Digital Certificates Service',
 
     // Database
     DB_HOST: process.env.DB_HOST || 'localhost',
@@ -26,6 +27,7 @@ export const Environment = {
 
     // JWT
     JWT_SECRET: process.env.JWT_SECRET || 'your_super_secret_jwt_key',
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'your_super_secret_refresh_jwt_key',
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h', // store seconds
 
     // External APIs

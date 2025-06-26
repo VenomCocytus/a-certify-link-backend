@@ -1,12 +1,12 @@
 import { ErrorCodes } from '@/constants/error-codes';
 
-export abstract class BaseException extends Error {
+export class BaseException extends Error {
     public readonly code: ErrorCodes;
     public readonly statusCode: number;
     public readonly details?: Record<string, unknown>;
     public readonly instance?: string;
 
-    protected constructor(
+    constructor(
         message: string,
         code: ErrorCodes,
         statusCode: number,
