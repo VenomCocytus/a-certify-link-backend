@@ -6,16 +6,19 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
-import {authLimiter, certificateCreationLimiter,} from '@middlewares/rate-limiter.middleware';
+import {authLimiter, certificateCreationLimiter, rateLimiter,} from '@middlewares/rate-limiter.middleware';
 import { Environment } from '@config/environment';
 import { setupSwagger } from "@config/swagger";
 import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
 import { logger } from '@utils/logger';
 import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-manager";
+import {AuthenticationService} from "@services/authentication.service";
+import * as process from "node:process";
 
 export class App {
     public app: Express;
     private asaciManager: AsaciServiceManager;
+    private authService: AuthenticationService;
 
     constructor() {
         this.app = express();
@@ -54,12 +57,28 @@ export class App {
     private setupMiddleware(): void {
         // Security middleware
         this.app.use(helmet());
+        // this.app.use(helmet({
+        //     contentSecurityPolicy: {
+        //         directives: {
+        //             defaultSrc: ["'self'"],
+        //             styleSrc: ["'self'", "'unsafe-inline'"],
+        //             scriptSrc: ["'self'"],
+        //             imgSrc: ["'self'", "data:", "https:"],
+        //         },
+        //     },
+        // }));
 
         // CORS configuration
         this.app.use(cors({
             origin: Environment.NODE_ENV !== 'production',
             credentials: true,
         }));
+        // this.app.use(cors({
+        //     origin: Environment.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+        //     credentials: true,
+        //     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        //     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+        // }));
 
         // Body parsing middleware
         this.app.use(express.json({ limit: '10mb' }));
@@ -69,6 +88,7 @@ export class App {
         this.app.use(compression());
 
         // Rate limiting
+        this.app.use(rateLimiter);
         this.app.use(certificateCreationLimiter);
         this.app.use(authLimiter);
 
@@ -83,8 +103,10 @@ export class App {
      */
     private initializeAsaciServices(): void {
         try {
+            this.authService = new AuthenticationService();
             this.asaciManager = createAsaciServiceManager({
-                baseUrl: process.env.ASACI_BASE_URL || 'https://ppcoreeatci.asacitech.com'
+                baseUrl: Environment.ASACI_BASE_URL,
+                timeout: Environment.ASACI_TIMEOUT,
             });
 
             // Setup Asaci health check endpoint
@@ -110,7 +132,7 @@ export class App {
     private setupRoutes(): void {
         try {
             // Get route configuration with Asaci manager
-            const routeConfig = getDefaultRouteConfig(this.asaciManager);
+            const routeConfig = getDefaultRouteConfig(this.authService, this.asaciManager);
 
             // Create and mount application routes
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
@@ -130,7 +152,7 @@ export class App {
                 });
             });
 
-            // Setup general health check endpoint
+            // Set up a general health check endpoint
             this.app.get('/health', (req, res) => {
                 res.json({
                     status: 'healthy',
@@ -152,19 +174,8 @@ export class App {
      * Setup error handlers (must be last)
      */
     private setupErrorHandlers(): void {
-        // 404 handler for non-API routes
-        this.app.use('*', (req, res) => {
-            res.status(404).json({
-                type: 'https://tools.ietf.org/html/rfc7231#section-6.5.4',
-                title: 'Not Found',
-                status: 404,
-                detail: `Route ${req.originalUrl} not found`,
-                instance: req.originalUrl,
-            });
-        });
-
         // Global error handler (must be last)
-        this.app.use(globalExceptionHandlerMiddleware);
+        // this.app.use(globalExceptionHandlerMiddleware);
 
         logger.info('✅ Error handlers initialized');
     }
@@ -174,15 +185,15 @@ export class App {
      */
     async authenticateAsaci(): Promise<void> {
         try {
-            if (!process.env.ASACI_EMAIL || !process.env.ASACI_PASSWORD) {
+            if (!Environment.ASACI_EMAIL || !Environment.ASACI_PASSWORD) {
                 logger.warn('⚠️ Asaci credentials not provided. Services will require manual authentication');
                 return;
             }
 
             await this.asaciManager.authenticate(
-                process.env.ASACI_EMAIL,
-                process.env.ASACI_PASSWORD,
-                process.env.ASACI_CLIENT_NAME
+                Environment.ASACI_EMAIL,
+                Environment.ASACI_PASSWORD,
+                Environment.ASACI_CLIENT_NAME
             );
 
             logger.info('✅ Asaci services authenticated successfully');
@@ -262,6 +273,4 @@ export const createApp = (): App => {
         throw error;
     }
 };
-
-// Export the App class as default
 export default App;

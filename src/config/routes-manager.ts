@@ -7,6 +7,7 @@ import { createAsaciRoutes } from "@/routes/asaci.routes";
 import { createAuthRoutes } from "@/routes/auth.routes";
 import {AuthenticationService} from "@services/authentication.service";
 import {AuthenticationController} from "@controllers/authentication.controller";
+import {Environment} from "@config/environment";
 
 export interface RouteConfig {
     auth?: {
@@ -127,10 +128,10 @@ export class RoutesManager {
     setup404Handler(): void {
         this.routes.use('*', (req, res) => {
             res.status(404).json({
-                type: 'https://tools.ietf.org/html/rfc7231#section-6.5.4',
+                type: `https://${Environment.APP_NAME}/rfc7231`,
                 title: 'Not Found',
                 status: 404,
-                detail: `API route ${req.originalUrl} not found`,
+                detail: `Route ${req.originalUrl} not found`,
                 instance: req.originalUrl,
             });
         });

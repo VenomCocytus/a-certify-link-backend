@@ -20,8 +20,8 @@ const sequelizeConfig: Options = {
     },
 
     pool: {
-        max: Environment.DB_POOL_MAX,
-        min: Environment.DB_POOL_MIN,
+        max: Math.max(1, parseInt(Environment.DB_POOL_MAX?.toString() || '5', 10)),
+        min: Math.max(0, parseInt(Environment.DB_POOL_MIN?.toString() || '0', 10)),
         acquire: Environment.DB_POOL_ACQUIRE,
         idle: Environment.DB_POOL_IDLE,
         evict: 1000,

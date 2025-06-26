@@ -1,0 +1,14 @@
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 12:40:34","traceId":"857e8a35-cf5c-4471-9c9f-3dea2fc622ab"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:43:35","traceId":"18282253-cdec-4a3d-91c5-00608da56c13"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:43:40","traceId":"ceb2e79c-b07e-4f48-a335-02ae87d47f1d"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:44:16","traceId":"3cfe6972-2428-44b6-951e-ccef0a7a897e"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:20","traceId":"8a4a2b6b-54bd-4f74-a518-3e3352734eb0"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:20","traceId":"8a4a2b6b-54bd-4f74-a518-3e3352734eb0"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:25","traceId":"4219784b-0d37-43f0-b9e4-a269260d92f6"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:25","traceId":"4219784b-0d37-43f0-b9e4-a269260d92f6"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:30","traceId":"b780916a-418e-498a-beee-972df37cdecd"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:30","traceId":"b780916a-418e-498a-beee-972df37cdecd"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 16:06:09","traceId":"3097cfc6-76cd-455d-8a04-922f255539d7"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:09","traceId":"3097cfc6-76cd-455d-8a04-922f255539d7"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 16:06:14","traceId":"1944b19a-1073-455a-bed1-3132a5c26a34"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:14","traceId":"1944b19a-1073-455a-bed1-3132a5c26a34"}

@@ -268,13 +268,8 @@ export async function initializeDatabase(): Promise<void> {
         // Test database connection
         await sequelize.authenticate();
         console.log('✅ Database connection established');
-
-        // Initialize models first
         initializeModels();
-
-        // Define model relationships after initialization
         defineAssociations();
-        console.log('✅ Model relationships defined');
 
         // Sync database (create tables if they don't exist)
         await sequelize.sync({

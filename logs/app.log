@@ -1,0 +1,362 @@
+{"level":"info","message":"🚀 Starting eAttestation API Server...","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:16"}
+{"level":"info","message":"Environment: development","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:16"}
+{"level":"info","message":"Port: 3000","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:16"}
+{"level":"info","message":"API Prefix: /api/v1","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:16"}
+{"level":"info","message":"✅ Environment variables validated","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:16"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Application middleware initialized","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Error handlers initialized","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Application created successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"warn","message":"⚠️ Asaci credentials not provided. Services will require manual authentication","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"✅ Application initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"📊 Environment: development","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"\n📍 Available Asaci Routes:","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"POST /api/v1/asaci/auth/login - Asaci Authentication","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"GET  /api/v1/asaci/auth/user - Current User Info","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/productions - Create Production Request","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"GET  /api/v1/asaci/attestations/certificates - List Certificates","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/orders - Create Order","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/transactions - Create Transaction","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"... and more Asaci endpoints","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:17"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:19"}
+{"level":"info","message":"✅ All services are operational","service":"digital-certificate-api","timestamp":"2025-06-26 12:00:19"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"digital-certificate-api","timestamp":"2025-06-26 12:06:39"}
+{"level":"info","message":"✅ Database connection closed","service":"digital-certificate-api","timestamp":"2025-06-26 12:06:39"}
+{"level":"info","message":"🚀 Starting eAttestation API Server...","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:30"}
+{"level":"info","message":"Environment: development","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:30"}
+{"level":"info","message":"Port: 3000","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:30"}
+{"level":"info","message":"API Prefix: /api/v1","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:30"}
+{"level":"info","message":"✅ Environment variables validated","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:30"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Application middleware initialized","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Error handlers initialized","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Application created successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:31"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"✅ Application initialized successfully","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"📊 Environment: development","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"\n📍 Available Asaci Routes:","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"POST /api/v1/asaci/auth/login - Asaci Authentication","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"GET  /api/v1/asaci/auth/user - Current User Info","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/productions - Create Production Request","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"GET  /api/v1/asaci/attestations/certificates - List Certificates","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/orders - Create Order","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/transactions - Create Transaction","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"... and more Asaci endpoints","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:32"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:34"}
+{"level":"info","message":"✅ All services are operational","service":"digital-certificate-api","timestamp":"2025-06-26 12:07:34"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"digital-certificate-api","timestamp":"2025-06-26 12:29:23"}
+{"level":"info","message":"✅ Database connection closed","service":"digital-certificate-api","timestamp":"2025-06-26 12:29:23"}
+{"level":"info","message":"🚀 Starting eAttestation API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:27"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"\n📍 Available Asaci Routes:","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"POST /api/v1/asaci/auth/login - Asaci Authentication","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"GET  /api/v1/asaci/auth/user - Current User Info","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/productions - Create Production Request","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"GET  /api/v1/asaci/attestations/certificates - List Certificates","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/orders - Create Order","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"POST /api/v1/asaci/attestations/transactions - Create Transaction","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"... and more Asaci endpoints","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:28"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:30"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 12:29:30"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:17"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:17"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:22"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:24"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:26"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 12:36:26"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:42"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:42"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:46"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:46"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:46"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:46"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:46"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:47"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:48"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:50"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 12:38:50"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:21"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:21"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:25"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:26"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:28"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 12:40:28"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 12:40:34","traceId":"857e8a35-cf5c-4471-9c9f-3dea2fc622ab"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 12:44:00"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 12:44:00"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:29"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:29"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:29"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:29"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:29"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:30"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:32"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:34"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 15:43:34"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:43:35","traceId":"18282253-cdec-4a3d-91c5-00608da56c13"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:43:40","traceId":"ceb2e79c-b07e-4f48-a335-02ae87d47f1d"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:44:16","traceId":"3cfe6972-2428-44b6-951e-ccef0a7a897e"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:06"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:06"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:13"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:13"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:13"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:13"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:13"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:14"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:17"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:19"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:19"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:20","traceId":"8a4a2b6b-54bd-4f74-a518-3e3352734eb0"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:20","traceId":"8a4a2b6b-54bd-4f74-a518-3e3352734eb0"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:25","traceId":"4219784b-0d37-43f0-b9e4-a269260d92f6"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:25","traceId":"4219784b-0d37-43f0-b9e4-a269260d92f6"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 15:45:30","traceId":"b780916a-418e-498a-beee-972df37cdecd"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:30","traceId":"b780916a-418e-498a-beee-972df37cdecd"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:57"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 15:45:57"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:00"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:00"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:00"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:00"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:00"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:01"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:03"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:05"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:05"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 16:06:09","traceId":"3097cfc6-76cd-455d-8a04-922f255539d7"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:09","traceId":"3097cfc6-76cd-455d-8a04-922f255539d7"}
+{"error":{},"level":"error","message":"Global exception handler caught error:","request":{},"service":"A-CertifyLink","timestamp":"2025-06-26 16:06:14","traceId":"1944b19a-1073-455a-bed1-3132a5c26a34"}
+{"level":"error","message":"Unhandled exception details:","service":"A-CertifyLink","timestamp":"2025-06-26 16:06:14","traceId":"1944b19a-1073-455a-bed1-3132a5c26a34"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:29"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:30"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:37"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:37"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:37"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:37"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:37"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:38"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:39"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:41"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 16:07:41"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:00"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:00"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:05"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:05"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:05"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:05"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:05"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:06"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:07"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:09"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 16:09:09"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:45"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:45"}
+{"level":"info","message":"🚀 Starting A-CertifyLink API Server...","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:57"}
+{"level":"info","message":"Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:57"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:57"}
+{"level":"info","message":"API Prefix: /api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:57"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:57"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:12:59"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000/api/v1/docs","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000/api/v1","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"📊 Environment: development","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:00"}
+{"level":"info","message":"📊 Startup Health Check: healthy","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:02"}
+{"level":"info","message":"✅ All services are operational","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:02"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:04"}
+{"level":"info","message":"✅ Database connection closed","service":"A-CertifyLink","timestamp":"2025-06-26 16:13:04"}

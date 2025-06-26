@@ -18,33 +18,33 @@ export class ExternalApiException extends BaseException {
         this.originalError = originalError;
     }
 
-    static orassConnectionError(originalError?: Error, instance?: string): ExternalApiException {
-        return new ExternalApiException(
-            'Orass',
-            'Failed to connect to Orass system',
-            ErrorCodes.ORASS_CONNECTION_ERROR,
-            502,
-            originalError,
-            instance
-        );
-    }
+    // static orassConnectionError(originalError?: Error, instance?: string): ExternalApiException {
+    //     return new ExternalApiException(
+    //         'Orass',
+    //         'Failed to connect to Orass system',
+    //         ErrorCodes.ORASS_CONNECTION_ERROR,
+    //         502,
+    //         originalError,
+    //         instance
+    //     );
+    // }
 
-    static orassAuthenticationError(instance?: string): ExternalApiException {
-        return new ExternalApiException(
-            'Orass',
-            'Authentication failed with Orass system',
-            ErrorCodes.ORASS_AUTHENTICATION_ERROR,
-            401,
-            undefined,
-            instance
-        );
-    }
+    // static orassAuthenticationError(instance?: string): ExternalApiException {
+    //     return new ExternalApiException(
+    //         'Orass',
+    //         'Authentication failed with Orass system',
+    //         ErrorCodes.ORASS_AUTHENTICATION_ERROR,
+    //         401,
+    //         undefined,
+    //         instance
+    //     );
+    // }
 
     static ivoryAttestationConnectionError(originalError?: Error, instance?: string): ExternalApiException {
         return new ExternalApiException(
             'IvoryAttestation',
             'Failed to connect to IvoryAttestation system',
-            ErrorCodes.IVORY_ATTESTATION_CONNECTION_ERROR,
+            ErrorCodes.ASACI_CONNECTION_ERROR,
             502,
             originalError,
             instance
@@ -55,7 +55,7 @@ export class ExternalApiException extends BaseException {
         return new ExternalApiException(
             'IvoryAttestation',
             'Authentication failed with IvoryAttestation system',
-            ErrorCodes.IVORY_ATTESTATION_AUTHENTICATION_ERROR,
+            ErrorCodes.ASACI_AUTHENTICATION_FAILED,
             401,
             undefined,
             instance

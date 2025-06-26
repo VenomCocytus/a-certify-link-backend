@@ -5,27 +5,19 @@ import {initializeDatabase, sequelize} from './models';
 import { Environment } from '@config/environment';
 import {validateEnvironment} from "@config/asaci-endpoints";
 
-// Server configuration
 const config = {
-    port: Environment.PORT || 3000,
-    host: '0.0.0.0',
-    apiPrefix: Environment.API_PREFIX || '/api/v1',
-    environment: Environment.NODE_ENV || 'development'
+    appName: Environment.APP_NAME,
+    port: Environment.PORT,
+    apiPrefix: Environment.API_PREFIX,
+    environment: Environment.NODE_ENV
 };
 
-// Application instance
 let app: App;
 let server: any;
 
-/**
- * Initialize application
- */
 async function initializeApplication(): Promise<void> {
     try {
-        // Create an application instance
         app = createApp();
-
-        // Authenticate Asaci services
         await app.authenticateAsaci();
 
         logger.info('✅ Application initialized successfully');
@@ -35,28 +27,15 @@ async function initializeApplication(): Promise<void> {
     }
 }
 
-/**
- * Start the HTTP server
- */
 async function startHttpServer(): Promise<void> {
     try {
-        server = app.getApp().listen(config.port, config.host, () => {
+        server = app.getApp().listen(config.port, () => {
             logger.info(`🚀 Server running on port ${config.port}`);
             logger.info(`📚 API Documentation: http://localhost:${config.port}${config.apiPrefix}/docs`);
             logger.info(`🏥 Health Check: http://localhost:${config.port}/health`);
             logger.info(`🏥 Asaci Health Check: http://localhost:${config.port}/health/asaci`);
             logger.info(`🔗 API base URL: http://localhost:${config.port}${config.apiPrefix}`);
             logger.info(`📊 Environment: ${config.environment}`);
-
-            // Display available Asaci routes
-            logger.info('\n📍 Available Asaci Routes:');
-            logger.info(`POST ${config.apiPrefix}/asaci/auth/login - Asaci Authentication`);
-            logger.info(`GET  ${config.apiPrefix}/asaci/auth/user - Current User Info`);
-            logger.info(`POST ${config.apiPrefix}/asaci/attestations/productions - Create Production Request`);
-            logger.info(`GET  ${config.apiPrefix}/asaci/attestations/certificates - List Certificates`);
-            logger.info(`POST ${config.apiPrefix}/asaci/attestations/orders - Create Order`);
-            logger.info(`POST ${config.apiPrefix}/asaci/attestations/transactions - Create Transaction`);
-            logger.info(`... and more Asaci endpoints`);
 
             logger.info('\n🎯 Server ready to accept requests!');
         });
@@ -89,9 +68,6 @@ async function startHttpServer(): Promise<void> {
     }
 }
 
-/**
- * Perform startup health check
- */
 async function performHealthCheck(): Promise<void> {
     try {
         setTimeout(async () => {
@@ -114,9 +90,6 @@ async function performHealthCheck(): Promise<void> {
     }
 }
 
-/**
- * Set up graceful shutdown handlers
- */
 function setupGracefulShutdown(): void {
     const gracefulShutdown = (signal: string) => {
         logger.info(`🔄 Received ${signal}. Starting graceful shutdown...`);
@@ -156,9 +129,6 @@ function setupGracefulShutdown(): void {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
-/**
- * Setup error handlers
- */
 function setupErrorHandlers(): void {
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
@@ -173,12 +143,9 @@ function setupErrorHandlers(): void {
     });
 }
 
-/**
- * Main server startup function
- */
 async function startServer(): Promise<void> {
     try {
-        logger.info('🚀 Starting eAttestation API Server...');
+        logger.info(`🚀 Starting ${config.appName} API Server...`);
         logger.info(`Environment: ${config.environment}`);
         logger.info(`Port: ${config.port}`);
         logger.info(`API Prefix: ${config.apiPrefix}`);
@@ -215,23 +182,14 @@ async function startServer(): Promise<void> {
     }
 }
 
-/**
- * Get server configuration
- */
 export function getServerConfig() {
     return config;
 }
 
-/**
- * Get an application instance
- */
 export function getApp(): App | undefined {
     return app;
 }
 
-/**
- * Get server instance
- */
 export function getServer() {
     return server;
 }

@@ -8,22 +8,22 @@ dotenv.config({
 export const Environment = {
     // Application
     NODE_ENV: process.env.NODE_ENV,
-    PORT: process.env.PORT,
+    PORT: process.env.PORT as unknown as number,
     API_PREFIX: process.env.API_PREFIX,
     API_VERSION: process.env.API_VERSION,
     APP_NAME: process.env.APP_NAME,
 
     // Database
     DB_HOST: process.env.DB_HOST,
-    DB_PORT: process.env.DB_PORT,
+    DB_PORT: process.env.DB_PORT as unknown as number,
     DB_NAME: process.env.DB_NAME,
     DB_USERNAME: process.env.DB_USERNAME,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_DIALECT: process.env.DB_DIALECT,
     DB_POOL_MAX:process.env.DB_POOL_MAX,
     DB_POOL_MIN: process.env.DB_POOL_MIN,
-    DB_POOL_ACQUIRE: process.env.DB_POOL_ACQUIRE,
-    DB_POOL_IDLE: process.env.DB_POOL_IDLE,
+    DB_POOL_ACQUIRE: process.env.DB_POOL_ACQUIRE as unknown as number,
+    DB_POOL_IDLE: process.env.DB_POOL_IDLE as unknown as number,
 
     // JWT
     JWT_SECRET: process.env.JWT_SECRET,
@@ -35,9 +35,12 @@ export const Environment = {
     ORASS_API_KEY: process.env.ORASS_API_KEY,
     ORASS_TIMEOUT: process.env.ORASS_TIMEOUT,
 
-    IVORY_ATTESTATION_BASE_URL: process.env.IVORY_ATTESTATION_BASE_URL,
+    ASACI_BASE_URL: process.env.ASACI_BASE_URL,
     IVORY_ATTESTATION_TOKEN: process.env.IVORY_ATTESTATION_TOKEN,
-    IVORY_ATTESTATION_TIMEOUT: process.env.IVORY_ATTESTATION_TIMEOUT,
+    ASACI_TIMEOUT: process.env.ASACI_TIMEOUT as unknown as number,
+    ASACI_EMAIL: process.env.ASACI_EMAIL,
+    ASACI_PASSWORD: process.env.ASACI_PASSWORD,
+    ASACI_CLIENT_NAME: process.env.ASACI_CLIENT_NAME,
 
     // Rate Limiting
     RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,

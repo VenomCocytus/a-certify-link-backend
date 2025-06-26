@@ -202,7 +202,7 @@ export const globalExceptionHandlerMiddleware = (
     }
 
     // Handle network errors
-    else if (error.name === 'ECONNREFUSED' || error.message.includes('ECONNREFUSED')) {
+    else if (error.name === 'ECONNREFUSED' || error.message?.includes('ECONNREFUSED')) {
         errorResponse = {
             type: 'https://tools.ietf.org/html/rfc7231#section-6.6.3',
             title: 'Service Unavailable',
@@ -213,7 +213,7 @@ export const globalExceptionHandlerMiddleware = (
             timestamp,
         };
     }
-    else if (error.name === 'ENOTFOUND' || error.message.includes('ENOTFOUND')) {
+    else if (error.name === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
         errorResponse = {
             type: 'https://tools.ietf.org/html/rfc7231#section-6.6.3',
             title: 'Service Unavailable',
@@ -224,7 +224,7 @@ export const globalExceptionHandlerMiddleware = (
             timestamp,
         };
     }
-    else if (error.name === 'ETIMEDOUT' || error.message.includes('timeout')) {
+    else if (error.name === 'ETIMEDOUT' || error.message?.includes('timeout')) {
         errorResponse = {
             type: 'https://tools.ietf.org/html/rfc7231#section-6.6.4',
             title: 'Request Timeout',
@@ -297,7 +297,7 @@ export const globalExceptionHandlerMiddleware = (
     }
 
     // Handle ASACI service specific errors
-    else if (error.message.includes('ASACI') || error.name.includes('Asaci')) {
+    else if (error.message?.includes('ASACI') || error.name?.includes('Asaci')) {
         errorResponse = {
             type: 'https://tools.ietf.org/html/rfc7231#section-6.6.3',
             title: 'ASACI Service Error',

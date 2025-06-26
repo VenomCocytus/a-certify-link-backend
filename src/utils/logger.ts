@@ -12,7 +12,7 @@ const logFormat = winston.format.combine(
 const logger = winston.createLogger({
     level: Environment.LOG_LEVEL,
     format: logFormat,
-    defaultMeta: { service: 'digital-certificate-api' },
+    defaultMeta: { service: Environment.APP_NAME },
     transports: [
         new winston.transports.File({
             filename: 'logs/error.log',
