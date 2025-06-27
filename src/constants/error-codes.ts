@@ -13,6 +13,7 @@ export enum ErrorCodes {
 
     // Authentication & Authorization Errors
     INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
+    INVALID_DATA = 'INVALID_DATA',
     TOKEN_EXPIRED = 'TOKEN_EXPIRED',
     TOKEN_INVALID = 'TOKEN_INVALID',
     TOKEN_MISSING = 'TOKEN_MISSING',

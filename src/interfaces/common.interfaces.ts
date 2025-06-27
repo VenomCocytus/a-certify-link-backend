@@ -24,3 +24,13 @@ export interface AuthenticatedRequest extends Request {
         twoFactorEnabled: boolean;
     };
 }
+
+export interface ErrorResponse {
+    type: string;
+    title: string;
+    status: number;
+    instance: string;
+    traceId: string;
+    timestamp: string;
+    [key: string]: unknown;
+}

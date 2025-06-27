@@ -1,5 +1,5 @@
 import {BaseException} from './base.exception';
-import {ErrorCodes, ErrorMessages} from "@/constants/error-codes";
+import {ErrorCodes} from "@/constants/error-codes";
 
 /**
  * Exception thrown when invalid data is encountered
@@ -20,6 +20,6 @@ export class InvalidDataError extends BaseException {
             errors,
         );
 
-        this.name = ErrorMessages.INVALID_DATA;
+        this.name = ErrorCodes.INVALID_DATA.toLowerCase();
     }
 }
