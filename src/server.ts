@@ -153,6 +153,9 @@ async function startServer(): Promise<void> {
         // Validate environment
         validateEnvironment();
 
+        // Initialize application
+        await initializeApplication();
+
         // Setup error handlers
         setupErrorHandlers();
 
@@ -161,9 +164,6 @@ async function startServer(): Promise<void> {
 
         // Initialize database
         await initializeDatabase();
-
-        // Initialize application
-        await initializeApplication();
 
         // Start HTTP server
         await startHttpServer();

@@ -9,7 +9,7 @@ export const Environment = {
     // Application
     NODE_ENV: process.env.NODE_ENV,
     PORT: process.env.PORT as unknown as number,
-    API_PREFIX: process.env.API_PREFIX,
+    API_PREFIX: process.env.API_PREFIX as string,
     API_VERSION: process.env.API_VERSION,
     APP_NAME: process.env.APP_NAME,
 
@@ -47,9 +47,9 @@ export const Environment = {
     RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS,
 
     // Circuit Breaker
-    CIRCUIT_BREAKER_TIMEOUT: process.env.CIRCUIT_BREAKER_TIMEOUT,
-    CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE: process.env.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,
-    CIRCUIT_BREAKER_RESET_TIMEOUT: process.env.CIRCUIT_BREAKER_RESET_TIMEOUT,
+    CIRCUIT_BREAKER_TIMEOUT: process.env.CIRCUIT_BREAKER_TIMEOUT as unknown as number,
+    CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE: process.env.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE as unknown as number,
+    CIRCUIT_BREAKER_RESET_TIMEOUT: process.env.CIRCUIT_BREAKER_RESET_TIMEOUT as unknown as number,
 
     // Logging
     LOG_LEVEL: process.env.LOG_LEVEL,

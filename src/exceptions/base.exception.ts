@@ -31,7 +31,7 @@ export class BaseException extends Error {
         type: string;
         title: string;
         status: number;
-        detail: string;
+        message?: string;
         instance?: string;
         [key: string]: unknown;
     } {
@@ -39,7 +39,7 @@ export class BaseException extends Error {
             type: `https://example.com/errors/${this.code}`,
             title: this.name.replace(/([A-Z])/g, ' $1').trim(),
             status: this.statusCode,
-            detail: this.message,
+            message: this.message,
             instance: this.instance,
             code: this.code,
             ...(this.details && { details: this.details }),

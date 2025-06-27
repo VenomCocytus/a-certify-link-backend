@@ -5,22 +5,13 @@ import { BaseException } from '@exceptions/base.exception';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 import { v4 as uuidv4 } from 'uuid';
-
-interface ErrorResponse {
-    type: string;
-    title: string;
-    status: number;
-    detail: string;
-    instance: string;
-    traceId: string;
-    timestamp: string;
-    [key: string]: unknown;
-}
+import { ErrorResponse } from '@/interfaces/common.interfaces';
 
 export const globalExceptionHandlerMiddleware = (
     error: Error,
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): void => {
     const traceId = uuidv4();
     const timestamp = new Date().toISOString();

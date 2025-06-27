@@ -5,6 +5,7 @@ import sequelize from '@config/database';
 import { PasswordHistoryModel, initPasswordHistoryModel } from './password-history.model';
 import { AsaciRequestModel, initAsaciRequestModel } from './asaci-request.model';
 import { OperationLogModel, initOperationLogModel } from './operation-log.model';
+import bcrypt from "bcryptjs";
 
 let User: typeof UserModel;
 let Role: typeof RoleModel;
@@ -198,15 +199,17 @@ async function seedDatabase(): Promise<void> {
         // Create a default admin user if it doesn't already exist
         const adminRole = await Role.findOne({ where: { name: 'ADMIN' } });
         if (adminRole) {
+            const hashedPassword = await bcrypt.hash('Admin123!@#', 12);
             const [adminUser, created] = await User.findOrCreate({
                 where: { email: 'admin@eattestation.com' },
                 defaults: {
                     email: 'admin@eattestation.com',
                     firstName: 'System',
                     lastName: 'Administrator',
-                    password: 'Admin123!@#', // This will be hashed automatically
+                    password: hashedPassword,
                     roleId: adminRole.id,
                     isActive: true,
+                    isBlocked: false,
                     isEmailVerified: true,
                     emailVerifiedAt: new Date()
                 }

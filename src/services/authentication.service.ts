@@ -58,7 +58,7 @@ export class AuthenticationService {
 
         // Find the user by email with role information
         const user = await UserModel.findOne({
-            where: { email: email.toLowerCase() },
+            where: { email: email },
             include: [{
                 model: RoleModel,
                 as: 'role',
@@ -67,6 +67,22 @@ export class AuthenticationService {
         });
 
         if (!user) {
+            throw new ValidationException('Invalid email or password');
+        }
+
+        // Check if the account is locked
+        // if (user.isAccountLocked) {
+        //     throw new BaseException(
+        //         'Account is temporarily locked due to too many failed login attempts. Please try again later.',
+        //         ErrorCodes.ACCOUNT_LOCKED,
+        //         423
+        //     );
+        // }
+
+        // Validate password
+        const isValidPassword = await user.validatePassword(password);
+        if (!isValidPassword) {
+            await user.incrementLoginAttempts();
             throw new ValidationException('Invalid email or password');
         }
 
@@ -79,40 +95,24 @@ export class AuthenticationService {
             );
         }
 
-        // Check if the account is locked
-        if (user.isAccountLocked) {
-            throw new BaseException(
-                'Account is temporarily locked due to too many failed login attempts. Please try again later.',
-                ErrorCodes.ACCOUNT_LOCKED,
-                423
-            );
-        }
-
-        // Validate password
-        const isValidPassword = await user.validatePassword(password);
-        if (!isValidPassword) {
-            await user.incrementLoginAttempts();
-            throw new ValidationException('Invalid email or password');
-        }
-
         // Check two-factor authentication if enabled
-        if (user.twoFactorEnabled) {
-            if (!twoFactorCode) {
-                throw new ValidationException('Two-factor authentication code is required');
-            }
-
-            const isValidTwoFactor = speakeasy.totp.verify({
-                secret: user.twoFactorSecret!,
-                encoding: 'base32',
-                token: twoFactorCode,
-                window: 2
-            });
-
-            if (!isValidTwoFactor) {
-                await user.incrementLoginAttempts();
-                throw new ValidationException('Invalid two-factor authentication code');
-            }
-        }
+        // if (user.twoFactorEnabled) {
+        //     if (!twoFactorCode) {
+        //         throw new ValidationException('Two-factor authentication code is required');
+        //     }
+        //
+        //     const isValidTwoFactor = speakeasy.totp.verify({
+        //         secret: user.twoFactorSecret!,
+        //         encoding: 'base32',
+        //         token: twoFactorCode,
+        //         window: 2
+        //     });
+        //
+        //     if (!isValidTwoFactor) {
+        //         await user.incrementLoginAttempts();
+        //         throw new ValidationException('Invalid two-factor authentication code');
+        //     }
+        // }
 
         // Reset login attempts on successful login
         await user.resetLoginAttempts();

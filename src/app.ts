@@ -8,7 +8,6 @@ import i18nextMiddleware from 'i18next-http-middleware';
 import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
 import {authLimiter, certificateCreationLimiter, rateLimiter,} from '@middlewares/rate-limiter.middleware';
 import { Environment } from '@config/environment';
-import { setupSwagger } from "@config/swagger";
 import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
 import { logger } from '@utils/logger';
 import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-manager";
@@ -87,10 +86,11 @@ export class App {
         // Compression middleware
         this.app.use(compression());
 
+        //TODO: Enable rate limiting
         // Rate limiting
-        this.app.use(rateLimiter);
-        this.app.use(certificateCreationLimiter);
-        this.app.use(authLimiter);
+        // this.app.use(rateLimiter);
+        // this.app.use(certificateCreationLimiter);
+        // this.app.use(authLimiter);
 
         // i18n middleware
         this.app.use(i18nextMiddleware.handle(i18next));
@@ -138,16 +138,11 @@ export class App {
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
             this.app.use(Environment.API_PREFIX as string, applicationRoutes);
 
-            // Setup API Documentation
-            setupSwagger(this.app);
-
             // Setup root endpoint
             this.app.get('/', (req, res) => {
                 res.json({
-                    message: 'eAttestation API Server',
-                    version: process.env.npm_package_version || '1.0.0',
+                    message: `${Environment.APP_NAME} API Server`,
                     environment: Environment.NODE_ENV,
-                    apiPrefix: Environment.API_PREFIX,
                     timestamp: new Date().toISOString()
                 });
             });
@@ -175,7 +170,7 @@ export class App {
      */
     private setupErrorHandlers(): void {
         // Global error handler (must be last)
-        // this.app.use(globalExceptionHandlerMiddleware);
+        this.app.use(globalExceptionHandlerMiddleware);
 
         logger.info('✅ Error handlers initialized');
     }

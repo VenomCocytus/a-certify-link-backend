@@ -1,0 +1,44 @@
+import { Request, Response } from 'express';
+import { AsaciProductionService } from '@services/asaci-production.service';
+import { AsaciOrderService } from '@services/asaci-order.service';
+import { AsaciCertificateService } from '@services/asaci-certificate.service';
+import { AsaciTransactionService } from '@services/asaci-transaction.service';
+export declare class AsaciAttestationController {
+    private readonly asaciProductionService;
+    private readonly asaciOrderService;
+    private readonly asaciCertificateService;
+    private readonly asaciTransactionService;
+    constructor(asaciProductionService: AsaciProductionService, asaciOrderService: AsaciOrderService, asaciCertificateService: AsaciCertificateService, asaciTransactionService: AsaciTransactionService);
+    createProductionRequest(req: Request, res: Response): Promise<void>;
+    getProductionRequests(req: Request, res: Response): Promise<void>;
+    downloadProductionZip(req: Request, res: Response): Promise<void>;
+    createOrder(req: Request, res: Response): Promise<void>;
+    getOrders(req: Request, res: Response): Promise<void>;
+    getOrder(req: Request, res: Response): Promise<void>;
+    updateOrder(req: Request, res: Response): Promise<void>;
+    approveOrder(req: Request, res: Response): Promise<void>;
+    rejectOrder(req: Request, res: Response): Promise<void>;
+    cancelOrder(req: Request, res: Response): Promise<void>;
+    suspendOrder(req: Request, res: Response): Promise<void>;
+    submitOrderForConfirmation(req: Request, res: Response): Promise<void>;
+    confirmOrderDelivery(req: Request, res: Response): Promise<void>;
+    getCertificates(req: Request, res: Response): Promise<void>;
+    getCertificate(req: Request, res: Response): Promise<void>;
+    downloadCertificate(req: Request, res: Response): Promise<void>;
+    cancelCertificate(req: Request, res: Response): Promise<void>;
+    suspendCertificate(req: Request, res: Response): Promise<void>;
+    checkCertificate(req: Request, res: Response): Promise<void>;
+    getCertificateTypes(req: Request, res: Response): Promise<void>;
+    getCertificateVariants(req: Request, res: Response): Promise<void>;
+    createTransaction(req: Request, res: Response): Promise<void>;
+    getTransactions(req: Request, res: Response): Promise<void>;
+    getTransaction(req: Request, res: Response): Promise<void>;
+    updateTransaction(req: Request, res: Response): Promise<void>;
+    approveTransaction(req: Request, res: Response): Promise<void>;
+    rejectTransaction(req: Request, res: Response): Promise<void>;
+    cancelTransaction(req: Request, res: Response): Promise<void>;
+    getCertificateUsageStatistics(req: Request, res: Response): Promise<void>;
+    getAvailableCertificatesStatistics(req: Request, res: Response): Promise<void>;
+    getUsedCertificatesStatistics(req: Request, res: Response): Promise<void>;
+}
+//# sourceMappingURL=asaci-attestation.controller.d.ts.map

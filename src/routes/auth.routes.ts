@@ -235,7 +235,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      *               $ref: '#/components/schemas/ErrorResponse'
      */
     router.post('/login',
-        authLimiter,
+        // authLimiter,
         validateDto(LoginDto),
         asyncHandlerMiddleware(authController.login.bind(authController))
     );
@@ -538,7 +538,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
 
     /**
      * @swagger
-     * /auth/profile:
+     * api/v1/auth/profile:
      *   get:
      *     tags: [Authentication]
      *     summary: Get current user profile

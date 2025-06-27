@@ -23,19 +23,4 @@ export class ValidationException extends BaseException {
             instance
         );
     }
-
-    static fromClassValidatorErrors(errors: ValidationError[], instance?: string): ValidationException {
-        const details = errors.reduce((acc: Record<string, string>, error) => {
-            if (error.constraints) {
-                acc[error.property] = Object.values(error.constraints).join(', ');
-            }
-            return acc;
-        }, {});
-
-        return new ValidationException(
-            'Validation failed',
-            { validationErrors: details },
-            instance
-        );
-    }
 }
