@@ -1,4 +1,4 @@
-import {AttestationColor, CertificateType, ChannelType, ProductionDataDto, VehicleCode} from "@dto/asaci.dto";
+import {CertificateType, ChannelType, ProductionDataDto} from "@dto/asaci.dto";
 
 export interface OrassConnectionConfig {
     host: string;

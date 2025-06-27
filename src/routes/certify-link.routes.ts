@@ -2,10 +2,9 @@ import { Router } from 'express';
 import { CertifyLinkController } from '@controllers/certify-link.controller';
 import { validateDto, validateQuery } from '@middlewares/validation.middleware';
 import { asyncHandlerMiddleware } from '@middlewares/async-handler.middleware';
-import { authMiddleware, requirePermissions, requireRoles } from '@middlewares/auth.middleware';
+import { authMiddleware, requirePermissions } from '@middlewares/auth.middleware';
 import { certificateCreationLimiter } from '@middlewares/rate-limiter.middleware';
 import {
-    SearchOrassPoliciesDto,
     CreateCertificateFromOrassDto,
     BulkCreateCertificatesFromOrassDto,
     ValidateOrassPolicyDto
@@ -112,7 +111,7 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
     /**
      * @route POST /certificates/bulk-create
      * @desc Create multiple certificates from ORASS policies (bulk operation)
-     * @access Private (Manager/Admin)
+     * @access Private
      */
     router.post('/certificates/bulk-create',
         authMiddleware,
@@ -138,7 +137,7 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
     /**
      * @route GET /statistics
      * @desc Get ORASS statistics
-     * @access Private (Manager/Admin)
+     * @access Private
      */
     router.get('/statistics',
         authMiddleware,

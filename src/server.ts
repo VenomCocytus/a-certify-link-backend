@@ -4,8 +4,6 @@ import { logger } from '@utils/logger';
 import {initializeDatabase, sequelize} from './models';
 import { Environment } from '@config/environment';
 import {validateEnvironment} from "@config/asaci-endpoints";
-import {AsaciServiceManager} from "@config/asaci-config";
-import {OrassServiceManager} from "@config/orass-service-manager";
 
 const config = {
     appName: Environment.APP_NAME,

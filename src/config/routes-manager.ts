@@ -97,7 +97,7 @@ export class RoutesManager {
             // Setup Swagger documentation
             setupSwagger(this.app);
 
-            // Add swagger routes info to main router (for route listing)
+            // Add swagger routes info to the main router (for route listing)
             const basePath = this.config.swagger?.basePath || '/docs';
 
             // Add a route that lists all available documentation endpoints
