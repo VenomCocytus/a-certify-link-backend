@@ -4,6 +4,8 @@ import { logger } from '@utils/logger';
 import {initializeDatabase, sequelize} from './models';
 import { Environment } from '@config/environment';
 import {validateEnvironment} from "@config/asaci-endpoints";
+import {AsaciServiceManager} from "@config/asaci-config";
+import {OrassServiceManager} from "@config/orass-service-manager";
 
 const config = {
     appName: Environment.APP_NAME,
@@ -19,6 +21,7 @@ async function initializeApplication(): Promise<void> {
     try {
         app = createApp();
         await app.authenticateAsaci();
+        await app.connectOrass();
 
         logger.info('✅ Application initialized successfully');
     } catch (error: any) {
@@ -112,6 +115,8 @@ function setupGracefulShutdown(): void {
                     logger.error('❌ Error during database shutdown:', error.message);
                     process.exit(1);
                 }
+
+                app.disconnectOrass();
             });
 
             // Force close after 10 seconds

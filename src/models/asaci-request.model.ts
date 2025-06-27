@@ -1,4 +1,5 @@
 import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
+import {CertificateType} from "@dto/asaci.dto";
 
 // Enums for better type safety
 export enum AsaciRequestStatus {
@@ -9,13 +10,6 @@ export enum AsaciRequestStatus {
     COMPLETED = 'COMPLETED',
     FAILED = 'FAILED',
     CANCELLED = 'CANCELLED'
-}
-
-export enum CertificateType {
-    CIMA = 'cima',
-    POOLTPV = 'pooltpv',
-    MATCA = 'matca',
-    POOLTPVBLEU = 'pooltpvbleu'
 }
 
 // Vehicle data interface
