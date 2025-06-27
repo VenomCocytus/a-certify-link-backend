@@ -136,14 +136,14 @@ async function seedDatabase(): Promise<void> {
                     'users.block',
                     'users.unblock',
                     'roles.manage',
-                    'productions.create',
-                    'productions.read',
-                    'productions.update',
-                    'productions.delete',
-                    'productions.retry',
-                    'logs.read',
-                    'system.configure',
-                    'system.monitor'
+                    'asaci:productions:create',
+                    'asaci:productions:read',
+                    'asaci:productions:update',
+                    'asaci:productions:delete',
+                    'asaci:productions:retry',
+                    'asaci:logs.read',
+                    'asaci:system.configure',
+                    'asaci:system.monitor'
                 ],
                 isActive: true
             },

@@ -555,7 +555,7 @@ export const getDefaultRouteConfig = (
         },
         asaci: {
             enabled: true,
-            basePath: '/asaci',
+            basePath: '/asaci', //TODO: Make this configurable
             manager: asaciManager
         },
         certifyLink: {

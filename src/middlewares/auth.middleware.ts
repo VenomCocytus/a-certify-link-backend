@@ -1,10 +1,9 @@
 import { Response, NextFunction } from 'express';
-import jwt, {JwtPayload} from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { UserModel } from '@models/user.model';
 import { RoleModel } from '@models/role.model';
-import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
-import {AuthenticatedRequest} from "@interfaces/common.interfaces";
+import {AuthenticatedRequest, JwtPayload} from "@interfaces/common.interfaces";
 
 export const authMiddleware = async (
     req: AuthenticatedRequest,
@@ -28,7 +27,7 @@ export const authMiddleware = async (
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
         // Verify JWT token
-        const decoded = jwt.verify(token, Environment.JWT_SECRET as string) as JwtPayload;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
 
         // Ensure it's an access token
         if (decoded.type !== 'access') {
@@ -236,7 +235,7 @@ export const optionalAuthMiddleware = async (
         }
 
         const token = authHeader.substring(7);
-        const decoded = jwt.verify(token, Environment.JWT_SECRET as string) as JwtPayload;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
 
         if (decoded.type === 'access') {
             const user = await UserModel.findByPk(decoded.userId, {

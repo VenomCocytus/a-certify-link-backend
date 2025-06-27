@@ -4,7 +4,6 @@ import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 import { UserModel } from '@models/user.model';
 import { RoleModel } from '@models/role.model';
-import { Environment } from '@config/environment';
 import { logger } from '@utils/logger';
 import { ValidationException } from '@exceptions/validation.exception';
 import { BaseException } from '@exceptions/base.exception';
@@ -22,6 +21,9 @@ import {
     CreateUserDto
 } from '@dto/auth.dto';
 import {ErrorCodes} from "@/constants/error-codes";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export interface AuthTokens {
     accessToken: string;
@@ -368,8 +370,8 @@ export class AuthenticationService {
 
         // Generate secret
         const secret = speakeasy.generateSecret({
-            name: `${Environment.APP_NAME} (${user.email})`,
-            issuer: Environment.APP_NAME,
+            name: `${process.env.APP_NAME} (${user.email})`,
+            issuer: process.env.APP_NAME,
             length: 32
         });
 
@@ -506,7 +508,7 @@ export class AuthenticationService {
      * Refresh access token
      */
     async refreshToken(refreshToken: string): Promise<AuthTokens> {
-        const decoded = jwt.verify(refreshToken, Environment.JWT_REFRESH_SECRET as string) as any;
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as any;
 
         const user = await UserModel.findByPk(decoded.userId);
         if (!user || !user.isActive) {
@@ -602,7 +604,7 @@ export class AuthenticationService {
                 type: 'access',
                 iat: Math.floor(Date.now() / 1000)
             },
-            Environment.JWT_SECRET as string,
+            process.env.JWT_SECRET as string,
             { expiresIn: accessTokenExpiry }
         );
 
@@ -612,7 +614,7 @@ export class AuthenticationService {
                 type: 'refresh',
                 iat: Math.floor(Date.now() / 1000)
             },
-            Environment.JWT_REFRESH_SECRET as string,
+            process.env.JWT_REFRESH_SECRET as string,
             { expiresIn: refreshTokenExpiry }
         );
 

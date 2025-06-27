@@ -193,7 +193,8 @@ export function createAsaciRoutes(
     router.post('/productions',
         authMiddleware,
         certificateCreationLimiter,
-        requirePermissions(['asaci:productions:create']),
+        requirePermissions(['productions.create']),
+        // requirePermissions(['asaci:productions:create']),
         validateDto(CreateProductionRequestDto),
         asyncHandlerMiddleware(attestationController.createProductionRequest.bind(attestationController))
     );

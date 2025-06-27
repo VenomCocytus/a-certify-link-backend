@@ -10,7 +10,7 @@ function parseNumber(value: string | undefined, defaultValue: number): number {
     return isNaN(parsed) ? defaultValue : parsed;
 }
 
-export const Environment = {
+export const Environment = { //TODO: replace by a class that load dynamically the environment variables
     // Application Configuration
     NODE_ENV: process.env.NODE_ENV || 'development',
     PORT: parseNumber(process.env.PORT, 3000),
@@ -36,9 +36,9 @@ export const Environment = {
     DB_SSL: process.env.DB_SSL === 'true',
 
     // JWT Configuration
-    JWT_SECRET: process.env.JWT_SECRET || '',
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || '',
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '',
+    JWT_SECRET: process.env.JWT_SECRET as unknown as string,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as unknown as string,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
 
     // Orass Configuration
     ORASS_HOST: process.env.ORASS_HOST || '',
@@ -99,7 +99,6 @@ const requiredEnvVars = [
     'ORASS_SID',
     'ORASS_USERNAME',
     'ORASS_PASSWORD',
-    'ASACI_API_KEY',  // Added here as well
 ];
 
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
