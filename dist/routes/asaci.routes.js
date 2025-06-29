@@ -94,7 +94,9 @@ function createAsaciRoutes(authController, attestationController) {
      * @desc Create ASACI production request
      * @access Private
      */
-    router.post('/productions', auth_middleware_1.authMiddleware, rate_limiter_middleware_1.certificateCreationLimiter, (0, auth_middleware_1.requirePermissions)(['asaci:productions:create']), (0, validation_middleware_1.validateDto)(asaci_dto_1.CreateProductionRequestDto), (0, async_handler_middleware_1.asyncHandlerMiddleware)(attestationController.createProductionRequest.bind(attestationController)));
+    router.post('/productions', auth_middleware_1.authMiddleware, rate_limiter_middleware_1.certificateCreationLimiter, (0, auth_middleware_1.requirePermissions)(['productions.create']), 
+    // requirePermissions(['asaci:productions:create']),
+    (0, validation_middleware_1.validateDto)(asaci_dto_1.CreateProductionRequestDto), (0, async_handler_middleware_1.asyncHandlerMiddleware)(attestationController.createProductionRequest.bind(attestationController)));
     /**
      * @route GET /productions
      * @desc Get ASACI production requests

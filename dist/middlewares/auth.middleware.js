@@ -7,7 +7,6 @@ exports.optionalAuthMiddleware = exports.requireEmailVerification = exports.requ
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("@models/user.model");
 const role_model_1 = require("@models/role.model");
-const environment_1 = require("@config/environment");
 const logger_1 = require("@utils/logger");
 const authMiddleware = async (req, res, next) => {
     try {
@@ -24,7 +23,7 @@ const authMiddleware = async (req, res, next) => {
         }
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
         // Verify JWT token
-        const decoded = jsonwebtoken_1.default.verify(token, environment_1.Environment.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         // Ensure it's an access token
         if (decoded.type !== 'access') {
             res.status(401).json({
@@ -209,7 +208,7 @@ const optionalAuthMiddleware = async (req, res, next) => {
             return;
         }
         const token = authHeader.substring(7);
-        const decoded = jsonwebtoken_1.default.verify(token, environment_1.Environment.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         if (decoded.type === 'access') {
             const user = await user_model_1.UserModel.findByPk(decoded.userId, {
                 include: [{

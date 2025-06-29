@@ -1,4 +1,5 @@
 import { Model, Optional, Sequelize } from 'sequelize';
+import { CertificateType } from "@dto/asaci.dto";
 export declare enum AsaciRequestStatus {
     ORASS_FETCHING = "ORASS_FETCHING",
     ORASS_FETCHED = "ORASS_FETCHED",
@@ -7,12 +8,6 @@ export declare enum AsaciRequestStatus {
     COMPLETED = "COMPLETED",
     FAILED = "FAILED",
     CANCELLED = "CANCELLED"
-}
-export declare enum CertificateType {
-    CIMA = "cima",
-    POOLTPV = "pooltpv",
-    MATCA = "matca",
-    POOLTPVBLEU = "pooltpvbleu"
 }
 export interface VehicleData {
     chassisNumber: string;

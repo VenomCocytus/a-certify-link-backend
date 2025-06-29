@@ -3,6 +3,7 @@ import { AsaciServiceManager } from "@config/asaci-config";
 export declare class App {
     app: Express;
     private asaciManager;
+    private orassManager;
     private authService;
     constructor();
     /**
@@ -16,7 +17,7 @@ export declare class App {
     /**
      * Initialize Asaci services
      */
-    private initializeAsaciServices;
+    private initializeServices;
     /**
      * Setup application routes
      */
@@ -26,9 +27,18 @@ export declare class App {
      */
     private setupErrorHandlers;
     /**
+     * Set up health check endpoints
+     */
+    private setupHealthChecks;
+    /**
      * Authenticate Asaci services
      */
     authenticateAsaci(): Promise<void>;
+    connectOrass(): Promise<void>;
+    /**
+     * Disconnect from external services
+     */
+    disconnectOrass(): Promise<void>;
     /**
      * Get the Express app instance
      */

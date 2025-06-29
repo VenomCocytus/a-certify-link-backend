@@ -10,11 +10,12 @@ const speakeasy_1 = __importDefault(require("speakeasy"));
 const qrcode_1 = __importDefault(require("qrcode"));
 const user_model_1 = require("@models/user.model");
 const role_model_1 = require("@models/role.model");
-const environment_1 = require("@config/environment");
 const logger_1 = require("@utils/logger");
 const validation_exception_1 = require("@exceptions/validation.exception");
 const base_exception_1 = require("@exceptions/base.exception");
 const error_codes_1 = require("@/constants/error-codes");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 class AuthenticationService {
     /**
      * Authenticate a user with email and password
@@ -268,8 +269,8 @@ class AuthenticationService {
         }
         // Generate secret
         const secret = speakeasy_1.default.generateSecret({
-            name: `${environment_1.Environment.APP_NAME} (${user.email})`,
-            issuer: environment_1.Environment.APP_NAME,
+            name: `${process.env.APP_NAME} (${user.email})`,
+            issuer: process.env.APP_NAME,
             length: 32
         });
         // Generate QR code
@@ -378,7 +379,7 @@ class AuthenticationService {
      * Refresh access token
      */
     async refreshToken(refreshToken) {
-        const decoded = jsonwebtoken_1.default.verify(refreshToken, environment_1.Environment.JWT_REFRESH_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const user = await user_model_1.UserModel.findByPk(decoded.userId);
         if (!user || !user.isActive) {
             throw new validation_exception_1.ValidationException('Invalid refresh token');
@@ -454,12 +455,12 @@ class AuthenticationService {
             userId,
             type: 'access',
             iat: Math.floor(Date.now() / 1000)
-        }, environment_1.Environment.JWT_SECRET, { expiresIn: accessTokenExpiry });
+        }, process.env.JWT_SECRET, { expiresIn: accessTokenExpiry });
         const refreshToken = jsonwebtoken_1.default.sign({
             userId,
             type: 'refresh',
             iat: Math.floor(Date.now() / 1000)
-        }, environment_1.Environment.JWT_REFRESH_SECRET, { expiresIn: refreshTokenExpiry });
+        }, process.env.JWT_REFRESH_SECRET, { expiresIn: refreshTokenExpiry });
         return {
             accessToken,
             refreshToken,

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAuthRoutes = exports.createAsaciRoutes = exports.getDefaultRouteConfig = exports.createApplicationRoutes = exports.RoutesManager = void 0;
+exports.createCertifyLinkRoutes = exports.createAuthRoutes = exports.createAsaciRoutes = exports.getDefaultRouteConfig = exports.createApplicationRoutes = exports.RoutesManager = void 0;
 const express_1 = require("express");
 const logger_1 = require("@utils/logger");
 const asaci_authentication_controller_1 = require("@controllers/asaci-authentication.controller");
@@ -12,6 +12,9 @@ Object.defineProperty(exports, "createAuthRoutes", { enumerable: true, get: func
 const authentication_controller_1 = require("@controllers/authentication.controller");
 const environment_1 = require("@config/environment");
 const swagger_1 = require("@config/swagger");
+const certify_link_controller_1 = require("@controllers/certify-link.controller");
+const certify_link_routes_1 = require("@/routes/certify-link.routes");
+Object.defineProperty(exports, "createCertifyLinkRoutes", { enumerable: true, get: function () { return certify_link_routes_1.createCertifyLinkRoutes; } });
 class RoutesManager {
     constructor(app, config = {}) {
         this.app = app;
@@ -39,6 +42,10 @@ class RoutesManager {
             if (this.config.asaci?.enabled !== false) {
                 this.setupAsaciRoutes();
             }
+            // Setup CertifyLink/ORASS routes if enabled
+            if (this.config.certifyLink?.enabled !== false) {
+                this.setupCertifyLinkRoutes();
+            }
             logger_1.logger.info('✅ All application routes initialized successfully');
             return this.routes;
         }
@@ -54,7 +61,7 @@ class RoutesManager {
         try {
             // Setup Swagger documentation
             (0, swagger_1.setupSwagger)(this.app);
-            // Add swagger routes info to main router (for route listing)
+            // Add swagger routes info to the main router (for route listing)
             const basePath = this.config.swagger?.basePath || '/docs';
             // Add a route that lists all available documentation endpoints
             this.routes.get('/docs', (req, res) => {
@@ -90,6 +97,90 @@ class RoutesManager {
     setupHealthRoutes() {
         try {
             const basePath = this.config.health?.basePath || '/health';
+            // Application health check
+            this.routes.get(`${basePath}/app`, (req, res) => {
+                res.json({
+                    status: 'healthy',
+                    timestamp: new Date().toISOString(),
+                    uptime: process.uptime(),
+                    memory: process.memoryUsage(),
+                    environment: process.env.NODE_ENV || 'development'
+                });
+            });
+            // Database health check
+            this.routes.get(`${basePath}/db`, async (req, res) => {
+                try {
+                    // Add your database health check here
+                    // await sequelize.authenticate();
+                    res.json({
+                        status: 'healthy',
+                        database: 'connected',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                catch (error) {
+                    res.status(503).json({
+                        status: 'unhealthy',
+                        database: 'disconnected',
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+            // Authentication service health check
+            this.routes.get(`${basePath}/auth`, async (req, res) => {
+                try {
+                    res.json({
+                        status: 'healthy',
+                        service: 'authentication',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                catch (error) {
+                    res.status(503).json({
+                        status: 'unhealthy',
+                        service: 'authentication',
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+            // ASACI service health check
+            if (this.config.asaci?.enabled) {
+                this.routes.get(`${basePath}/asaci`, async (req, res) => {
+                    try {
+                        const health = await this.config.asaci.manager.healthCheck();
+                        const statusCode = health.status === 'healthy' ? 200 : 503;
+                        res.status(statusCode).json(health);
+                    }
+                    catch (error) {
+                        res.status(503).json({
+                            status: 'unhealthy',
+                            service: 'asaci',
+                            error: error.message,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                });
+            }
+            // ORASS service health check
+            if (this.config.certifyLink?.enabled) {
+                this.routes.get(`${basePath}/orass`, async (req, res) => {
+                    try {
+                        const health = await this.config.certifyLink.orassManager.healthCheck();
+                        const statusCode = health.status === 'healthy' ? 200 : 503;
+                        res.status(statusCode).json(health);
+                    }
+                    catch (error) {
+                        res.status(503).json({
+                            status: 'unhealthy',
+                            service: 'orass',
+                            error: error.message,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                });
+            }
             // Main health check endpoint
             this.routes.get('/health', async (req, res) => {
                 const healthStatus = await this.getApplicationHealthStatus();
@@ -175,6 +266,28 @@ class RoutesManager {
         }
         catch (error) {
             logger_1.logger.error('❌ Failed to setup Asaci routes:', error.message);
+            throw error;
+        }
+    }
+    /**
+     * Setup CertifyLink/ORASS routes
+     */
+    setupCertifyLinkRoutes() {
+        try {
+            if (!this.config.certifyLink?.orassManager) {
+                throw new Error('ORASS service manager not provided in route config');
+            }
+            const orassManager = this.config.certifyLink.orassManager;
+            // Create CertifyLink controller
+            const certifyLinkController = new certify_link_controller_1.CertifyLinkController(orassManager.getCertifyLinkService());
+            // Create and mount CertifyLink routes
+            const certifyLinkRoutes = (0, certify_link_routes_1.createCertifyLinkRoutes)(certifyLinkController);
+            const basePath = this.config.certifyLink.basePath || '/certify-link';
+            this.routes.use(basePath, certifyLinkRoutes);
+            logger_1.logger.info(`✅ CertifyLink routes mounted at: ${basePath}`);
+        }
+        catch (error) {
+            logger_1.logger.error('❌ Failed to setup CertifyLink routes:', error.message);
             throw error;
         }
     }
@@ -345,7 +458,7 @@ exports.createApplicationRoutes = createApplicationRoutes;
 /**
  * Get default route configuration
  */
-const getDefaultRouteConfig = (authService, asaciManager) => {
+const getDefaultRouteConfig = (authService, asaciManager, orassManager) => {
     return {
         auth: {
             enabled: true,
@@ -354,8 +467,13 @@ const getDefaultRouteConfig = (authService, asaciManager) => {
         },
         asaci: {
             enabled: true,
-            basePath: '/asaci',
+            basePath: '/asaci', //TODO: Make this configurable
             manager: asaciManager
+        },
+        certifyLink: {
+            enabled: true,
+            basePath: '/certify-link',
+            orassManager: orassManager
         },
         swagger: {
             enabled: environment_1.Environment.NODE_ENV !== 'production', // Enable swagger in development by default

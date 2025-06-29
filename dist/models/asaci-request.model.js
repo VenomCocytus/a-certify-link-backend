@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AsaciRequestModel = exports.CertificateType = exports.AsaciRequestStatus = void 0;
+exports.AsaciRequestModel = exports.AsaciRequestStatus = void 0;
 exports.initAsaciRequestModel = initAsaciRequestModel;
 const sequelize_1 = require("sequelize");
+const asaci_dto_1 = require("@dto/asaci.dto");
 // Enums for better type safety
 var AsaciRequestStatus;
 (function (AsaciRequestStatus) {
@@ -14,13 +15,6 @@ var AsaciRequestStatus;
     AsaciRequestStatus["FAILED"] = "FAILED";
     AsaciRequestStatus["CANCELLED"] = "CANCELLED";
 })(AsaciRequestStatus || (exports.AsaciRequestStatus = AsaciRequestStatus = {}));
-var CertificateType;
-(function (CertificateType) {
-    CertificateType["CIMA"] = "cima";
-    CertificateType["POOLTPV"] = "pooltpv";
-    CertificateType["MATCA"] = "matca";
-    CertificateType["POOLTPVBLEU"] = "pooltpvbleu";
-})(CertificateType || (exports.CertificateType = CertificateType = {}));
 class AsaciRequestModel extends sequelize_1.Model {
     // Virtual fields
     get isCompleted() {
@@ -207,7 +201,7 @@ function initAsaciRequestModel(sequelize) {
             }
         },
         certificateType: {
-            type: sequelize_1.DataTypes.ENUM(...Object.values(CertificateType)),
+            type: sequelize_1.DataTypes.ENUM(...Object.values(asaci_dto_1.CertificateType)),
             allowNull: false
         },
         emailNotification: {

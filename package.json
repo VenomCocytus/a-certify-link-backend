@@ -1,12 +1,12 @@
 {
-  "name": "A-CertifyLink",
+  "name": "a_certify_link",
   "version": "1.0.0",
   "description": "Digital Certificate Management Backend for Insurance",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "ts-node -r tsconfig-paths/register dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node -r tsconfig-paths/register src/server.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

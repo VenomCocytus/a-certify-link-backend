@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+#  mssql:
+#    image: mcr.microsoft.com/mssql/server:2022-latest
+#    environment:
+#      - ACCEPT_EULA=Y
+#      - SA_PASSWORD=YourStrong@Passw0rd
+#      - MSSQL_PID=Express
+#    ports:
+#      - "1433:1433"
+#    volumes:
+#      - mssql_data:/var/opt/mssql
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=#Roxanne2004
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=acl_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+#  mssql_data:
+  postgres_data:

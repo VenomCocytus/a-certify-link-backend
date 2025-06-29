@@ -3,6 +3,8 @@ import { AsaciServiceManager } from '@config/asaci-config';
 import { createAsaciRoutes } from "@/routes/asaci.routes";
 import { createAuthRoutes } from "@/routes/auth.routes";
 import { AuthenticationService } from "@services/authentication.service";
+import { OrassServiceManager } from "@config/orass-service-manager";
+import { createCertifyLinkRoutes } from "@/routes/certify-link.routes";
 export interface RouteConfig {
     auth?: {
         enabled?: boolean;
@@ -13,6 +15,11 @@ export interface RouteConfig {
         enabled?: boolean;
         basePath?: string;
         manager?: AsaciServiceManager;
+    };
+    certifyLink?: {
+        enabled?: boolean;
+        basePath?: string;
+        orassManager?: OrassServiceManager;
     };
     swagger?: {
         enabled?: boolean;
@@ -49,6 +56,10 @@ export declare class RoutesManager {
      */
     private setupAsaciRoutes;
     /**
+     * Setup CertifyLink/ORASS routes
+     */
+    private setupCertifyLinkRoutes;
+    /**
      * Get application health status
      */
     private getApplicationHealthStatus;
@@ -80,6 +91,6 @@ export declare const createApplicationRoutes: (app: Express, config?: RouteConfi
 /**
  * Get default route configuration
  */
-export declare const getDefaultRouteConfig: (authService?: AuthenticationService, asaciManager?: AsaciServiceManager) => RouteConfig;
-export { createAsaciRoutes, createAuthRoutes };
+export declare const getDefaultRouteConfig: (authService?: AuthenticationService, asaciManager?: AsaciServiceManager, orassManager?: OrassServiceManager) => RouteConfig;
+export { createAsaciRoutes, createAuthRoutes, createCertifyLinkRoutes };
 //# sourceMappingURL=routes-manager.d.ts.map
