@@ -143,7 +143,12 @@ async function seedDatabase(): Promise<void> {
                     'asaci:productions:retry',
                     'asaci:logs.read',
                     'asaci:system.configure',
-                    'asaci:system.monitor'
+                    'asaci:system.monitor',
+                    'orass:policies:read',
+                    'orass:policies:validate',
+                    'orass:policies:preview',
+                    'orass:policies:create',
+                    'orass:policies:bulk-create'
                 ],
                 isActive: true
             },

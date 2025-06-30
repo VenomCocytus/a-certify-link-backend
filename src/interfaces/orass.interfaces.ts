@@ -45,17 +45,13 @@ export interface OrassPolicy {
     updatedAt?: Date;
 }
 
+//TODO: find which is the applicant code
 export interface OrassPolicySearchCriteria {
     policyNumber?: string;
-    vehicleRegistration?: string;
-    vehicleChassisNumber?: string;
-    subscriberName?: string;
-    insuredName?: string;
+    applicantCode?: string;
+    endorsementNumber?: string;
     organizationCode?: string;
     officeCode?: string;
-    contractStartDate?: Date;
-    contractEndDate?: Date;
-    certificateColor?: string;
 }
 
 export interface OrassQueryResult {

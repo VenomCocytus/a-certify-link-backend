@@ -31,15 +31,10 @@ export class CertifyLinkService {
         try {
             const criteria: OrassPolicySearchCriteria = {
                 policyNumber: searchDto.policyNumber,
-                vehicleRegistration: searchDto.vehicleRegistration,
-                vehicleChassisNumber: searchDto.vehicleChassisNumber,
-                subscriberName: searchDto.subscriberName,
-                insuredName: searchDto.insuredName,
+                applicantCode: searchDto.applicantCode,
+                endorsementNumber: searchDto.endorsementNumber,
                 organizationCode: searchDto.organizationCode,
-                officeCode: searchDto.officeCode,
-                certificateColor: searchDto.certificateColor,
-                contractStartDate: searchDto.contractStartDate ? new Date(searchDto.contractStartDate) : undefined,
-                contractEndDate: searchDto.contractEndDate ? new Date(searchDto.contractEndDate) : undefined,
+                officeCode: searchDto.officeCode
             };
 
             const result = await this.orassService.searchPolicies(

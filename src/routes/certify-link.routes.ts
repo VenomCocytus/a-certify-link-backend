@@ -31,9 +31,9 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
      * @access Private
      */
     router.get('/policies/search',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        validateQuery,
+        // authMiddleware,
+        // requirePermissions(['orass:policies:read']),
+        // validateQuery,
         asyncHandlerMiddleware(certifyLinkController.searchOrassPolicies.bind(certifyLinkController))
     );
 
@@ -46,28 +46,6 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
         authMiddleware,
         requirePermissions(['orass:policies:read']),
         asyncHandlerMiddleware(certifyLinkController.getOrassPolicyByNumber.bind(certifyLinkController))
-    );
-
-    /**
-     * @route GET /policies/by-vehicle/:vehicleRegistration
-     * @desc Get ORASS policies by vehicle registration
-     * @access Private
-     */
-    router.get('/policies/by-vehicle/:vehicleRegistration',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        asyncHandlerMiddleware(certifyLinkController.getPoliciesByVehicleRegistration.bind(certifyLinkController))
-    );
-
-    /**
-     * @route GET /policies/by-chassis/:chassisNumber
-     * @desc Get ORASS policies by chassis number
-     * @access Private
-     */
-    router.get('/policies/by-chassis/:chassisNumber',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        asyncHandlerMiddleware(certifyLinkController.getPoliciesByChassisNumber.bind(certifyLinkController))
     );
 
     /**

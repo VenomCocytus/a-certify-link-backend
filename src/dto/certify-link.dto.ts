@@ -16,30 +16,17 @@ import {CertificateType, ChannelType} from "@dto/asaci.dto";
 
 // DTO for searching ORASS policies
 export class SearchOrassPoliciesDto {
-    @IsOptional()
     @IsString()
     @Transform(({ value }) => value?.trim())
     policyNumber?: string;
 
-    @IsOptional()
-    @IsString()
-    @Transform(({ value }) => value?.trim()?.toUpperCase())
-    vehicleRegistration?: string;
-
-    @IsOptional()
-    @IsString()
-    @Transform(({ value }) => value?.trim()?.toUpperCase())
-    vehicleChassisNumber?: string;
-
-    @IsOptional()
     @IsString()
     @Transform(({ value }) => value?.trim())
-    subscriberName?: string;
+    applicantCode?: string;
 
-    @IsOptional()
     @IsString()
     @Transform(({ value }) => value?.trim())
-    insuredName?: string;
+    endorsementNumber?: string;
 
     @IsOptional()
     @IsString()
@@ -48,18 +35,6 @@ export class SearchOrassPoliciesDto {
     @IsOptional()
     @IsString()
     officeCode?: string;
-
-    @IsOptional()
-    @IsDateString()
-    contractStartDate?: string;
-
-    @IsOptional()
-    @IsDateString()
-    contractEndDate?: string;
-
-    @IsOptional()
-    @IsString()
-    certificateColor?: string;
 
     @IsOptional()
     @IsInt()

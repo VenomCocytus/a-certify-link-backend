@@ -18,15 +18,10 @@ export class CertifyLinkController {
     async searchOrassPolicies(req: AuthenticatedRequest, res: Response): Promise<void> {
         const searchDto: SearchOrassPoliciesDto = {
             policyNumber: req.query.policyNumber as string,
-            vehicleRegistration: req.query.vehicleRegistration as string,
-            vehicleChassisNumber: req.query.vehicleChassisNumber as string,
-            subscriberName: req.query.subscriberName as string,
-            insuredName: req.query.insuredName as string,
+            applicantCode: req.query.applicantCode as string,
+            endorsementNumber: req.query.endorsementNumber as string,
             organizationCode: req.query.organizationCode as string,
             officeCode: req.query.officeCode as string,
-            contractStartDate: req.query.contractStartDate as string,
-            contractEndDate: req.query.contractEndDate as string,
-            certificateColor: req.query.certificateColor as string,
             limit: req.query.limit ? parseInt(req.query.limit as string) : 100,
             offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
         };
@@ -165,54 +160,6 @@ export class CertifyLinkController {
         const statusCode = health.status === 'healthy' ? 200 : 503;
 
         res.status(statusCode).json(health);
-    }
-
-    /**
-     * Get policies by vehicle registration (convenience endpoint)
-     * @route GET /certify-link/policies/by-vehicle/:vehicleRegistration
-     */
-    async getPoliciesByVehicleRegistration(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const { vehicleRegistration } = req.params;
-
-        const result = await this.certifyLinkService.searchOrassPolicies({
-            vehicleRegistration,
-            limit: 100,
-            offset: 0
-        });
-
-        res.status(200).json({
-            message: 'ORASS policies by vehicle registration retrieved successfully',
-            data: result.policies,
-            pagination: {
-                total: result.totalCount,
-                hasMore: result.hasMore
-            },
-            user: req.user?.email
-        });
-    }
-
-    /**
-     * Get policies by chassis number (convenience endpoint)
-     * @route GET /certify-link/policies/by-chassis/:chassisNumber
-     */
-    async getPoliciesByChassisNumber(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const { chassisNumber } = req.params;
-
-        const result = await this.certifyLinkService.searchOrassPolicies({
-            vehicleChassisNumber: chassisNumber,
-            limit: 100,
-            offset: 0
-        });
-
-        res.status(200).json({
-            message: 'ORASS policies by chassis number retrieved successfully',
-            data: result.policies,
-            pagination: {
-                total: result.totalCount,
-                hasMore: result.hasMore
-            },
-            user: req.user?.email
-        });
     }
 
     /**
