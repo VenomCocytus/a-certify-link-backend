@@ -17,6 +17,8 @@ let server: any;
 
 async function initializeApplication(): Promise<void> {
     try {
+        //TODO: The app must not freeze on startup if not able to connect to ORASS
+        //TODO: Check if the orass service is healthy before making a new attestation creation
         app = createApp();
         await app.authenticateAsaci();
         await app.connectOrass();

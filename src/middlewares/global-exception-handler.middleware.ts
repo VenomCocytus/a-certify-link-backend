@@ -231,12 +231,16 @@ export const globalExceptionHandlerMiddleware = (
     else if ((error as any).isAxiosError) {
         const axiosError = error as any;
         const status = axiosError.response?.status || 503;
+        const externalErrorDetail =
+            axiosError.response?.data?.errors?.[0]?.detail ||
+            axiosError.response?.data?.message ||
+            'External service request failed';
 
         errorResponse = {
             type: 'https://tools.ietf.org/html/rfc7231#section-6.6.3',
             title: 'External Service Error',
             status: status >= 500 ? 503 : status,
-            detail: axiosError.response?.data?.message || 'External service request failed',
+            detail: externalErrorDetail,
             instance,
             traceId,
             timestamp,

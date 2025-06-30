@@ -10,6 +10,7 @@ import {
     OrassConnectionStatus
 } from '@interfaces/orass.interfaces';
 import {ErrorCodes} from "@/constants/error-codes";
+import * as console from "node:console";
 
 export class OrassService {
     private pool: oracledb.Pool | null = null;
@@ -133,7 +134,7 @@ export class OrassService {
     }
 
     /**
-     * Disconnect from database
+     * Disconnect from the database
      */
     async disconnect(): Promise<void> {
         try {

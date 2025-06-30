@@ -267,7 +267,7 @@ export class App {
     }
 
     async connectOrass(): Promise<void> {
-        if(Environment.ORASS_AUTO_CONNECT)
+        if(process.env.ORASS_AUTO_CONNECT)
             this.orassManager.connect().catch(error => {
                 logger.error('❌ Failed to connect to ORASS:', error.message);
                 throw error;
