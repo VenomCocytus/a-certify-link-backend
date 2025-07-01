@@ -1,4 +1,4 @@
-import {CertificateType, ChannelType, ProductionDataDto} from "@dto/asaci.dto";
+import {CertificateColor, CertificateType, ChannelType, ProductionDataDto} from "@dto/asaci.dto";
 
 export interface OrassConnectionConfig {
     host: string;
@@ -14,15 +14,20 @@ export interface OrassPolicy {
     policyNumber: string;
     organizationCode: string;
     officeCode: string;
+    certificateType: CertificateType;
+    emailNotification: string;
+    generatedBy: string;
+    channel: ChannelType;
+    certificateColor: CertificateColor;
     subscriberName: string;
     subscriberPhone: string;
     subscriberEmail: string;
-    subscriberAddress: string;
+    subscriberPoBox: string;
     insuredName: string;
     insuredPhone: string;
     insuredEmail: string;
-    insuredAddress: string;
-    vehicleRegistration: string;
+    insuredPoBox: string;
+    vehicleRegistrationNumber: string;
     vehicleChassisNumber: string;
     vehicleBrand: string;
     vehicleModel: string;
@@ -37,12 +42,10 @@ export interface OrassPolicy {
     fleetReduction: number;
     subscriberType: string;
     premiumRC: number;
-    contractStartDate: Date;
-    contractEndDate: Date;
-    opATD?: string;
-    certificateColor: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    policyEffectiveDate: Date;
+    policyExpiryDate: Date;
+    rNum: number;
+    opATD: string;
 }
 
 //TODO: find which is the applicant code

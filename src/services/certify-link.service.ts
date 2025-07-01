@@ -16,7 +16,7 @@ import {
     ValidateOrassPolicyDto
 } from '@dto/certify-link.dto';
 import {OrassService} from "@services/orass-database.service";
-import {AttestationColor, CertificateType, ChannelType, ProductionDataDto, VehicleCode} from "@dto/asaci.dto";
+import {CertificateColor, CertificateType, ChannelType, ProductionDataDto, VehicleCode} from "@dto/asaci.dto";
 
 export class CertifyLinkService {
     constructor(
@@ -96,7 +96,7 @@ export class CertifyLinkService {
 
             // Validate expected vehicle registration if provided
             if (validateDto.expectedVehicleRegistration) {
-                if (policy.vehicleRegistration.toUpperCase() !== validateDto.expectedVehicleRegistration.toUpperCase()) {
+                if (policy.vehicleRegistrationNumber.toUpperCase() !== validateDto.expectedVehicleRegistration.toUpperCase()) {
                     errors.push('Vehicle registration does not match expected value');
                 }
             }
@@ -110,11 +110,11 @@ export class CertifyLinkService {
 
             // Validate policy dates
             const now = new Date();
-            if (policy.contractEndDate < now) {
+            if (policy.policyExpiryDate < now) {
                 errors.push('Policy contract has expired');
             }
 
-            if (policy.contractStartDate > now) {
+            if (policy.policyEffectiveDate > now) {
                 errors.push('Policy contract has not started yet');
             }
 
@@ -174,7 +174,7 @@ export class CertifyLinkService {
                 createDto.emailNotification,
                 createDto.generatedBy,
                 createDto.channel as ChannelType,
-                createDto.certificateColor as AttestationColor
+                createDto.certificateColor as CertificateColor
             );
 
             // Create production request via ASACI service
@@ -282,13 +282,13 @@ export class CertifyLinkService {
         emailNotification: string,
         generatedBy: string,
         channel: ChannelType = ChannelType.API,
-        overrideCertificateColor?: AttestationColor
+        overrideCertificateColor?: CertificateColor
     ): AsaciProductionData {
 
         // Determine certificate color
-        const certificateColor: AttestationColor = overrideCertificateColor ||
-            (CERTIFICATE_COLOR_MAP[policy.certificateColor] as AttestationColor) ||
-            AttestationColor.CIMA_JAUNE;
+        const certificateColor: CertificateColor = overrideCertificateColor ||
+            (CERTIFICATE_COLOR_MAP[policy.certificateColor] as CertificateColor) ||
+            CertificateColor.CIMA_JAUNE;
 
         // Map vehicle type to ASACI format
         const mappedVehicleType = VEHICLE_TYPE_MAP[policy.vehicleType] || policy.vehicleType;
@@ -307,17 +307,17 @@ export class CertifyLinkService {
             NOMBRE_DE_PLACE_DU_VEHICULE: policy.vehicleSeats,
             TYPE_DE_SOUSCRIPTEUR: policy.subscriberType as VehicleCode,
             NUMERO_DE_TELEPHONE_DU_SOUSCRIPTEUR: policy.subscriberPhone,
-            BOITE_POSTALE_DU_SOUSCRIPTEUR: policy.subscriberAddress,
+            BOITE_POSTALE_DU_SOUSCRIPTEUR: policy.subscriberPoBox,
             ADRESSE_EMAIL_DU_SOUSCRIPTEUR: policy.subscriberEmail,
             NOM_DU_SOUSCRIPTEUR: policy.subscriberName,
             TELEPHONE_MOBILE_DE_L_ASSURE: policy.insuredPhone,
-            BOITE_POSTALE_DE_L_ASSURE: policy.insuredAddress,
+            BOITE_POSTALE_DE_L_ASSURE: policy.insuredPoBox,
             ADRESSE_EMAIL_DE_L_ASSURE: policy.insuredEmail,
             NOM_DE_L_ASSURE: policy.insuredName,
-            IMMATRICULATION_DU_VEHICULE: policy.vehicleRegistration,
+            IMMATRICULATION_DU_VEHICULE: policy.vehicleRegistrationNumber,
             NUMERO_DE_POLICE: policy.policyNumber,
-            DATE_D_EFFET_DU_CONTRAT: this.formatDateForAsaci(policy.contractStartDate),
-            DATE_D_ECHEANCE_DU_CONTRAT: this.formatDateForAsaci(policy.contractEndDate),
+            DATE_D_EFFET_DU_CONTRAT: this.formatDateForAsaci(policy.policyEffectiveDate),
+            DATE_D_ECHEANCE_DU_CONTRAT: this.formatDateForAsaci(policy.policyExpiryDate),
             OP_ATD: policy.opATD,
             PUISSANCE_FISCALE: policy.vehicleFiscalPower,
             CHARGE_UTILE: policy.vehicleUsefulLoad,

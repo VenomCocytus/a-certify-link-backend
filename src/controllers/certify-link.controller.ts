@@ -204,15 +204,15 @@ export class CertifyLinkController {
                 organization_code: validation.policy.organizationCode,
                 certificate_type: certificateType,
                 vehicle_info: {
-                    registration: validation.policy.vehicleRegistration,
+                    registration: validation.policy.vehicleRegistrationNumber,
                     chassis: validation.policy.vehicleChassisNumber,
                     brand: validation.policy.vehicleBrand,
                     model: validation.policy.vehicleModel,
                     type: validation.policy.vehicleType
                 },
                 contract_info: {
-                    start_date: validation.policy.contractStartDate,
-                    end_date: validation.policy.contractEndDate,
+                    start_date: validation.policy.policyEffectiveDate,
+                    end_date: validation.policy.policyExpiryDate,
                     premium: validation.policy.premiumRC
                 }
             }

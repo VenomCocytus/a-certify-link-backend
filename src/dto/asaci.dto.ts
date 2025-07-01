@@ -93,7 +93,7 @@ export enum CertificateType {
     POOLTPVBLEU = 'pooltpvbleu'
 }
 
-export enum AttestationColor {
+export enum CertificateColor {
     CIMA_JAUNE = 'cima-jaune',
     CIMA_VERTE = 'cima-verte',
     POOLTPV_ROUGE = 'pooltpv-rouge',
@@ -131,9 +131,9 @@ export enum TransactionType {
 
 // Production Data DTO
 export class ProductionDataDto {
-    @IsEnum(AttestationColor)
+    @IsEnum(CertificateColor)
     @IsNotEmpty({ message: 'Couleur d\'attestation is required' })
-    COULEUR_D_ATTESTATION_A_EDITER: AttestationColor;
+    COULEUR_D_ATTESTATION_A_EDITER: CertificateColor;
 
     @IsInt()
     @IsNotEmpty({ message: 'Prime RC is required' })

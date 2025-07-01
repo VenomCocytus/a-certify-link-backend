@@ -11,6 +11,7 @@ import {
 } from '@interfaces/orass.interfaces';
 import {ErrorCodes} from "@/constants/error-codes";
 import * as console from "node:console";
+import {CertificateColor, CertificateType, ChannelType} from "@dto/asaci.dto";
 
 export class OrassService {
     private pool: oracledb.Pool | null = null;
@@ -243,49 +244,17 @@ export class OrassService {
     }
 
     /**
-     * Build search query with dynamic WHERE conditions
+     * Build a search query with dynamic WHERE conditions
      */
-    // private buildSearchQuery(criteria: OrassPolicySearchCriteria, limit: number, offset: number): { query: string; binds: any } {
-    //     let query = `
-    //         SELECT *
-    //         FROM act_detail_att_digitale
-    //         WHERE 1=1
-    //     `;
-    //
-    //     const binds: any = {};
-    //     const conditions: string[] = [];
-    //
-    //     if (criteria.applicantCode && criteria.policyNumber && criteria.endorsementNumber) {
-    //         const searchString = `${criteria.applicantCode}${criteria.policyNumber}${criteria.endorsementNumber}`;
-    //         conditions.push('NUMERO_DE_POLICE = :numeropolice');
-    //         binds.numeropolice = searchString;
-    //     }
-    //
-    //     // Add conditions to a query
-    //     if (conditions.length > 0) {
-    //         query += ' AND ' + conditions.join(' AND ');
-    //     }
-    //
-    //     // Add ordering and pagination for Oracle 12c+
-    //     query += `
-    //     ORDER BY CREATED_AT DESC
-    //     OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY
-    // `;
-    //
-    //     binds.offset = offset;
-    //     binds.limit = limit;
-    //
-    //     return { query, binds };
-    // }
-
+    //TODO: clean this code
     private buildSearchQuery(criteria: OrassPolicySearchCriteria, limit: number, offset: number): { query: string; binds: any } {
         let query = `
-        SELECT * FROM (
-            SELECT a.*, ROWNUM rnum FROM (
-                SELECT *
-                FROM act_detail_att_digitale
-                WHERE 1=1
-    `;
+            SELECT * FROM (
+                              SELECT a.*, ROWNUM rnum FROM (
+                                                               SELECT *
+                                                               FROM act_detail_att_digitale
+                                                               WHERE 1=1
+        `;
 
         const binds: any = {};
         const conditions: string[] = [];
@@ -296,28 +265,29 @@ export class OrassService {
             binds.numeropolice = searchString;
         }
 
-        // Add conditions to a query
+        // Add conditions to the query
         if (conditions.length > 0) {
             query += ' AND ' + conditions.join(' AND ');
         }
 
-        // Add ordering and pagination for Oracle 11g and earlier
+        //TODO: Add a proper ordering based on requirements
+        // Oracle 11g pagination using ROWNUM
         query += `
-                ORDER BY CREATED_AT DESC
+                ORDER BY NUMERO_DE_POLICE DESC
             ) a
             WHERE ROWNUM <= :max_row
         )
         WHERE rnum > :min_row
     `;
 
-        binds.max_row = offset + limit;
-        binds.min_row = offset;
+        binds.max_row = offset + limit;  // Upper bound (e.g., OFFSET 10 + LIMIT 10 → max_row = 20)
+        binds.min_row = offset;          // Lower bound (e.g., OFFSET 10 → min_row = 10)
 
         return { query, binds };
     }
 
     /**
-     * Build count query for pagination
+     * Build a count query for pagination
      */
     private buildCountQuery(criteria: OrassPolicySearchCriteria): { query: string; binds: any } {
         let query = 'SELECT COUNT(*) as TOTAL_COUNT FROM act_detail_att_digitale  p WHERE 1=1';
@@ -343,38 +313,41 @@ export class OrassService {
      */
     private mapRowToPolicy(row: any): OrassPolicy {
         return {
-            policyNumber: row.POLICY_NUMBER,
-            organizationCode: row.ORGANIZATION_CODE,
+            policyNumber: row.NUMERO_DE_POLICE,
             officeCode: row.OFFICE_CODE,
-            subscriberName: row.SUBSCRIBER_NAME,
-            subscriberPhone: row.SUBSCRIBER_PHONE,
-            subscriberEmail: row.SUBSCRIBER_EMAIL,
-            subscriberAddress: row.SUBSCRIBER_ADDRESS,
-            insuredName: row.INSURED_NAME,
-            insuredPhone: row.INSURED_PHONE,
-            insuredEmail: row.INSURED_EMAIL,
-            insuredAddress: row.INSURED_ADDRESS,
-            vehicleRegistration: row.VEHICLE_REGISTRATION,
-            vehicleChassisNumber: row.VEHICLE_CHASSIS_NUMBER,
-            vehicleBrand: row.VEHICLE_BRAND,
-            vehicleModel: row.VEHICLE_MODEL,
-            vehicleType: row.VEHICLE_TYPE,
-            vehicleCategory: row.VEHICLE_CATEGORY,
-            vehicleUsage: row.VEHICLE_USAGE,
-            vehicleGenre: row.VEHICLE_GENRE,
-            vehicleEnergy: row.VEHICLE_ENERGY,
-            vehicleSeats: row.VEHICLE_SEATS,
-            vehicleFiscalPower: row.VEHICLE_FISCAL_POWER,
-            vehicleUsefulLoad: row.VEHICLE_USEFUL_LOAD,
-            fleetReduction: row.FLEET_REDUCTION,
-            subscriberType: row.SUBSCRIBER_TYPE,
-            premiumRC: row.PREMIUM_RC,
-            contractStartDate: row.CONTRACT_START_DATE,
-            contractEndDate: row.CONTRACT_END_DATE,
-            opATD: row.OP_ATD,
-            certificateColor: row.CERTIFICATE_COLOR,
-            createdAt: row.CREATED_AT,
-            updatedAt: row.UPDATED_AT,
+            organizationCode: row.ORGANIZATION_CODE,
+            certificateType: row.CERTIFICATE_TYPE as CertificateType,
+            emailNotification: row.EMAIL_NOTIFICATION,
+            generatedBy: row.GENERATED_BY,
+            channel: row.CHANNEL as ChannelType,
+            certificateColor: row.COULEUR_D_ATTESTATION_A_EDITER as CertificateColor,
+            premiumRC: row.PRIME_RC,
+            vehicleEnergy: row.ENERGIE_DU_VEHICULE,
+            vehicleChassisNumber: row.NUMERO_DE_CHASSIS_DU_VEHICULE,
+            vehicleModel: row.MODELE_DU_VEHICULE,
+            vehicleGenre: row.GENRE_DU_VEHICULE,
+            vehicleCategory: row.CATEGORIE_DU_VEHICULE,
+            vehicleUsage: row.USAGE_DU_VEHICULE,
+            vehicleBrand: row.MARQUE_DU_VEHICULE,
+            vehicleType: row.TYPE_DU_VEHICULE,
+            vehicleSeats: row.NOMBRE_DE_PLACE_DU_VEHICULE,
+            subscriberType: row.TYPE_DE_SOUSCRIPTEUR,
+            subscriberPhone: row.NUMERO_DE_TELEPHONE_DU_SOUS,
+            subscriberPoBox: row.BOITE_POSTALE_DU_SOUSCRIPTEUR,
+            subscriberEmail: row.ADRESSE_EMAIL_DU_SOUSCRIPTEUR,
+            subscriberName: row.NOM_DU_SOUSCRIPTEUR,
+            insuredPhone: row.TELEPHONE_MOBILE_DE_L_ASSURE,
+            insuredPoBox: row.BOITE_POSTALE_DE_L_ASSURE,
+            insuredName: row.NOM_DE_L_ASSURE,
+            insuredEmail: row.ADRESSE_EMAIL_DE_L_ASSURE,
+            vehicleRegistrationNumber: row.IMMATRICULATION_DU_VEHICULE,
+            policyEffectiveDate: row.DATE_D_EFFET_DU_CONTRAT as Date,
+            policyExpiryDate: row.DATE_D_ECHEANCE_DU_CONTRAT as Date,
+            vehicleFiscalPower: row.PUISSANCE_FISCALE,
+            vehicleUsefulLoad: row.CHARGE_UTILE,
+            fleetReduction: row.REDUCTION_FLOTTE,
+            rNum: row.RNUM,
+            opATD: row.OP_ATD
         };
     }
 

@@ -31,8 +31,8 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
      * @access Private
      */
     router.get('/policies/search',
-        // authMiddleware,
-        // requirePermissions(['orass:policies:read']),
+        authMiddleware,
+        requirePermissions(['orass:policies:read']),
         // validateQuery,
         asyncHandlerMiddleware(certifyLinkController.searchOrassPolicies.bind(certifyLinkController))
     );
