@@ -1,5 +1,5 @@
 import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
-import {CertificateType} from "@dto/asaci.dto";
+import {CertificateType} from "@interfaces/common.enum";
 
 // Enums for better type safety
 export enum AsaciRequestStatus {

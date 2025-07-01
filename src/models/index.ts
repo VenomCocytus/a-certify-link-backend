@@ -148,7 +148,8 @@ async function seedDatabase(): Promise<void> {
                     'orass:policies:validate',
                     'orass:policies:preview',
                     'orass:policies:create',
-                    'orass:policies:bulk-create'
+                    'orass:policies:bulk-create',
+                    'orass:certificates:create'
                 ],
                 isActive: true
             },

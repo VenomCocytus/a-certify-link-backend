@@ -2,16 +2,14 @@ import oracledb from 'oracledb';
 import { logger } from '@utils/logger';
 import { Environment } from '@config/environment';
 import { BaseException } from '@exceptions/base.exception';
+import {ErrorCodes} from "@/constants/error-codes";
 import {
     OrassConnectionConfig,
-    OrassPolicy,
+    OrassConnectionStatus, OrassPolicyResponse,
     OrassPolicySearchCriteria,
-    OrassQueryResult,
-    OrassConnectionStatus
-} from '@interfaces/orass.interfaces';
-import {ErrorCodes} from "@/constants/error-codes";
-import * as console from "node:console";
-import {CertificateColor, CertificateType, ChannelType} from "@dto/asaci.dto";
+    OrassQueryResult
+} from "@dto/orass.dto";
+import {CertificateColor, CertificateType, ChannelType} from "@interfaces/common.enum";
 
 export class OrassService {
     private pool: oracledb.Pool | null = null;
@@ -236,14 +234,6 @@ export class OrassService {
     }
 
     /**
-     * Get policy by policy number
-     */
-    async getPolicyByNumber(policyNumber: string): Promise<OrassPolicy | null> {
-        const result = await this.searchPolicies({ policyNumber }, 1);
-        return result.policies.length > 0 ? result.policies[0] : null;
-    }
-
-    /**
      * Build a search query with dynamic WHERE conditions
      */
     //TODO: clean this code
@@ -311,7 +301,7 @@ export class OrassService {
     /**
      * Map database row to OrassPolicy object
      */
-    private mapRowToPolicy(row: any): OrassPolicy {
+    private mapRowToPolicy(row: any): OrassPolicyResponse {
         return {
             policyNumber: row.NUMERO_DE_POLICE,
             officeCode: row.OFFICE_CODE,
