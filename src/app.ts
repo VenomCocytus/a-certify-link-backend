@@ -23,17 +23,43 @@ export class App {
 
     constructor() {
         this.app = express();
-        this.initializeI18n();
-        this.setupMiddleware();
+        this.setupMiddlewares();
         this.initializeServices();
-        this.setupRoutes();
+        this.setupApplicationRoutes();
         this.setupErrorHandlers();
     }
 
-    /**
-     * Initialize i18next for internationalization
-     */
-    private initializeI18n(): void {
+    private setupMiddlewares(): void {
+        this.app.use(helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    scriptSrc: ["'self'"],
+                    imgSrc: ["'self'", "data:", "https:"],
+                },
+            },
+        }));
+
+        this.app.use(cors({
+            origin: Environment.NODE_ENV !== 'production',
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+        }));
+
+        this.app.use(express.json({ limit: '10mb' }));
+        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cookieParser());
+
+        this.app.use(compression());
+
+        //TODO: Enable rate limiting
+        // this.app.use(rateLimiter);
+        // this.app.use(certificateCreationLimiter);
+        // this.app.use(authLimiter);
+
+        // i18n middleware
         i18next
             .use(Backend)
             .use(i18nextMiddleware.LanguageDetector)
@@ -50,70 +76,11 @@ export class App {
             });
 
         logger.info('✅ i18next initialized successfully');
-    }
-
-    /**
-     * Setup application middleware
-     */
-    private setupMiddleware(): void {
-        // Security middleware
-        this.app.use(helmet());
-        // this.app.use(helmet({
-        //     contentSecurityPolicy: {
-        //         directives: {
-        //             defaultSrc: ["'self'"],
-        //             styleSrc: ["'self'", "'unsafe-inline'"],
-        //             scriptSrc: ["'self'"],
-        //             imgSrc: ["'self'", "data:", "https:"],
-        //         },
-        //     },
-        // }));
-        // this.app.use(helmet({
-        //     contentSecurityPolicy: Environment.isProduction() ? undefined : false,
-        //     crossOriginEmbedderPolicy: false
-        // }));
-
-        // CORS configuration
-        this.app.use(cors({
-            origin: Environment.NODE_ENV !== 'production',
-            credentials: true,
-        }));
-        // this.app.use(cors({
-        //     origin: Environment.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-        //     credentials: true,
-        //     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-        //     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-        // }));
-        // this.app.use(cors({
-        //     origin: Environment.isDevelopment() ? true : Environment.ALLOWED_ORIGINS?.split(','),
-        //     credentials: true,
-        //     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-        //     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-        // }));
-
-        // Body parsing middleware
-        this.app.use(express.json({ limit: '10mb' }));
-        this.app.use(express.urlencoded({ extended: true }));
-        this.app.use(cookieParser());
-
-        // Compression middleware
-        this.app.use(compression());
-
-        //TODO: Enable rate limiting
-        // Rate limiting
-        // this.app.use(rateLimiter);
-        // this.app.use(certificateCreationLimiter);
-        // this.app.use(authLimiter);
-
-        // i18n middleware
         this.app.use(i18nextMiddleware.handle(i18next));
 
         logger.info('✅ Application middleware initialized');
     }
 
-    /**
-     * Initialize Asaci services
-     */
     private initializeServices(): void {
         try {
             this.authService = new AuthenticationService();
@@ -144,10 +111,7 @@ export class App {
         }
     }
 
-    /**
-     * Setup application routes
-     */
-    private setupRoutes(): void {
+    private setupApplicationRoutes(): void {
         try {
             // Health check endpoints
             this.setupHealthChecks();
@@ -179,9 +143,6 @@ export class App {
         }
     }
 
-    /**
-     * Setup error handlers (must be last)
-     */
     private setupErrorHandlers(): void {
         // Global error handler (must be last)
         this.app.use(globalExceptionHandlerMiddleware);
@@ -189,9 +150,6 @@ export class App {
         logger.info('✅ Error handlers initialized');
     }
 
-    /**
-     * Set up health check endpoints
-     */
     private setupHealthChecks(): void {
         // General health check endpoint
         this.app.get('/health', async (req, res) => {
@@ -243,9 +201,6 @@ export class App {
         logger.info('✅ Health check endpoints configured');
     }
 
-    /**
-     * Authenticate Asaci services
-     */
     async authenticateAsaci(): Promise<void> {
         try {
             if (!Environment.ASACI_EMAIL || !Environment.ASACI_PASSWORD) {
@@ -274,9 +229,6 @@ export class App {
             });
     }
 
-    /**
-     * Disconnect from external services
-     */
     async disconnectOrass(): Promise<void> {
         const disconnectionPromises: Promise<void>[] = [
             this.orassManager.disconnect().catch(error => {
@@ -285,26 +237,13 @@ export class App {
         ];
 
         await Promise.allSettled(disconnectionPromises);
-        logger.info('✅ External services disconnected');
+        logger.info('✅ Orass services disconnected');
     }
 
-    /**
-     * Get the Express app instance
-     */
     getApp(): Express {
         return this.app;
     }
 
-    /**
-     * Get the Asaci service manager
-     */
-    getAsaciManager(): AsaciServiceManager {
-        return this.asaciManager;
-    }
-
-    /**
-     * Get application health status
-     */
     async getHealthStatus(): Promise<any> {
         const services: Record<string, any> = {};
 
@@ -363,9 +302,6 @@ export class App {
     }
 }
 
-/**
- * Factory function to create and initialize the app
- */
 export const createApp = (): App => {
     try {
         const app = new App();
