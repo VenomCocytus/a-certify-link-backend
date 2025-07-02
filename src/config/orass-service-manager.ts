@@ -3,18 +3,7 @@ import { AsaciProductionService } from '@services/asaci-production.service';
 import { logger } from '@utils/logger';
 import { Environment } from '@config/environment';
 import {OrassService} from "@services/orass-database.service";
-import {OrassConnectionConfig} from "@interfaces/orass.interfaces";
-
-export interface OrassServiceManagerConfig {
-    host: string;
-    port: number;
-    sid: string;
-    username: string;
-    password: string;
-    connectionTimeout?: number;
-    requestTimeout?: number;
-    autoConnect?: boolean;
-}
+import {OrassConnectionConfig, OrassServiceManagerConfig} from "@dto/orass.dto";
 
 export class OrassServiceManager {
     private orassService: OrassService;

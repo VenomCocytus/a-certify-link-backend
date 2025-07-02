@@ -2,14 +2,14 @@ import oracledb from 'oracledb';
 import { logger } from '@utils/logger';
 import { Environment } from '@config/environment';
 import { BaseException } from '@exceptions/base.exception';
+import {ErrorCodes} from "@/constants/error-codes";
 import {
     OrassConnectionConfig,
-    OrassPolicy,
+    OrassConnectionStatus, OrassPolicyResponse,
     OrassPolicySearchCriteria,
-    OrassQueryResult,
-    OrassConnectionStatus
-} from '@interfaces/orass.interfaces';
-import {ErrorCodes} from "@/constants/error-codes";
+    OrassQueryResult
+} from "@dto/orass.dto";
+import {CertificateColor, CertificateType, ChannelType} from "@interfaces/common.enum";
 
 export class OrassService {
     private pool: oracledb.Pool | null = null;
@@ -40,6 +40,7 @@ export class OrassService {
             // Set Oracle client configuration
             oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
             oracledb.autoCommit = true;
+            oracledb.initOracleClient();
 
             logger.info('✅ Oracle client initialized');
         } catch (error: any) {
@@ -66,8 +67,8 @@ export class OrassService {
             const connectionString = `${this.config.host}:${this.config.port}/${this.config.sid}`;
 
             this.pool = await oracledb.createPool({
-                user: this.config.username,
-                password: this.config.password,
+                user: process.env.ORASS_USERNAME,
+                password: process.env.ORASS_PASSWORD,
                 connectString: connectionString,
                 poolMin: 2,
                 poolMax: 10,
@@ -133,7 +134,7 @@ export class OrassService {
     }
 
     /**
-     * Disconnect from database
+     * Disconnect from the database
      */
     async disconnect(): Promise<void> {
         try {
@@ -218,6 +219,7 @@ export class OrassService {
         } catch (error: any) {
             logger.error('❌ Error searching ORASS policies:', error);
 
+            //TODO: return an external api exception instead
             throw new BaseException(
                 'Failed to search policies in ORASS database',
                 ErrorCodes.DATABASE_QUERY_ERROR,
@@ -232,199 +234,61 @@ export class OrassService {
     }
 
     /**
-     * Get policy by policy number
+     * Build a search query with dynamic WHERE conditions
      */
-    async getPolicyByNumber(policyNumber: string): Promise<OrassPolicy | null> {
-        const result = await this.searchPolicies({ policyNumber }, 1);
-        return result.policies.length > 0 ? result.policies[0] : null;
-    }
-
-    /**
-     * Get policies by vehicle registration
-     */
-    async getPoliciesByVehicleRegistration(vehicleRegistration: string): Promise<OrassPolicy[]> {
-        const result = await this.searchPolicies({ vehicleRegistration });
-        return result.policies;
-    }
-
-    /**
-     * Get policies by chassis number
-     */
-    async getPoliciesByChassisNumber(chassisNumber: string): Promise<OrassPolicy[]> {
-        const result = await this.searchPolicies({ vehicleChassisNumber: chassisNumber });
-        return result.policies;
-    }
-
-    /**
-     * Build search query with dynamic WHERE conditions
-     */
+    //TODO: clean this code
     private buildSearchQuery(criteria: OrassPolicySearchCriteria, limit: number, offset: number): { query: string; binds: any } {
         let query = `
-      SELECT 
-        p.POLICY_NUMBER,
-        p.ORGANIZATION_CODE,
-        p.OFFICE_CODE,
-        p.SUBSCRIBER_NAME,
-        p.SUBSCRIBER_PHONE,
-        p.SUBSCRIBER_EMAIL,
-        p.SUBSCRIBER_ADDRESS,
-        p.INSURED_NAME,
-        p.INSURED_PHONE,
-        p.INSURED_EMAIL,
-        p.INSURED_ADDRESS,
-        p.VEHICLE_REGISTRATION,
-        p.VEHICLE_CHASSIS_NUMBER,
-        p.VEHICLE_BRAND,
-        p.VEHICLE_MODEL,
-        p.VEHICLE_TYPE,
-        p.VEHICLE_CATEGORY,
-        p.VEHICLE_USAGE,
-        p.VEHICLE_GENRE,
-        p.VEHICLE_ENERGY,
-        p.VEHICLE_SEATS,
-        p.VEHICLE_FISCAL_POWER,
-        p.VEHICLE_USEFUL_LOAD,
-        p.FLEET_REDUCTION,
-        p.SUBSCRIBER_TYPE,
-        p.PREMIUM_RC,
-        p.CONTRACT_START_DATE,
-        p.CONTRACT_END_DATE,
-        p.OP_ATD,
-        p.CERTIFICATE_COLOR,
-        p.CREATED_AT,
-        p.UPDATED_AT
-      FROM ORASS_POLICIES p
-      WHERE 1=1
-    `;
+            SELECT * FROM (
+                              SELECT a.*, ROWNUM rnum FROM (
+                                                               SELECT *
+                                                               FROM act_detail_att_digitale
+                                                               WHERE 1=1
+        `;
 
         const binds: any = {};
         const conditions: string[] = [];
 
-        // Build dynamic WHERE conditions
-        if (criteria.policyNumber) {
-            conditions.push('p.POLICY_NUMBER = :policyNumber');
-            binds.policyNumber = criteria.policyNumber;
+        if (criteria.applicantCode && criteria.policyNumber && criteria.endorsementNumber) {
+            const searchString = `${criteria.applicantCode}${criteria.policyNumber}${criteria.endorsementNumber}`;
+            conditions.push('NUMERO_DE_POLICE = :numeropolice');
+            binds.numeropolice = searchString;
         }
 
-        if (criteria.vehicleRegistration) {
-            conditions.push('UPPER(p.VEHICLE_REGISTRATION) = UPPER(:vehicleRegistration)');
-            binds.vehicleRegistration = criteria.vehicleRegistration;
-        }
-
-        if (criteria.vehicleChassisNumber) {
-            conditions.push('UPPER(p.VEHICLE_CHASSIS_NUMBER) = UPPER(:vehicleChassisNumber)');
-            binds.vehicleChassisNumber = criteria.vehicleChassisNumber;
-        }
-
-        if (criteria.subscriberName) {
-            conditions.push('UPPER(p.SUBSCRIBER_NAME) LIKE UPPER(:subscriberName)');
-            binds.subscriberName = `%${criteria.subscriberName}%`;
-        }
-
-        if (criteria.insuredName) {
-            conditions.push('UPPER(p.INSURED_NAME) LIKE UPPER(:insuredName)');
-            binds.insuredName = `%${criteria.insuredName}%`;
-        }
-
-        if (criteria.organizationCode) {
-            conditions.push('p.ORGANIZATION_CODE = :organizationCode');
-            binds.organizationCode = criteria.organizationCode;
-        }
-
-        if (criteria.officeCode) {
-            conditions.push('p.OFFICE_CODE = :officeCode');
-            binds.officeCode = criteria.officeCode;
-        }
-
-        if (criteria.certificateColor) {
-            conditions.push('p.CERTIFICATE_COLOR = :certificateColor');
-            binds.certificateColor = criteria.certificateColor;
-        }
-
-        if (criteria.contractStartDate) {
-            conditions.push('p.CONTRACT_START_DATE >= :contractStartDate');
-            binds.contractStartDate = criteria.contractStartDate;
-        }
-
-        if (criteria.contractEndDate) {
-            conditions.push('p.CONTRACT_END_DATE <= :contractEndDate');
-            binds.contractEndDate = criteria.contractEndDate;
-        }
-
-        // Add conditions to query
+        // Add conditions to the query
         if (conditions.length > 0) {
             query += ' AND ' + conditions.join(' AND ');
         }
 
-        // Add ordering and pagination
-        query += ` 
-      ORDER BY p.CREATED_AT DESC
-      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY
+        //TODO: Add a proper ordering based on requirements
+        // Oracle 11g pagination using ROWNUM
+        query += `
+                ORDER BY NUMERO_DE_POLICE DESC
+            ) a
+            WHERE ROWNUM <= :max_row
+        )
+        WHERE rnum > :min_row
     `;
 
-        binds.offset = offset;
-        binds.limit = limit;
+        binds.max_row = offset + limit;  // Upper bound (e.g., OFFSET 10 + LIMIT 10 → max_row = 20)
+        binds.min_row = offset;          // Lower bound (e.g., OFFSET 10 → min_row = 10)
 
         return { query, binds };
     }
 
     /**
-     * Build count query for pagination
+     * Build a count query for pagination
      */
     private buildCountQuery(criteria: OrassPolicySearchCriteria): { query: string; binds: any } {
-        let query = 'SELECT COUNT(*) as TOTAL_COUNT FROM ORASS_POLICIES p WHERE 1=1';
+        let query = 'SELECT COUNT(*) as TOTAL_COUNT FROM act_detail_att_digitale  p WHERE 1=1';
         const binds: any = {};
         const conditions: string[] = [];
 
         // Same conditions as a search query (without SELECT fields and pagination)
-        if (criteria.policyNumber) {
-            conditions.push('p.POLICY_NUMBER = :policyNumber');
-            binds.policyNumber = criteria.policyNumber;
-        }
-
-        if (criteria.vehicleRegistration) {
-            conditions.push('UPPER(p.VEHICLE_REGISTRATION) = UPPER(:vehicleRegistration)');
-            binds.vehicleRegistration = criteria.vehicleRegistration;
-        }
-
-        if (criteria.vehicleChassisNumber) {
-            conditions.push('UPPER(p.VEHICLE_CHASSIS_NUMBER) = UPPER(:vehicleChassisNumber)');
-            binds.vehicleChassisNumber = criteria.vehicleChassisNumber;
-        }
-
-        if (criteria.subscriberName) {
-            conditions.push('UPPER(p.SUBSCRIBER_NAME) LIKE UPPER(:subscriberName)');
-            binds.subscriberName = `%${criteria.subscriberName}%`;
-        }
-
-        if (criteria.insuredName) {
-            conditions.push('UPPER(p.INSURED_NAME) LIKE UPPER(:insuredName)');
-            binds.insuredName = `%${criteria.insuredName}%`;
-        }
-
-        if (criteria.organizationCode) {
-            conditions.push('p.ORGANIZATION_CODE = :organizationCode');
-            binds.organizationCode = criteria.organizationCode;
-        }
-
-        if (criteria.officeCode) {
-            conditions.push('p.OFFICE_CODE = :officeCode');
-            binds.officeCode = criteria.officeCode;
-        }
-
-        if (criteria.certificateColor) {
-            conditions.push('p.CERTIFICATE_COLOR = :certificateColor');
-            binds.certificateColor = criteria.certificateColor;
-        }
-
-        if (criteria.contractStartDate) {
-            conditions.push('p.CONTRACT_START_DATE >= :contractStartDate');
-            binds.contractStartDate = criteria.contractStartDate;
-        }
-
-        if (criteria.contractEndDate) {
-            conditions.push('p.CONTRACT_END_DATE <= :contractEndDate');
-            binds.contractEndDate = criteria.contractEndDate;
+        if (criteria.applicantCode && criteria.policyNumber && criteria.endorsementNumber) {
+            const searchString = `${criteria.applicantCode}${criteria.policyNumber}${criteria.endorsementNumber}`;
+            conditions.push('NUMERO_DE_POLICE = :numeropolice');
+            binds.numeropolice = searchString;
         }
 
         if (conditions.length > 0) {
@@ -437,40 +301,43 @@ export class OrassService {
     /**
      * Map database row to OrassPolicy object
      */
-    private mapRowToPolicy(row: any): OrassPolicy {
+    private mapRowToPolicy(row: any): OrassPolicyResponse {
         return {
-            policyNumber: row.POLICY_NUMBER,
-            organizationCode: row.ORGANIZATION_CODE,
+            policyNumber: row.NUMERO_DE_POLICE,
             officeCode: row.OFFICE_CODE,
-            subscriberName: row.SUBSCRIBER_NAME,
-            subscriberPhone: row.SUBSCRIBER_PHONE,
-            subscriberEmail: row.SUBSCRIBER_EMAIL,
-            subscriberAddress: row.SUBSCRIBER_ADDRESS,
-            insuredName: row.INSURED_NAME,
-            insuredPhone: row.INSURED_PHONE,
-            insuredEmail: row.INSURED_EMAIL,
-            insuredAddress: row.INSURED_ADDRESS,
-            vehicleRegistration: row.VEHICLE_REGISTRATION,
-            vehicleChassisNumber: row.VEHICLE_CHASSIS_NUMBER,
-            vehicleBrand: row.VEHICLE_BRAND,
-            vehicleModel: row.VEHICLE_MODEL,
-            vehicleType: row.VEHICLE_TYPE,
-            vehicleCategory: row.VEHICLE_CATEGORY,
-            vehicleUsage: row.VEHICLE_USAGE,
-            vehicleGenre: row.VEHICLE_GENRE,
-            vehicleEnergy: row.VEHICLE_ENERGY,
-            vehicleSeats: row.VEHICLE_SEATS,
-            vehicleFiscalPower: row.VEHICLE_FISCAL_POWER,
-            vehicleUsefulLoad: row.VEHICLE_USEFUL_LOAD,
-            fleetReduction: row.FLEET_REDUCTION,
-            subscriberType: row.SUBSCRIBER_TYPE,
-            premiumRC: row.PREMIUM_RC,
-            contractStartDate: row.CONTRACT_START_DATE,
-            contractEndDate: row.CONTRACT_END_DATE,
-            opATD: row.OP_ATD,
-            certificateColor: row.CERTIFICATE_COLOR,
-            createdAt: row.CREATED_AT,
-            updatedAt: row.UPDATED_AT,
+            organizationCode: row.ORGANIZATION_CODE,
+            certificateType: row.CERTIFICATE_TYPE as CertificateType,
+            emailNotification: row.EMAIL_NOTIFICATION,
+            generatedBy: row.GENERATED_BY,
+            channel: row.CHANNEL as ChannelType,
+            certificateColor: row.COULEUR_D_ATTESTATION_A_EDITER as CertificateColor,
+            premiumRC: row.PRIME_RC,
+            vehicleEnergy: row.ENERGIE_DU_VEHICULE,
+            vehicleChassisNumber: row.NUMERO_DE_CHASSIS_DU_VEHICULE,
+            vehicleModel: row.MODELE_DU_VEHICULE,
+            vehicleGenre: row.GENRE_DU_VEHICULE,
+            vehicleCategory: row.CATEGORIE_DU_VEHICULE,
+            vehicleUsage: row.USAGE_DU_VEHICULE,
+            vehicleBrand: row.MARQUE_DU_VEHICULE,
+            vehicleType: row.TYPE_DU_VEHICULE,
+            vehicleSeats: row.NOMBRE_DE_PLACE_DU_VEHICULE,
+            subscriberType: row.TYPE_DE_SOUSCRIPTEUR,
+            subscriberPhone: row.NUMERO_DE_TELEPHONE_DU_SOUS,
+            subscriberPoBox: row.BOITE_POSTALE_DU_SOUSCRIPTEUR,
+            subscriberEmail: row.ADRESSE_EMAIL_DU_SOUSCRIPTEUR,
+            subscriberName: row.NOM_DU_SOUSCRIPTEUR,
+            insuredPhone: row.TELEPHONE_MOBILE_DE_L_ASSURE,
+            insuredPoBox: row.BOITE_POSTALE_DE_L_ASSURE,
+            insuredName: row.NOM_DE_L_ASSURE,
+            insuredEmail: row.ADRESSE_EMAIL_DE_L_ASSURE,
+            vehicleRegistrationNumber: row.IMMATRICULATION_DU_VEHICULE,
+            policyEffectiveDate: row.DATE_D_EFFET_DU_CONTRAT as Date,
+            policyExpiryDate: row.DATE_D_ECHEANCE_DU_CONTRAT as Date,
+            vehicleFiscalPower: row.PUISSANCE_FISCALE,
+            vehicleUsefulLoad: row.CHARGE_UTILE,
+            fleetReduction: row.REDUCTION_FLOTTE,
+            rNum: row.RNUM,
+            opATD: row.OP_ATD
         };
     }
 

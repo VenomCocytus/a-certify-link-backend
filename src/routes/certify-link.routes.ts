@@ -5,10 +5,9 @@ import { asyncHandlerMiddleware } from '@middlewares/async-handler.middleware';
 import { authMiddleware, requirePermissions } from '@middlewares/auth.middleware';
 import { certificateCreationLimiter } from '@middlewares/rate-limiter.middleware';
 import {
-    CreateCertificateFromOrassDto,
-    BulkCreateCertificatesFromOrassDto,
-    ValidateOrassPolicyDto
+    BulkCreateCertificatesFromOrassDto
 } from '@dto/certify-link.dto';
+import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";
 
 export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkController): Router {
     const router = Router();
@@ -33,66 +32,8 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
     router.get('/policies/search',
         authMiddleware,
         requirePermissions(['orass:policies:read']),
-        validateQuery,
+        // validateQuery,
         asyncHandlerMiddleware(certifyLinkController.searchOrassPolicies.bind(certifyLinkController))
-    );
-
-    /**
-     * @route GET /policies/:policyNumber
-     * @desc Get specific ORASS policy by policy number
-     * @access Private
-     */
-    router.get('/policies/:policyNumber',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        asyncHandlerMiddleware(certifyLinkController.getOrassPolicyByNumber.bind(certifyLinkController))
-    );
-
-    /**
-     * @route GET /policies/by-vehicle/:vehicleRegistration
-     * @desc Get ORASS policies by vehicle registration
-     * @access Private
-     */
-    router.get('/policies/by-vehicle/:vehicleRegistration',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        asyncHandlerMiddleware(certifyLinkController.getPoliciesByVehicleRegistration.bind(certifyLinkController))
-    );
-
-    /**
-     * @route GET /policies/by-chassis/:chassisNumber
-     * @desc Get ORASS policies by chassis number
-     * @access Private
-     */
-    router.get('/policies/by-chassis/:chassisNumber',
-        authMiddleware,
-        requirePermissions(['orass:policies:read']),
-        asyncHandlerMiddleware(certifyLinkController.getPoliciesByChassisNumber.bind(certifyLinkController))
-    );
-
-    /**
-     * @route POST /policies/validate
-     * @desc Validate ORASS policy for certificate creation
-     * @access Private
-     */
-    router.post('/policies/validate',
-        authMiddleware,
-        requirePermissions(['orass:policies:validate']),
-        validateDto(ValidateOrassPolicyDto),
-        asyncHandlerMiddleware(certifyLinkController.validateOrassPolicy.bind(certifyLinkController))
-    );
-
-    // Certificate Creation Routes
-
-    /**
-     * @route POST /certificates/preview
-     * @desc Preview certificate data before creation
-     * @access Private
-     */
-    router.post('/certificates/preview',
-        authMiddleware,
-        requirePermissions(['orass:certificates:preview']),
-        asyncHandlerMiddleware(certifyLinkController.previewCertificateData.bind(certifyLinkController))
     );
 
     /**
@@ -100,26 +41,27 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
      * @desc Create certificate production from ORASS policy
      * @access Private
      */
-    router.post('/certificates/create',
+    router.post('/certificates/production',
         authMiddleware,
-        certificateCreationLimiter,
+        // certificateCreationLimiter,
         requirePermissions(['orass:certificates:create']),
-        validateDto(CreateCertificateFromOrassDto),
-        asyncHandlerMiddleware(certifyLinkController.createCertificateFromOrassPolicy.bind(certifyLinkController))
+        validateDto(CreateEditionFromOrassDataRequest),
+        asyncHandlerMiddleware(certifyLinkController.createEditionRequestFromOrassPolicy.bind(certifyLinkController))
     );
 
-    /**
-     * @route POST /certificates/bulk-create
-     * @desc Create multiple certificates from ORASS policies (bulk operation)
-     * @access Private
-     */
-    router.post('/certificates/bulk-create',
-        authMiddleware,
-        certificateCreationLimiter,
-        requirePermissions(['orass:certificates:bulk-create']),
-        validateDto(BulkCreateCertificatesFromOrassDto),
-        asyncHandlerMiddleware(certifyLinkController.bulkCreateCertificatesFromOrass.bind(certifyLinkController))
-    );
+    //TODO: Update the route to create bulk edition requests from ORASS policies
+    // /**
+    //  * @route POST /certificates/bulk-create
+    //  * @desc Create multiple certificates from ORASS policies (bulk operation)
+    //  * @access Private
+    //  */
+    // router.post('/certificates/bulk-create',
+    //     authMiddleware,
+    //     certificateCreationLimiter,
+    //     requirePermissions(['orass:certificates:bulk-create']),
+    //     validateDto(BulkCreateCertificatesFromOrassDto),
+    //     asyncHandlerMiddleware(certifyLinkController.bulkCreateCertificatesFromOrass.bind(certifyLinkController))
+    // );
 
     // Configuration and Utility Routes
 
