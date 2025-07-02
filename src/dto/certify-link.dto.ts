@@ -8,7 +8,7 @@ import {
     Min,
     Max,
     IsEnum,
-    ArrayMinSize
+    ArrayMinSize, ArrayMaxSize
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
@@ -59,6 +59,18 @@ export class EditionRequestCreatedDto {
     failedPolicies: number;
     errors?: string[];
     createdAt: Date;
+}
+
+export class GetCertificateDownloadLinkDto {
+    @IsString()
+    certificateReference!: string;
+}
+
+export class BatchGetCertificateDownloadLinksDto {
+    @IsString({ each: true })
+    @ArrayMaxSize(50, { message: 'Maximum 50 certificate references allowed' })
+    @ArrayMinSize(1, { message: 'At least one certificate reference is required' })
+    certificateReferences!: string[];
 }
 
 // DTO for bulk certificate creation from multiple ORASS policies

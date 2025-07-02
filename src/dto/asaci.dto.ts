@@ -236,7 +236,6 @@ export class CreateProductionRequestDto {
 
     @IsString()
     @IsNotEmpty({ message: 'Organization code is required' })
-    @MaxLength(255, { message: 'Le texte de value ne peut pas contenir plus de 255 caractères.' })
     organization_code: string;
 
     @IsEnum(CertificateType)
@@ -245,12 +244,10 @@ export class CreateProductionRequestDto {
 
     @IsOptional()
     @IsString()
-    @MaxLength(255, { message: 'Le texte de value ne peut pas contenir plus de 255 caractères.' })
     email_notification?: string;
 
     @IsOptional()
     @IsString()
-    @MaxLength(255, { message: 'Le texte de value ne peut pas contenir plus de 255 caractères.' })
     generated_by?: string;
 
     @IsOptional()

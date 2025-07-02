@@ -194,7 +194,7 @@ export function createAsaciRoutes(
         authMiddleware,
         certificateCreationLimiter,
         requirePermissions(['asaci:productions:create']),
-        validateDto(CreateProductionRequestDto),
+        // validateDto(CreateProductionRequestDto),
         asyncHandlerMiddleware(attestationController.createProductionRequest.bind(attestationController))
     );
 

@@ -19,6 +19,8 @@ export class AsaciProductionService {
         }
     }
 
+    //TODO: Cast the result form asaci into a correct class
+
     setAuthToken(token: string): void {
         this.httpClient.setAuthToken(token);
     }

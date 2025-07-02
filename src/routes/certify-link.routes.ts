@@ -18,6 +18,7 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
      * @desc Health check for certify-link service
      * @access Public
      */
+    //TODO: fix this road with postman
     router.get('/health',
         asyncHandlerMiddleware(certifyLinkController.healthCheck.bind(certifyLinkController))
     );
@@ -63,6 +64,82 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
     //     asyncHandlerMiddleware(certifyLinkController.bulkCreateCertificatesFromOrass.bind(certifyLinkController))
     // );
 
+    // New Attestations Routes
+
+    /**
+     * @route GET /attestations
+     * @desc Get attestations from ASACI API filtered by generated_id and other criteria
+     * @access Private
+     */
+    router.get('/attestations',
+        authMiddleware,
+        // requirePermissions(['asaci:attestations:read']),
+        asyncHandlerMiddleware(certifyLinkController.getAttestationsFromAsaci.bind(certifyLinkController))
+    );
+
+    // Stored ASACI Request Routes
+
+    /**
+     * @route GET /requests
+     * @desc Get stored ASACI requests for the authenticated user
+     * @access Private
+     * @query status - Filter by request status
+     * @query certificate_type - Filter by certificate type
+     * @query limit - Number of records to return (default: 50)
+     * @query offset - Number of records to skip (default: 0)
+     */
+    router.get('/requests',
+        authMiddleware,
+        // requirePermissions(['asaci:requests:read']),
+        asyncHandlerMiddleware(certifyLinkController.getStoredAsaciRequests.bind(certifyLinkController))
+    );
+
+    /**
+     * @route GET /requests/:requestId
+     * @desc Get specific ASACI request by ID
+     * @access Private
+     */
+    router.get('/requests/:requestId',
+        authMiddleware,
+        // requirePermissions(['asaci:requests:read']),
+        asyncHandlerMiddleware(certifyLinkController.getAsaciRequestById.bind(certifyLinkController))
+    );
+
+    /**
+     * @route POST /requests/:requestId/download
+     * @desc Download certificate and track download count
+     * @access Private
+     */
+    router.post('/requests/:requestId/download',
+        authMiddleware,
+        // requirePermissions(['asaci:certificates:download']),
+        asyncHandlerMiddleware(certifyLinkController.downloadCertificate.bind(certifyLinkController))
+    );
+
+    // Statistics Routes
+
+    /**
+     * @route GET /statistics/user
+     * @desc Get user statistics for ASACI requests
+     * @access Private
+     */
+    router.get('/statistics/user',
+        authMiddleware,
+        requirePermissions(['asaci:statistics:read']),
+        asyncHandlerMiddleware(certifyLinkController.getUserStatistics.bind(certifyLinkController))
+    );
+
+    /**
+     * @route GET /statistics/orass
+     * @desc Get ORASS statistics
+     * @access Private
+     */
+    router.get('/statistics/orass',
+        authMiddleware,
+        requirePermissions(['orass:statistics:read']),
+        asyncHandlerMiddleware(certifyLinkController.getOrassStatistics.bind(certifyLinkController))
+    );
+
     // Configuration and Utility Routes
 
     /**
@@ -77,14 +154,28 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
     );
 
     /**
-     * @route GET /statistics
-     * @desc Get ORASS statistics
+     * @route POST /certificates/download-link
+     * @desc Get certificate download link by ASACI certificate reference/ID (POST version)
      * @access Private
+     * @body certificateReference - The ASACI certificate reference/ID
      */
-    router.get('/statistics',
+    //TODO: Turn this route into a query
+    router.post('/certificates/download-link',
         authMiddleware,
-        requirePermissions(['orass:statistics:read']),
-        asyncHandlerMiddleware(certifyLinkController.getOrassStatistics.bind(certifyLinkController))
+        // requirePermissions(['asaci:certificates:download']),
+        asyncHandlerMiddleware(certifyLinkController.getCertificateDownloadLinkPost.bind(certifyLinkController))
+    );
+
+    /**
+     * @route POST /certificates/batch-download-links
+     * @desc Batch get certificate download links by multiple ASACI certificate references
+     * @access Private
+     * @body certificateReferences - Array of ASACI certificate references/IDs (max 50)
+     */
+    router.post('/certificates/batch-download-links',
+        authMiddleware,
+        requirePermissions(['asaci:certificates:download']),
+        asyncHandlerMiddleware(certifyLinkController.getBatchCertificateDownloadLinks.bind(certifyLinkController))
     );
 
     return router;

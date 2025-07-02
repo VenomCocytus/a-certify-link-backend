@@ -57,6 +57,7 @@ export const Environment = { //TODO: replace by a class that load dynamically th
     ASACI_EMAIL: process.env.ASACI_EMAIL || '',
     ASACI_PASSWORD: process.env.ASACI_PASSWORD || '',
     ASACI_CLIENT_NAME: process.env.ASACI_CLIENT_NAME || '',
+    ASACI_GENERATED_BY: process.env.ASACI_GENERATED_BY || '',
 
     // Rate Limiting
     RATE_LIMIT_WINDOW_MS: parseNumber(process.env.RATE_LIMIT_WINDOW_MS, 60000),
@@ -99,6 +100,7 @@ const requiredEnvVars = [
     'ORASS_SID',
     'ORASS_USERNAME',
     'ORASS_PASSWORD',
+    'ASACI_GENERATED_BY'
 ];
 
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);

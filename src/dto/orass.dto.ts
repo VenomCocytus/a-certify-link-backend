@@ -89,14 +89,10 @@ export interface OrassPolicyResponse {
 export class CreateEditionFromOrassDataRequest {
     @IsString({message: 'Le numéro de police doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le numéro de police est requis.'})
-    @MaxLength(50, {message: 'Le numéro de police ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value.trim())
     policyNumber: string;
 
     @IsString({message: 'Le code organisation doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le code organisation est requis.'})
-    @MaxLength(50, {message: 'Le code organisation ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     organizationCode: string;
 
     @IsString()
@@ -109,14 +105,10 @@ export class CreateEditionFromOrassDataRequest {
 
     @IsOptional()
     @IsEmail({}, {message: 'L\'adresse email de notification doit être valide.'})
-    @MaxLength(255, {message: 'L\'email de notification ne peut pas contenir plus de 255 caractères.'})
-    // @Transform(({value}) => value?.trim().toLowerCase())
     emailNotification?: string;
 
     @IsOptional()
     @IsString({message: 'Le champ généré par doit être une chaîne de caractères.'})
-    @MaxLength(100, {message: 'Le champ généré par ne peut pas contenir plus de 100 caractères.'})
-    // @Transform(({value}) => value?.trim())
     generatedBy?: string;
 
     @IsEnum(ChannelType, {message: 'Le canal doit être "api" ou "web".'})
@@ -130,79 +122,54 @@ export class CreateEditionFromOrassDataRequest {
     // Subscriber Information
     @IsString({message: 'Le nom du souscripteur doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le nom du souscripteur est requis.'})
-    @MaxLength(255, {message: 'Le nom du souscripteur ne peut pas contenir plus de 255 caractères.'})
-    @MinLength(2, {message: 'Le nom du souscripteur doit contenir au moins 2 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     subscriberName: string;
 
     @IsString({message: 'Le téléphone du souscripteur doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le téléphone du souscripteur est requis.'})
     @Matches(/^\+?[1-9]\d{1,14}$/, {message: 'Le numéro de téléphone du souscripteur doit être un numéro valide (format international recommandé).'})
-    // @Transform(({value}) => value?.trim())
     subscriberPhone: string;
 
     @IsEmail({}, {message: 'L\'adresse email du souscripteur doit être valide.'})
     @IsNotEmpty({message: 'L\'email du souscripteur est requis.'})
-    @MaxLength(255, {message: 'L\'email du souscripteur ne peut pas contenir plus de 255 caractères.'})
-    // @Transform(({value}) => value?.trim().toLowerCase())
     subscriberEmail: string;
 
     @IsString({message: 'La boîte postale du souscripteur doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'La boîte postale du souscripteur est requise.'})
-    @MaxLength(50, {message: 'La boîte postale du souscripteur ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     subscriberPoBox: string;
 
     // Insured Information
     @IsString({message: 'Le nom de l\'assuré doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le nom de l\'assuré est requis.'})
-    @MaxLength(255, {message: 'Le nom de l\'assuré ne peut pas contenir plus de 255 caractères.'})
-    @MinLength(2, {message: 'Le nom de l\'assuré doit contenir au moins 2 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     insuredName: string;
 
     @IsString({message: 'Le téléphone de l\'assuré doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le téléphone de l\'assuré est requis.'})
     @Matches(/^\+?[1-9]\d{1,14}$/, {message: 'Le numéro de téléphone de l\'assuré doit être un numéro valide (format international recommandé).'})
-    // @Transform(({value}) => value?.trim())
     insuredPhone: string;
 
     @IsEmail({}, {message: 'L\'adresse email de l\'assuré doit être valide.'})
     @IsNotEmpty({message: 'L\'email de l\'assuré est requis.'})
-    @MaxLength(255, {message: 'L\'email de l\'assuré ne peut pas contenir plus de 255 caractères.'})
-    // @Transform(({value}) => value?.trim().toLowerCase())
     insuredEmail: string;
 
     @IsString({message: 'La boîte postale de l\'assuré doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'La boîte postale de l\'assuré est requise.'})
-    @MaxLength(50, {message: 'La boîte postale de l\'assuré ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     insuredPoBox: string;
 
     // Vehicle Information
     @IsString({message: 'Le numéro d\'immatriculation doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le numéro d\'immatriculation est requis.'})
-    @MaxLength(20, {message: 'Le numéro d\'immatriculation ne peut pas contenir plus de 20 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     vehicleRegistrationNumber: string;
 
     @IsString({message: 'Le numéro de châssis doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le numéro de châssis est requis.'})
-    @MaxLength(50, {message: 'Le numéro de châssis ne peut pas contenir plus de 50 caractères.'})
-    @MinLength(10, {message: 'Le numéro de châssis doit contenir au moins 10 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     vehicleChassisNumber: string;
 
     @IsString({message: 'La marque du véhicule doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'La marque du véhicule est requise.'})
-    @MaxLength(50, {message: 'La marque du véhicule ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     vehicleBrand: string;
 
     @IsString({message: 'Le modèle du véhicule doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le modèle du véhicule est requis.'})
-    @MaxLength(100, {message: 'Le modèle du véhicule ne peut pas contenir plus de 100 caractères.'})
-    // @Transform(({value}) => value?.trim())
     vehicleModel: string;
 
     @IsEnum(VehicleType, {message: 'Le type de véhicule doit être une valeur valide.'})
@@ -290,8 +257,6 @@ export class CreateEditionFromOrassDataRequest {
 
     @IsOptional()
     @IsString({message: 'L\'OP ATD doit être une chaîne de caractères.'})
-    @MaxLength(50, {message: 'L\'OP ATD ne peut pas contenir plus de 50 caractères.'})
-    // @Transform(({value}) => value?.trim().toUpperCase())
     opATD?: string;
 
     /**
@@ -420,36 +385,4 @@ export const CERTIFICATE_COLOR_MAP: CertificateColorMapping = {
     'POOLTPV_BLUE': 'pooltpv-bleu',
     'POOLTPV_BROWN': 'pooltpv-marron',
     'MATCA_BLUE': 'matca-bleu'
-};
-
-// Vehicle type mapping for ASACI compliance
-export const VEHICLE_TYPE_MAP: { [key: string]: string } = {
-    // UV - Urban Vehicles
-    'UV01': 'UV01', 'UV02': 'UV02', 'UV03': 'UV03', 'UV04': 'UV04', 'UV05': 'UV05',
-    'UV06': 'UV06', 'UV07': 'UV07', 'UV08': 'UV08', 'UV09': 'UV09', 'UV10': 'UV10',
-
-    // ST - Special Transport
-    'ST01': 'ST01', 'ST02': 'ST02', 'ST03': 'ST03', 'ST04': 'ST04', 'ST05': 'ST05',
-    'ST06': 'ST06', 'ST07': 'ST07', 'ST08': 'ST08', 'ST09': 'ST09', 'ST10': 'ST10',
-    'ST11': 'ST11', 'ST12': 'ST12',
-
-    // TA - Transport Agriculture
-    'TAPP': 'TAPP', 'TAPM': 'TAPM', 'TSPP': 'TSPP', 'TSPM': 'TSPM',
-
-    // TV - Transport Vehicles
-    'TV01': 'TV01', 'TV02': 'TV02', 'TV03': 'TV03', 'TV04': 'TV04', 'TV05': 'TV05',
-    'TV06': 'TV06', 'TV07': 'TV07', 'TV08': 'TV08', 'TV09': 'TV09', 'TV10': 'TV10',
-    'TV11': 'TV11', 'TV12': 'TV12', 'TV13': 'TV13',
-
-    // GV - Good Vehicles
-    'GV01': 'GV01', 'GV02': 'GV02', 'GV03': 'GV03', 'GV04': 'GV04', 'GV05': 'GV05',
-    'GV06': 'GV06', 'GV07': 'GV07', 'GV08': 'GV08', 'GV09': 'GV09', 'GV10': 'GV10',
-    'GV11': 'GV11', 'GV12': 'GV12',
-
-    // Numeric codes
-    '01': '01', '02': '02', '03': '03', '04': '04', '05': '05', '06': '06',
-    '07': '07', '08': '08', '09': '09', '10': '10', '11': '11', '12': '12',
-
-    // SE - Special Energy
-    'SEES': 'SEES', 'SEDI': 'SEDI', 'SEHY': 'SEHY', 'SEEL': 'SEEL'
 };

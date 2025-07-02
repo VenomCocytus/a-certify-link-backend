@@ -40,7 +40,7 @@ export class OrassService {
             // Set Oracle client configuration
             oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
             oracledb.autoCommit = true;
-            // oracledb.initOracleClient();
+            oracledb.initOracleClient();
 
             logger.info('✅ Oracle client initialized');
         } catch (error: any) {
@@ -179,6 +179,7 @@ export class OrassService {
         };
     }
 
+    //TODO: Simplify this service code
     /**
      * Search policies based on criteria
      */
