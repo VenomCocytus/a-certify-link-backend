@@ -13,9 +13,9 @@ let PasswordHistory: typeof PasswordHistoryModel;
 let AsaciRequest: typeof AsaciRequestModel;
 let OperationLog: typeof OperationLogModel;
 
-function initializeModels(): void {
+function initModels(): void {
     try {
-        console.log('🔄 Initializing models...');
+        console.log('🔄 Initializing models for MSSQL...');
 
         User = initUserModel(sequelize);
         Role = initRoleModel(sequelize);
@@ -23,7 +23,7 @@ function initializeModels(): void {
         AsaciRequest = initAsaciRequestModel(sequelize);
         OperationLog = initOperationLogModel(sequelize);
 
-        console.log('✅ Models initialized successfully');
+        console.log('✅ Models initialized successfully for MSSQL');
     } catch (error) {
         console.error('❌ Error initializing models:', error);
         throw error;
@@ -38,14 +38,14 @@ function defineModelsAssociations(): void {
         User.belongsTo(Role, {
             foreignKey: 'roleId',
             as: 'role',
-            onDelete: 'RESTRICT',
+            onDelete: 'NO ACTION',
             onUpdate: 'CASCADE'
         });
 
         Role.hasMany(User, {
             foreignKey: 'roleId',
             as: 'users',
-            onDelete: 'RESTRICT',
+            onDelete: 'NO ACTION',
             onUpdate: 'CASCADE'
         });
 
@@ -118,7 +118,7 @@ function defineModelsAssociations(): void {
 
 async function seedDatabase(): Promise<void> {
     try {
-        console.log('🔄 Seeding database...');
+        console.log('🔄 Seeding database for MSSQL...');
 
         const roles = [
             {
@@ -201,7 +201,7 @@ async function seedDatabase(): Promise<void> {
         const adminRole = await Role.findOne({ where: { name: 'ADMIN' } });
         if (adminRole) {
             const hashedPassword = await bcrypt.hash('Admin123!@#', 12);
-            const [adminUser, created] = await User.findOrCreate({
+            const [created] = await User.findOrCreate({
                 where: { email: 'admin@eattestation.com' },
                 defaults: {
                     email: 'admin@eattestation.com',
@@ -225,7 +225,7 @@ async function seedDatabase(): Promise<void> {
             }
         }
 
-        console.log('✅ Database seeded successfully');
+        console.log('✅ Database seeded successfully for MSSQL');
     } catch (error) {
         console.error('❌ Error seeding database:', error);
         throw error;
@@ -271,7 +271,7 @@ export async function initializeDatabase(): Promise<void> {
 
         await sequelize.authenticate();
         console.log('✅ Database connection established');
-        initializeModels();
+        initModels();
         defineModelsAssociations();
 
         await sequelize.sync({
@@ -298,7 +298,9 @@ export async function checkDatabaseHealth(): Promise<{
     details: any;
 }> {
     try {
+        // Test basic connection
         await sequelize.authenticate();
+
         // Test table access
         const userCount = await User.count();
         const roleCount = await Role.count();
@@ -315,6 +317,7 @@ export async function checkDatabaseHealth(): Promise<{
             status: 'healthy',
             details: {
                 connection: 'active',
+                database: 'mssql',
                 users: userCount,
                 roles: roleCount,
                 asaciRequests: asaciRequestCount,
@@ -328,6 +331,7 @@ export async function checkDatabaseHealth(): Promise<{
             status: 'unhealthy',
             details: {
                 connection: 'failed',
+                database: 'mssql',
                 error: error.message,
                 timestamp: new Date().toISOString()
             }
@@ -338,28 +342,3 @@ export async function checkDatabaseHealth(): Promise<{
 export {
     sequelize
 };
-
-export function getUser() {
-    if (!User) throw new Error('User model not initialized. Call initializeDatabase() first.');
-    return User;
-}
-
-export function getRole() {
-    if (!Role) throw new Error('Role model not initialized. Call initializeDatabase() first.');
-    return Role;
-}
-
-export function getPasswordHistory() {
-    if (!PasswordHistory) throw new Error('PasswordHistory model not initialized. Call initializeDatabase() first.');
-    return PasswordHistory;
-}
-
-export function getAsaciRequest() {
-    if (!AsaciRequest) throw new Error('AsaciRequest model not initialized. Call initializeDatabase() first.');
-    return AsaciRequest;
-}
-
-export function getOperationLog() {
-    if (!OperationLog) throw new Error('OperationLog model not initialized. Call initializeDatabase() first.');
-    return OperationLog;
-}

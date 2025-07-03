@@ -5737,3 +5737,21 @@
 {"executionTime":1103,"filteredCount":5,"generated_id":"01JYM40ESBJPFHY4AVJBTXVJVE","level":"info","message":"Successfully retrieved attestations from ASACI","service":"A-CertifyLink","timestamp":"2025-07-02 19:10:03","totalCount":6}
 {"certificateReference":"PROD-072025-F3CEA64D97","level":"info","message":"Fetching certificate download link from ASACI","service":"A-CertifyLink","timestamp":"2025-07-02 19:10:17","userId":"6f187637-7881-4397-aa08-70ee26cbb4e5"}
 {"certificateReference":"PROD-072025-F3CEA64D97","downloadCount":2,"level":"info","message":"Certificate download link retrieved from database","requestId":"39030c73-afc4-4a1e-bded-74cb3cea08bf","service":"A-CertifyLink","timestamp":"2025-07-02 19:10:17"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:42"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:42"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:42"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:42"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:42"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 11:13:45"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:56"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:56"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:56"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:56"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:56"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 11:19:58"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:46"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:46"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:46"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:46"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:46"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 11:28:48"}

@@ -13,6 +13,58 @@ import AsaciRequestModel, {AsaciRequestCreationAttributes, AsaciRequestStatus} f
 import OperationLogModel, {OperationStatus, OperationType} from "@models/operation-log.model";
 import {ASACI_ENDPOINTS} from "@config/asaci-endpoints";
 
+export interface AsaciCertificate {
+    production: {
+        reference: string;
+    };
+    reference: string;
+    state: {
+        name: string;
+        label: string;
+    };
+    download_link: string;
+    licence_plate: string;
+    chassis_number: string;
+    police_number: string;
+    insured_name: string;
+    starts_at: string;
+    ends_at: string;
+    printed_at: string;
+}
+
+export interface AsaciOrganization {
+    id: string;
+    code: string;
+    name: string;
+    address: string;
+    email: string;
+    telephone: string;
+    logo_url: string;
+    disabled_at: string | null;
+    is_disabled: boolean;
+    created_at: string;
+    formatted_created_at: string;
+    updated_at: string;
+    formatted_updated_at: string;
+}
+
+export interface AsaciResponsePayload {
+    status: number;
+    message: string;
+    data: {
+        id: string;
+        reference: string;
+        sent_to_storage: string | null;
+        channel: string;
+        download_link: string;
+        created_at: string;
+        quantity: number;
+        formatted_created_at: string;
+        organization: AsaciOrganization;
+        certificates: AsaciCertificate[];
+    };
+}
+
 export class CertifyLinkService {
     constructor(
         private readonly orassService: OrassService,
@@ -385,43 +437,72 @@ export class CertifyLinkService {
             if (storedRequest && storedRequest.certificateUrl) {
                 await storedRequest.incrementDownloadCount();
 
-                // Safely extract the certificate download link
-                let certDownloadLink = null;
-                if (
-                    storedRequest.asaciResponsePayload &&
-                    storedRequest.asaciResponsePayload.data &&
-                    Array.isArray(storedRequest.asaciResponsePayload.data.certificates) &&
-                    storedRequest.asaciResponsePayload.data.certificates.length > 0
-                ) {
-                    certDownloadLink = storedRequest.asaciResponsePayload.data.certificates[0].download_link;
+                let certDownloadLink: string | null = null;
+
+                try {
+                    const responsePayload = storedRequest.asaciResponsePayload as AsaciResponsePayload;
+                    if (responsePayload && typeof responsePayload === 'object') {
+                        if (
+                            responsePayload.data &&
+                            Array.isArray(responsePayload.data.certificates) &&
+                            responsePayload.data.certificates.length > 0
+                        ) {
+                            certDownloadLink = responsePayload.data.certificates[0].download_link;
+                        }
+
+                        // Optionally, fallback to the production download link
+                        if (!certDownloadLink && responsePayload.data?.download_link) {
+                            certDownloadLink = responsePayload.data.download_link;
+                        }
+                    }
+                } catch (jsonError : any) {
+                    logger.warn('Failed to parse asaciResponsePayload JSON', {
+                        certificateReference,
+                        requestId: storedRequest.id,
+                        error: jsonError.message
+                    });
+
+                    certDownloadLink = storedRequest.certificateUrl;
                 }
 
-                // Optionally, fallback to the production download link
-                if (!certDownloadLink && storedRequest?.asaciResponsePayload?.data.download_link) {
-                    certDownloadLink = storedRequest.asaciResponsePayload.data.download_link;
-                }
+                await storedRequest.reload();
 
                 logger.info('Certificate download link retrieved from database', {
                     certificateReference,
                     requestId: storedRequest.id,
-                    downloadCount: storedRequest.downloadCount + 1
+                    downloadCount: storedRequest.downloadCount
                 });
 
                 return {
                     success: true,
                     source: 'database',
                     certificateReference,
-                    downloadLink: certDownloadLink,
-                    downloadCount: storedRequest.downloadCount + 1,
+                    downloadLink: certDownloadLink || storedRequest.certificateUrl,
+                    downloadCount: storedRequest.downloadCount,
                     asaciRequestId: storedRequest.id,
                     message: 'Certificate download link retrieved from database'
                 };
             }
+
+            logger.info('Certificate not found in database', {
+                certificateReference,
+                userId
+            });
+
+            return {
+                success: false,
+                source: 'database',
+                certificateReference,
+                message: 'Certificate not found in database',
+                downloadLink: null
+            };
+
         } catch (error: any) {
             const executionTime = Date.now() - startTime;
 
             logger.error('Failed to get certificate download link:', {
                 error: error.message,
+                stack: error.stack,
                 certificateReference,
                 userId,
                 executionTime
@@ -429,24 +510,33 @@ export class CertifyLinkService {
 
             // Log the failure
             if (userId) {
-                const storedRequest = await AsaciRequestModel.findOne({
-                    where: { userId, asaciReference: certificateReference }
-                });
+                try {
+                    const storedRequest = await AsaciRequestModel.findOne({
+                        where: { userId, asaciReference: certificateReference }
+                    });
 
-                if (storedRequest) {
-                    await OperationLogModel.logAsaciOperation(
-                        userId,
-                        storedRequest.id,
-                        OperationType.ASACI_DOWNLOAD,
-                        OperationStatus.FAILED,
-                        'GET',
-                        ASACI_ENDPOINTS.CERTIFICATES_DOWNLOAD.replace('{certificate_reference}', certificateReference),
-                        executionTime,
-                        { certificateReference },
-                        undefined,
-                        undefined,
-                        error
-                    );
+                    if (storedRequest) {
+                        await OperationLogModel.logAsaciOperation(
+                            userId,
+                            storedRequest.id,
+                            OperationType.ASACI_DOWNLOAD,
+                            OperationStatus.FAILED,
+                            'GET',
+                            ASACI_ENDPOINTS.CERTIFICATES_DOWNLOAD.replace('{certificate_reference}', certificateReference),
+                            executionTime,
+                            { certificateReference },
+                            undefined,
+                            undefined,
+                            error
+                        );
+                    }
+                } catch (logError : any) {
+                    logger.error('Failed to log operation failure:', {
+                        error: logError.message,
+                        originalError: error.message,
+                        certificateReference,
+                        userId
+                    });
                 }
             }
 

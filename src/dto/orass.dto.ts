@@ -7,9 +7,7 @@ import {
     IsOptional,
     IsString, Matches,
     Max,
-    MaxLength,
-    Min, MinLength,
-    ValidateIf, ValidateNested
+    Min, ValidateIf
 } from "class-validator";
 import { Transform, Type } from 'class-transformer';
 import {

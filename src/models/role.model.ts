@@ -51,6 +51,28 @@ export class RoleModel extends Model<RoleAttributes, RoleCreationAttributes> imp
     }
 }
 
+// Helper function to serialize JSON for MSSQL
+function serializeJson(value: any): string | null {
+    if (value === null || value === undefined) return null;
+    try {
+        return JSON.stringify(value);
+    } catch (error) {
+        console.error('Error serializing JSON:', error);
+        return null;
+    }
+}
+
+// Helper function to deserialize JSON for MSSQL
+function deserializeJson(value: string | null): any {
+    if (!value) return [];
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('Error deserializing JSON:', error);
+        return [];
+    }
+}
+
 // Model initialization function
 export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
     RoleModel.init({
@@ -74,13 +96,30 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
             allowNull: true
         },
         permissions: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
             allowNull: false,
-            defaultValue: [],
+            defaultValue: '[]',
+            get() {
+                const value = this.getDataValue('permissions') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                // Validate that value is an array
+                if (!Array.isArray(value)) {
+                    throw new Error('Permissions must be an array');
+                }
+                this.setDataValue('permissions', serializeJson(value) as any);
+            },
             validate: {
                 isArrayValidator(value: any) {
-                    if (!Array.isArray(value)) {
-                        throw new Error('Permissions must be an array');
+                    // Since we're storing as string, we need to parse it first to validate
+                    try {
+                        const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+                        if (!Array.isArray(parsed)) {
+                            throw new Error('Permissions must be an array');
+                        }
+                    } catch (error) {
+                        throw new Error('Permissions must be a valid JSON array');
                     }
                 }
             }

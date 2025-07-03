@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { CertifyLinkService } from '@services/certify-link.service';
 import {
-    SearchOrassPoliciesDto,
-    BulkCreateCertificatesFromOrassDto
+    SearchOrassPoliciesDto
 } from '@dto/certify-link.dto';
 import {AuthenticatedRequest} from "@interfaces/common.interfaces";
 import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";

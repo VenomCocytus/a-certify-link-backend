@@ -240,6 +240,28 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
     }
 }
 
+// Helper function to serialize JSON for MSSQL
+function serializeJson(value: any): string | null {
+    if (value === null || value === undefined) return null;
+    try {
+        return JSON.stringify(value);
+    } catch (error) {
+        console.error('Error serializing JSON:', error);
+        return null;
+    }
+}
+
+// Helper function to deserialize JSON for MSSQL
+function deserializeJson(value: string | null): any {
+    if (!value) return null;
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('Error deserializing JSON:', error);
+        return null;
+    }
+}
+
 // Model initialization function
 export function initOperationLogModel(sequelize: Sequelize): typeof OperationLogModel {
     OperationLogModel.init({
@@ -283,14 +305,28 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         requestData: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
             field: 'request_data',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('requestData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('requestData', serializeJson(value) as any);
+            }
         },
         responseData: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
             field: 'response_data',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('responseData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('responseData', serializeJson(value) as any);
+            }
         },
         responseStatus: {
             type: DataTypes.INTEGER,
@@ -308,9 +344,16 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         errorDetails: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
             field: 'error_details',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('errorDetails') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('errorDetails', serializeJson(value) as any);
+            }
         },
         executionTimeMs: {
             type: DataTypes.INTEGER,
@@ -343,8 +386,15 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         metadata: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('metadata') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('metadata', serializeJson(value) as any);
+            }
         },
         createdAt: {
             type: DataTypes.DATE,
