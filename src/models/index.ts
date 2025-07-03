@@ -96,14 +96,14 @@ function defineModelsAssociations(): void {
 
         // AsaciRequest <-> OperationLog relationship (One-to-Many)
         AsaciRequest.hasMany(OperationLog, {
-            foreignKey: 'productionRequestId',
+            foreignKey: 'asaciRequestId',
             as: 'operationLogs',
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
         });
 
         OperationLog.belongsTo(AsaciRequest, {
-            foreignKey: 'productionRequestId',
+            foreignKey: 'asaciRequestId',
             as: 'asaciRequest',
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
@@ -144,7 +144,7 @@ async function seedDatabase(): Promise<void> {
                     'user.statistics.read',
                     'orass.statistics.read'
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             },
             {
                 name: 'USER',
@@ -160,7 +160,7 @@ async function seedDatabase(): Promise<void> {
                     'edition.requests.download',
                     'user.statistics.read',
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             },
             {
                 name: 'OPERATOR',
@@ -175,7 +175,7 @@ async function seedDatabase(): Promise<void> {
                     'profile.update',
                     'password.change'
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             },
             {
                 name: 'VIEWER',
@@ -185,14 +185,18 @@ async function seedDatabase(): Promise<void> {
                     'users.read',
                     'logs.read'
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             }
         ];
 
         for (const roleData of roles) {
             const [role] = await Role.findOrCreate({
                 where: { name: roleData.name },
-                defaults: roleData
+                defaults: {
+                    ...roleData,
+                    permissions: roleData.permissions || [],
+                    isActive: roleData.isActive
+                }
             });
 
             console.log(`✅ Role ${role.name} initialized`);
@@ -212,7 +216,9 @@ async function seedDatabase(): Promise<void> {
                     isActive: true,
                     isBlocked: false,
                     isEmailVerified: true,
-                    emailVerifiedAt: new Date()
+                    emailVerifiedAt: new Date(),
+                    loginAttempts: 0,
+                    twoFactorEnabled: true
                 }
             });
 
@@ -267,18 +273,21 @@ async function setupPeriodicCleanupJobs(): Promise<void> {
 
 export async function initializeDatabase(): Promise<void> {
     try {
-        console.log('🔄 Initializing database...');
+        console.log('🔄 Initializing database for MSSQL...');
 
         await sequelize.authenticate();
         console.log('✅ Database connection established');
+
         initModels();
         defineModelsAssociations();
 
+        // MSSQL specific sync options
         await sequelize.sync({
             alter: process.env.NODE_ENV === 'development',
-            force: false // Never force in production
+            force: false, // Never force in production
+            logging: process.env.NODE_ENV === 'development' ? console.log : false
         });
-        console.log('✅ Database synchronized');
+        console.log('✅ Database synchronized for MSSQL');
 
         await seedDatabase();
         console.log('✅ Database seeded with initial data');
@@ -340,5 +349,10 @@ export async function checkDatabaseHealth(): Promise<{
 }
 
 export {
-    sequelize
+    sequelize,
+    User,
+    Role,
+    PasswordHistory,
+    AsaciRequest,
+    OperationLog
 };

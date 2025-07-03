@@ -83,9 +83,11 @@ export function initPasswordHistoryModel(sequelize: Sequelize): typeof PasswordH
         underscored: true,
         indexes: [
             {
+                name: 'idx_password_histories_user_id',
                 fields: ['user_id']
             },
             {
+                name: 'idx_password_histories_user_changed',
                 fields: ['user_id', 'changed_at']
             }
         ],

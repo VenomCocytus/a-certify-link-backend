@@ -241,7 +241,7 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
 }
 
 // Helper function to serialize JSON for MSSQL
-function serializeJson(value: any): string | null {
+function serializeJsonLog(value: any): string | null {
     if (value === null || value === undefined) return null;
     try {
         return JSON.stringify(value);
@@ -252,7 +252,7 @@ function serializeJson(value: any): string | null {
 }
 
 // Helper function to deserialize JSON for MSSQL
-function deserializeJson(value: string | null): any {
+function deserializeJsonLog(value: string | null): any {
     if (!value) return null;
     try {
         return JSON.parse(value);
@@ -289,12 +289,18 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             }
         },
         operation: {
-            type: DataTypes.ENUM(...Object.values(OperationType)),
-            allowNull: false
+            type: DataTypes.STRING(50), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            validate: {
+                isIn: [Object.values(OperationType)]
+            }
         },
         status: {
-            type: DataTypes.ENUM(...Object.values(OperationStatus)),
-            allowNull: false
+            type: DataTypes.STRING(20), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            validate: {
+                isIn: [Object.values(OperationStatus)]
+            }
         },
         method: {
             type: DataTypes.STRING(10),
@@ -305,27 +311,27 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         requestData: {
-            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            type: DataTypes.TEXT,
             field: 'request_data',
             allowNull: true,
             get() {
                 const value = this.getDataValue('requestData') as unknown as string;
-                return deserializeJson(value);
+                return deserializeJsonLog(value);
             },
             set(value: any) {
-                this.setDataValue('requestData', serializeJson(value) as any);
+                this.setDataValue('requestData', serializeJsonLog(value) as any);
             }
         },
         responseData: {
-            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            type: DataTypes.TEXT,
             field: 'response_data',
             allowNull: true,
             get() {
                 const value = this.getDataValue('responseData') as unknown as string;
-                return deserializeJson(value);
+                return deserializeJsonLog(value);
             },
             set(value: any) {
-                this.setDataValue('responseData', serializeJson(value) as any);
+                this.setDataValue('responseData', serializeJsonLog(value) as any);
             }
         },
         responseStatus: {
@@ -344,15 +350,15 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         errorDetails: {
-            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            type: DataTypes.TEXT,
             field: 'error_details',
             allowNull: true,
             get() {
                 const value = this.getDataValue('errorDetails') as unknown as string;
-                return deserializeJson(value);
+                return deserializeJsonLog(value);
             },
             set(value: any) {
-                this.setDataValue('errorDetails', serializeJson(value) as any);
+                this.setDataValue('errorDetails', serializeJsonLog(value) as any);
             }
         },
         executionTimeMs: {
@@ -386,14 +392,14 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         metadata: {
-            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            type: DataTypes.TEXT,
             allowNull: true,
             get() {
                 const value = this.getDataValue('metadata') as unknown as string;
-                return deserializeJson(value);
+                return deserializeJsonLog(value);
             },
             set(value: any) {
-                this.setDataValue('metadata', serializeJson(value) as any);
+                this.setDataValue('metadata', serializeJsonLog(value) as any);
             }
         },
         createdAt: {
@@ -410,30 +416,39 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         underscored: true,
         indexes: [
             {
+                name: 'idx_operation_logs_user_id',
                 fields: ['user_id']
             },
             {
+                name: 'idx_operation_logs_asaci_request_id',
                 fields: ['asaci_request_id']
             },
             {
+                name: 'idx_operation_logs_operation',
                 fields: ['operation']
             },
             {
+                name: 'idx_operation_logs_status',
                 fields: ['status']
             },
             {
+                name: 'idx_operation_logs_created_at',
                 fields: ['created_at']
             },
             {
+                name: 'idx_operation_logs_operation_status',
                 fields: ['operation', 'status']
             },
             {
+                name: 'idx_operation_logs_operation_created_at',
                 fields: ['operation', 'created_at']
             },
             {
+                name: 'idx_operation_logs_user_operation',
                 fields: ['user_id', 'operation']
             },
             {
+                name: 'idx_operation_logs_correlation_id',
                 fields: ['correlation_id']
             }
         ]

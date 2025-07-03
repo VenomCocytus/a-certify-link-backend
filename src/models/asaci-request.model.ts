@@ -1,4 +1,4 @@
-import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
+import {DataTypes, Model, Op, Optional, Sequelize} from 'sequelize';
 import {CertificateType, ChannelType} from "@interfaces/common.enum";
 
 export enum AsaciRequestStatus {
@@ -236,15 +236,14 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
     public static async findByStatus(status: AsaciRequestStatus): Promise<AsaciRequestModel[]> {
         return this.findAll({
             where: { status },
-            include: ['user'],
-            order: [['created_at', 'DESC']]
+            order: [['createdAt', 'DESC']]
         });
     }
 
     public static async findByUser(userId: string, limit: number = 10): Promise<AsaciRequestModel[]> {
         return this.findAll({
-            where: { userId: userId }, // Fixed: use snake_case
-            order: [['created_at', 'DESC']], // Fixed: use snake_case
+            where: { userId },
+            order: [['createdAt', 'DESC']],
             limit
         });
     }
@@ -253,17 +252,17 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
         return this.findAll({
             where: {
                 status: AsaciRequestStatus.FAILED,
-                retryCount: { // Fixed: use snake_case
-                    [Op.lt]: sequelize.literal('max_retries')
+                retryCount: {
+                    [Op.lt]: sequelize.col('maxRetries')
                 }
             },
-            order: [['updated_at', 'ASC']] // Fixed: use snake_case
+            order: [['updatedAt', 'ASC']]
         });
     }
 
     public static async getStatsByUser(userId: string, sequelize: Sequelize): Promise<any> {
         const stats = await this.findAll({
-            where: { userId: userId }, // Fixed: use snake_case
+            where: { userId },
             attributes: [
                 'status',
                 [sequelize.fn('COUNT', sequelize.col('id')), 'count']
@@ -312,6 +311,7 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         userId: {
             type: DataTypes.UUID,
             allowNull: false,
+            field: 'user_id',
             references: {
                 model: 'users',
                 key: 'id'
@@ -321,11 +321,13 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         // Orass Integration
         orassReference: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'orass_reference'
         },
         orassData: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'orass_data',
             get() {
                 const value = this.getDataValue('orassData') as unknown as string;
                 return deserializeJson(value);
@@ -336,17 +338,20 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         },
         orassFetchedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'orass_fetched_at'
         },
 
         // Asaci Integration
         asaciReference: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_reference'
         },
         asaciRequestPayload: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'asaci_request_payload',
             get() {
                 const value = this.getDataValue('asaciRequestPayload') as unknown as string;
                 return deserializeJson(value);
@@ -356,8 +361,9 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
             }
         },
         asaciResponsePayload: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'asaci_response_payload',
             get() {
                 const value = this.getDataValue('asaciResponsePayload') as unknown as string;
                 return deserializeJson(value);
@@ -368,17 +374,20 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         },
         asaciSubmittedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_submitted_at'
         },
         asaciCompletedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_completed_at'
         },
 
         // Request Details
         officeCode: {
             type: DataTypes.STRING(255),
             allowNull: false,
+            field: 'office_code',
             validate: {
                 notEmpty: true
             }
@@ -386,45 +395,58 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         organizationCode: {
             type: DataTypes.STRING(255),
             allowNull: false,
+            field: 'organization_code',
             validate: {
                 notEmpty: true
             }
         },
         certificateType: {
-            type: DataTypes.ENUM(...Object.values(CertificateType)),
-            allowNull: false
+            type: DataTypes.STRING(50), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            field: 'certificate_type',
+            validate: {
+                isIn: [Object.values(CertificateType)]
+            }
         },
         emailNotification: {
             type: DataTypes.STRING(255),
             allowNull: true,
+            field: 'email_notification',
             validate: {
                 isEmail: true
             }
         },
         generatedBy: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'generated_by'
         },
         channel: {
-            type: DataTypes.ENUM('api', 'web'),
+            type: DataTypes.STRING(10),
             allowNull: false,
-            defaultValue: 'web'
+            validate: {
+                isIn: [['api', 'web']]
+            }
         },
 
         // Status Tracking
         status: {
-            type: DataTypes.ENUM(...Object.values(AsaciRequestStatus)),
+            type: DataTypes.STRING(50),
             allowNull: false,
-            defaultValue: AsaciRequestStatus.ORASS_FETCHING
+            validate: {
+                isIn: [Object.values(AsaciRequestStatus)]
+            }
         },
         statusMessage: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'status_message'
         },
 
         insuredData: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'insured_data',
             get() {
                 const value = this.getDataValue('insuredData') as unknown as string;
                 return deserializeJson(value);
@@ -434,8 +456,9 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
             }
         },
         subscriberData: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'subscriber_data',
             get() {
                 const value = this.getDataValue('subscriberData') as unknown as string;
                 return deserializeJson(value);
@@ -445,8 +468,9 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
             }
         },
         contractData: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'contract_data',
             get() {
                 const value = this.getDataValue('contractData') as unknown as string;
                 return deserializeJson(value);
@@ -459,11 +483,13 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         // Results
         certificateUrl: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'certificate_url'
         },
         certificateData: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'certificate_data',
             get() {
                 const value = this.getDataValue('certificateData') as unknown as string;
                 return deserializeJson(value);
@@ -475,21 +501,24 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         downloadCount: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            field: 'download_count'
         },
         lastDownloadAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'last_download_at'
         },
 
         // Error Handling
         errorMessage: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'error_message'
         },
         errorDetails: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true,
+            field: 'error_details',
             get() {
                 const value = this.getDataValue('errorDetails') as unknown as string;
                 return deserializeJson(value);
@@ -501,28 +530,31 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         retryCount: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            field: 'retry_count'
         },
         maxRetries: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 3
+            field: 'max_retries'
         },
 
         // Audit
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: DataTypes.NOW
+            defaultValue: DataTypes.NOW,
+            field: 'created_at'
         },
         updatedAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: DataTypes.NOW
+            defaultValue: DataTypes.NOW,
+            field: 'updated_at'
         },
         completedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'completed_at'
         }
     }, {
         sequelize,
@@ -532,28 +564,42 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         underscored: true,
         indexes: [
             {
+                name: 'idx_asaci_requests_user_id',
                 fields: ['user_id']
             },
             {
+                name: 'idx_asaci_requests_status',
                 fields: ['status']
             },
             {
+                name: 'idx_asaci_requests_certificate_type',
                 fields: ['certificate_type']
             },
             {
+                name: 'idx_asaci_requests_orass_reference',
                 fields: ['orass_reference']
             },
             {
+                name: 'idx_asaci_requests_asaci_reference',
                 fields: ['asaci_reference']
             },
             {
+                name: 'idx_asaci_requests_created_at',
                 fields: ['created_at']
             },
             {
+                name: 'idx_asaci_requests_status_retry_count',
                 fields: ['status', 'retry_count']
             }
         ],
         hooks: {
+            beforeCreate: (asaciRequest: AsaciRequestModel) => {
+                if (asaciRequest.channel === undefined) asaciRequest.setDataValue('channel', ChannelType.WEB);
+                if (asaciRequest.status === undefined) asaciRequest.setDataValue('status', AsaciRequestStatus.ORASS_FETCHING);
+                if (asaciRequest.downloadCount === undefined) asaciRequest.setDataValue('downloadCount', 0);
+                if (asaciRequest.retryCount === undefined) asaciRequest.setDataValue('retryCount', 0);
+                if (asaciRequest.maxRetries === undefined) asaciRequest.setDataValue('maxRetries', 3);
+            },
             beforeUpdate: (asaciRequest: AsaciRequestModel) => {
                 asaciRequest.updatedAt = new Date();
             }

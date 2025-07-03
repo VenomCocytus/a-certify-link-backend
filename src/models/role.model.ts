@@ -52,7 +52,7 @@ export class RoleModel extends Model<RoleAttributes, RoleCreationAttributes> imp
 }
 
 // Helper function to serialize JSON for MSSQL
-function serializeJson(value: any): string | null {
+function serializeJsonRole(value: any): string | null {
     if (value === null || value === undefined) return null;
     try {
         return JSON.stringify(value);
@@ -63,7 +63,7 @@ function serializeJson(value: any): string | null {
 }
 
 // Helper function to deserialize JSON for MSSQL
-function deserializeJson(value: string | null): any {
+function deserializeJsonRole(value: string | null): any {
     if (!value) return [];
     try {
         return JSON.parse(value);
@@ -84,7 +84,6 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
         name: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            unique: true,
             validate: {
                 len: [2, 50],
                 notEmpty: true,
@@ -96,19 +95,19 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
             allowNull: true
         },
         permissions: {
-            type: DataTypes.TEXT('long'), // Changed from JSON to TEXT for MSSQL
+            type: DataTypes.TEXT,
             allowNull: false,
-            defaultValue: '[]',
+            // Remove defaultValue to avoid MSSQL ALTER COLUMN DEFAULT issues
             get() {
                 const value = this.getDataValue('permissions') as unknown as string;
-                return deserializeJson(value);
+                return deserializeJsonRole(value);
             },
             set(value: any) {
                 // Validate that value is an array
                 if (!Array.isArray(value)) {
                     throw new Error('Permissions must be an array');
                 }
-                this.setDataValue('permissions', serializeJson(value) as any);
+                this.setDataValue('permissions', serializeJsonRole(value) as any);
             },
             validate: {
                 isArrayValidator(value: any) {
@@ -127,7 +126,6 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
         isActive: {
             type: DataTypes.BOOLEAN,
             field: 'is_active',
-            defaultValue: true,
             allowNull: false
         },
         createdAt: {
@@ -150,13 +148,21 @@ export function initRoleModel(sequelize: Sequelize): typeof RoleModel {
         underscored: true,
         indexes: [
             {
+                name: 'idx_roles_name',
                 unique: true,
                 fields: ['name']
             },
             {
+                name: 'idx_roles_is_active',
                 fields: ['is_active']
             }
-        ]
+        ],
+        hooks: {
+            beforeCreate: (role: RoleModel) => {
+                if (role.isActive === undefined) role.setDataValue('isActive', true);
+                if (role.permissions === undefined) role.setDataValue('permissions', []);
+            }
+        }
     });
 
     return RoleModel;
