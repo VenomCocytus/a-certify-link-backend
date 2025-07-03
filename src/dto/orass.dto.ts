@@ -321,31 +321,6 @@ export class CreateEditionFromOrassDataRequest {
     }
 }
 
-
-/**
- * Validation class for bulk creation from multiple ORASS policies
- */
-export class BulkCreateEditionRequestFromOrassDto {
-    @ValidateNested({ each: true })
-    @Type(() => CreateEditionFromOrassDataRequest)
-    @IsNotEmpty({ message: 'Au moins une police ORASS est requise.' })
-    @Max(1000, { message: 'Vous ne pouvez pas traiter plus de 1000 polices à la fois.' })
-    policies: CreateEditionFromOrassDataRequest[];
-
-    @IsOptional()
-    @IsString({ message: 'L\'email de notification doit être une chaîne de caractères.' })
-    @IsEmail({}, { message: 'L\'adresse email de notification doit être valide.' })
-    @MaxLength(255, { message: 'L\'email de notification ne peut pas contenir plus de 255 caractères.' })
-    @Transform(({ value }) => value?.trim()?.toLowerCase())
-    bulkEmailNotification?: string;
-
-    @IsOptional()
-    @IsString({ message: 'Le nom du lot doit être une chaîne de caractères.' })
-    @MaxLength(100, { message: 'Le nom du lot ne peut pas contenir plus de 100 caractères.' })
-    @Transform(({ value }) => value?.trim())
-    batchName?: string;
-}
-
 //TODO: find which is the applicant code
 export interface OrassPolicySearchCriteria {
     policyNumber?: string;
@@ -372,17 +347,3 @@ export interface OrassConnectionStatus {
         username: string;
     };
 }
-
-// Certificate color mapping
-export type CertificateColorMapping = {
-    [key: string]: string;
-};
-
-export const CERTIFICATE_COLOR_MAP: CertificateColorMapping = {
-    'CIMA_YELLOW': 'cima-jaune',
-    'CIMA_GREEN': 'cima-verte',
-    'POOLTPV_RED': 'pooltpv-rouge',
-    'POOLTPV_BLUE': 'pooltpv-bleu',
-    'POOLTPV_BROWN': 'pooltpv-marron',
-    'MATCA_BLUE': 'matca-bleu'
-};

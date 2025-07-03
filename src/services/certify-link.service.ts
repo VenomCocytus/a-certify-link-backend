@@ -3,7 +3,7 @@ import { logger } from '@utils/logger';
 import {
     OrassPolicySearchCriteria,
     OrassQueryResult,
-    CERTIFICATE_COLOR_MAP, CreateEditionFromOrassDataRequest,
+    CreateEditionFromOrassDataRequest,
 } from '@dto/orass.dto';
 import {
     SearchOrassPoliciesDto,
@@ -50,33 +50,6 @@ export class CertifyLinkService {
             throw error;
         }
     }
-
-    /**
-     * Create ASACI certificate production from ORASS policy
-     */
-    // async createEditionRequest(createProductionRequest: CreateEditionFromOrassDataRequest): Promise<any> {
-    //     try {
-    //         const productionData = createProductionRequest.toAsaciProductionRequest();
-    //         const result = await this.asaciProductionService.createProductionRequest(productionData);
-    //
-    //         logger.info('Certificate production created from ORASS policy', {
-    //             policyNumber: createProductionRequest.policyNumber,
-    //             certificateType: createProductionRequest.certificateType,
-    //             productionReference: result.reference || 'N/A'
-    //         });
-    //
-    //         return {
-    //             success: true,
-    //             productionData,
-    //             asaciResult: result,
-    //             message: 'Certificate production created successfully'
-    //         };
-    //
-    //     } catch (error: any) {
-    //         logger.error('Failed to create certificate from ORASS policy:', error);
-    //         throw error;
-    //     }
-    // }
 
     /**
      * Create ASACI certificate production from ORASS policy and store in a database
@@ -204,7 +177,7 @@ export class CertifyLinkService {
     /**
      * Get attestations from ASACI API filtered by generated_id and other criteria
      */
-    async getAttestationsFromAsaci(): Promise<any> {
+    async getEditionRequestFromAsaci(): Promise<any> {
         const startTime = Date.now();
 
         try {
@@ -388,7 +361,7 @@ export class CertifyLinkService {
     /**
      * Get a certificate download link by ASACI certificate reference/ID
      */
-    async getCertificateDownloadLink(certificateReference: string, userId?: string): Promise<any> {
+    async getEditionRequestDownloadLink(certificateReference: string, userId?: string): Promise<any> {
         const startTime = Date.now();
 
         try {
@@ -444,77 +417,6 @@ export class CertifyLinkService {
                     message: 'Certificate download link retrieved from database'
                 };
             }
-
-            // // If not in database or no download link, fetch from ASACI API
-            // const endpoint = ASACI_ENDPOINTS.CERTIFICATES_DOWNLOAD.replace('{certificate_reference}', certificateReference);
-            //
-            // logger.info('Fetching certificate download link from ASACI API', {
-            //     endpoint,
-            //     certificateReference
-            // });
-            //
-            // const response = await this.downloadCertificate(userId, userId);
-            //
-            // const executionTime = Date.now() - startTime;
-            //
-            // // Log the operation
-            // if (userId && storedRequest) {
-            //     await OperationLogModel.logAsaciOperation(
-            //         userId,
-            //         storedRequest.id,
-            //         OperationType.ASACI_DOWNLOAD,
-            //         OperationStatus.SUCCESS,
-            //         'GET',
-            //         endpoint,
-            //         executionTime,
-            //         { certificateReference },
-            //         response,
-            //         response.status
-            //     );
-            // }
-            //
-            // // Extract download link from response
-            // let downloadLink = '';
-            // if (response.data && typeof response.data === 'string' && response.data.startsWith('http')) {
-            //     // Direct download link
-            //     downloadLink = response.data;
-            // } else if (response.data && response.data.download_link) {
-            //     // Download link in response object
-            //     downloadLink = response.data.download_link;
-            // } else if (response.headers && response.headers.location) {
-            //     // Redirect location
-            //     downloadLink = response.headers.location;
-            // } else {
-            //     // Try to construct a download link
-            //     downloadLink = `${process.env.ASACI_BASE_URL}/api/v1/certificates/${certificateReference}/download`;
-            // }
-            //
-            // // Update the stored request if found
-            // if (storedRequest && downloadLink) {
-            //     await storedRequest.update({
-            //         certificateUrl: downloadLink
-            //     });
-            //     await storedRequest.incrementDownloadCount();
-            // }
-            //
-            // logger.info('Certificate download link retrieved from ASACI API', {
-            //     certificateReference,
-            //     downloadLink,
-            //     executionTime,
-            //     source: 'asaci_api'
-            // });
-            //
-            // return {
-            //     success: true,
-            //     source: 'asaci_api',
-            //     certificateReference,
-            //     downloadLink,
-            //     downloadCount: storedRequest ? storedRequest.downloadCount + 1 : 1,
-            //     asaciRequestId: storedRequest?.id,
-            //     executionTime,
-            //     message: 'Certificate download link retrieved from ASACI API'
-            // };
-
         } catch (error: any) {
             const executionTime = Date.now() - startTime;
 
@@ -568,7 +470,7 @@ export class CertifyLinkService {
 
             const results = await Promise.allSettled(
                 certificateReferences.map(ref =>
-                    this.getCertificateDownloadLink(ref, userId)
+                    this.getEditionRequestDownloadLink(ref, userId)
                 )
             );
 
@@ -614,79 +516,6 @@ export class CertifyLinkService {
     }
 
     /**
-     * Create multiple certificates from ORASS policies (bulk operation)
-     */
-    // async bulkCreateCertificatesFromOrass(bulkDto: BulkCreateCertificatesFromOrassDto): Promise<any> {
-    //     const results: any[] = [];
-    //     const errors: any[] = [];
-    //
-    //     try {
-    //         logger.info('Starting bulk certificate creation', {
-    //             policyCount: bulkDto.policyNumbers.length,
-    //             certificateType: bulkDto.certificateType
-    //         });
-    //
-    //         for (const policyNumber of bulkDto.policyNumbers) {
-    //             try {
-    //                 const result = await this.createEditionRequest({
-    //                     policyNumber,
-    //                     certificateType: bulkDto.certificateType as CertificateType,
-    //                     emailNotification: bulkDto.emailNotification,
-    //                     generatedBy: bulkDto.generatedBy,
-    //                     channel: bulkDto.channel as ChannelType,
-    //                     certificateColor: bulkDto.defaultCertificateColor
-    //                 });
-    //
-    //                 results.push({
-    //                     policyNumber,
-    //                     success: true,
-    //                     result
-    //                 });
-    //
-    //             } catch (error: any) {
-    //                 const errorInfo = {
-    //                     policyNumber,
-    //                     success: false,
-    //                     error: error.message,
-    //                     details: error.details || {}
-    //                 };
-    //
-    //                 errors.push(errorInfo);
-    //                 results.push(errorInfo);
-    //
-    //                 logger.warn('Failed to create certificate for policy', {
-    //                     policyNumber,
-    //                     error: error.message
-    //                 });
-    //             }
-    //         }
-    //
-    //         const successCount = results.filter(r => r.success).length;
-    //         const errorCount = errors.length;
-    //
-    //         logger.info('Bulk certificate creation completed', {
-    //             total: bulkDto.policyNumbers.length,
-    //             successful: successCount,
-    //             failed: errorCount
-    //         });
-    //
-    //         return {
-    //             summary: {
-    //                 total: bulkDto.policyNumbers.length,
-    //                 successful: successCount,
-    //                 failed: errorCount
-    //             },
-    //             results,
-    //             errors: errorCount > 0 ? errors : undefined
-    //         };
-    //
-    //     } catch (error: any) {
-    //         logger.error('Failed bulk certificate creation:', error);
-    //         throw error;
-    //     }
-    // }
-
-    /**
      * Get statistics for user's ASACI requests
      */
     async getUserStatistics(userId: string): Promise<any> {
@@ -700,20 +529,6 @@ export class CertifyLinkService {
             };
         } catch (error: any) {
             logger.error('Failed to get user statistics:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get available certificate colors from ORASS policies
-     */
-    async getAvailableCertificateColors(): Promise<string[]> {
-        try {
-            // This would typically query distinct certificate colors from ORASS
-            // For now, return the mapped colors
-            return Object.values(CERTIFICATE_COLOR_MAP);
-        } catch (error: any) {
-            logger.error('Failed to get available certificate colors:', error);
             throw error;
         }
     }

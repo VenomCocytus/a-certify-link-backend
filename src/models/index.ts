@@ -17,7 +17,6 @@ function initializeModels(): void {
     try {
         console.log('🔄 Initializing models...');
 
-        // Initialize each model with the sequelized instance
         User = initUserModel(sequelize);
         Role = initRoleModel(sequelize);
         PasswordHistory = initPasswordHistoryModel(sequelize);
@@ -31,8 +30,7 @@ function initializeModels(): void {
     }
 }
 
-// Define model relationships
-function defineAssociations(): void {
+function defineModelsAssociations(): void {
     try {
         console.log('🔄 Defining model associations...');
 
@@ -118,12 +116,10 @@ function defineAssociations(): void {
     }
 }
 
-// Initialize database with seed data
 async function seedDatabase(): Promise<void> {
     try {
         console.log('🔄 Seeding database...');
 
-        // Seed default roles
         const roles = [
             {
                 name: 'ADMIN',
@@ -135,21 +131,18 @@ async function seedDatabase(): Promise<void> {
                     'users.delete',
                     'users.block',
                     'users.unblock',
+                    'verify.email',
+                    'profile.update',
+                    'profile.read',
+                    'password.update',
                     'roles.manage',
-                    'asaci:productions:create',
-                    'asaci:productions:read',
-                    'asaci:productions:update',
-                    'asaci:productions:delete',
-                    'asaci:productions:retry',
-                    'asaci:logs.read',
-                    'asaci:system.configure',
-                    'asaci:system.monitor',
-                    'orass:policies:read',
-                    'orass:policies:validate',
-                    'orass:policies:preview',
-                    'orass:policies:create',
-                    'orass:policies:bulk-create',
-                    'orass:certificates:create'
+                    'policies.read',
+                    'edition.requests.create',
+                    'edition.requests.read',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
+                    'orass.statistics.read'
                 ],
                 isActive: true
             },
@@ -157,11 +150,15 @@ async function seedDatabase(): Promise<void> {
                 name: 'USER',
                 description: 'Regular user with basic access',
                 permissions: [
-                    'productions.create',
-                    'productions.read',
-                    'productions.download',
+                    'verify.email',
                     'profile.update',
-                    'password.change'
+                    'profile.read',
+                    'password.update',
+                    'policies.read',
+                    'edition.requests.create',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
                 ],
                 isActive: true
             },
@@ -169,11 +166,10 @@ async function seedDatabase(): Promise<void> {
                 name: 'OPERATOR',
                 description: 'Operator with production management access',
                 permissions: [
-                    'productions.create',
-                    'productions.read',
-                    'productions.update',
-                    'productions.retry',
-                    'productions.download',
+                    'edition.requests.create',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
                     'users.read',
                     'logs.read',
                     'profile.update',
@@ -185,7 +181,7 @@ async function seedDatabase(): Promise<void> {
                 name: 'VIEWER',
                 description: 'Read-only access for monitoring',
                 permissions: [
-                    'productions.read',
+                    'edition.requests.read',
                     'users.read',
                     'logs.read'
                 ],
@@ -202,7 +198,6 @@ async function seedDatabase(): Promise<void> {
             console.log(`✅ Role ${role.name} initialized`);
         }
 
-        // Create a default admin user if it doesn't already exist
         const adminRole = await Role.findOne({ where: { name: 'ADMIN' } });
         if (adminRole) {
             const hashedPassword = await bcrypt.hash('Admin123!@#', 12);
@@ -237,8 +232,7 @@ async function seedDatabase(): Promise<void> {
     }
 }
 
-// Setup periodic cleanup jobs
-async function setupCleanupJobs(): Promise<void> {
+async function setupPeriodicCleanupJobs(): Promise<void> {
     // Clean up expired user blocks every hour
     setInterval(async () => {
         try {
@@ -267,32 +261,30 @@ async function setupCleanupJobs(): Promise<void> {
             }
         }, 24 * 60 * 60 * 1000); // Every 24 hours
     }, timeUntil2AM);
+
+    //TODO: Clean up failed asaci requests
 }
 
-// Database initialization function
 export async function initializeDatabase(): Promise<void> {
     try {
         console.log('🔄 Initializing database...');
 
-        // Test database connection
         await sequelize.authenticate();
         console.log('✅ Database connection established');
         initializeModels();
-        defineAssociations();
+        defineModelsAssociations();
 
-        // Sync database (create tables if they don't exist)
         await sequelize.sync({
             alter: process.env.NODE_ENV === 'development',
             force: false // Never force in production
         });
         console.log('✅ Database synchronized');
 
-        // Seed initial data
         await seedDatabase();
         console.log('✅ Database seeded with initial data');
 
-        // Setup cleanup jobs
-        await setupCleanupJobs();
+        console.log('🔄 Setting up periodic cleanup jobs...');
+        await setupPeriodicCleanupJobs();
         console.log('✅ Cleanup jobs scheduled');
 
     } catch (error) {
@@ -301,15 +293,12 @@ export async function initializeDatabase(): Promise<void> {
     }
 }
 
-// Database health check
 export async function checkDatabaseHealth(): Promise<{
     status: 'healthy' | 'unhealthy';
     details: any;
 }> {
     try {
-        // Test basic connection
         await sequelize.authenticate();
-
         // Test table access
         const userCount = await User.count();
         const roleCount = await Role.count();
@@ -349,6 +338,7 @@ export async function checkDatabaseHealth(): Promise<{
 export {
     sequelize
 };
+
 export function getUser() {
     if (!User) throw new Error('User model not initialized. Call initializeDatabase() first.');
     return User;
@@ -372,14 +362,4 @@ export function getAsaciRequest() {
 export function getOperationLog() {
     if (!OperationLog) throw new Error('OperationLog model not initialized. Call initializeDatabase() first.');
     return OperationLog;
-}
-
-export function getModels() {
-    return {
-        User: getUser(),
-        Role: getRole(),
-        PasswordHistory: getPasswordHistory(),
-        AsaciRequest: getAsaciRequest(),
-        OperationLog: getOperationLog()
-    };
 }

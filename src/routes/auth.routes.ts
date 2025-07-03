@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { validateDto, validateQuery } from '@middlewares/validation.middleware';
+import { validateDto } from '@middlewares/validation.middleware';
 import { AuthenticationController } from "@controllers/authentication.controller";
 import { asyncHandlerMiddleware } from '@middlewares/async-handler.middleware';
-import { authMiddleware, requireRoles } from '@middlewares/auth.middleware';
+import {authMiddleware, requirePermissions, requireRoles} from '@middlewares/auth.middleware';
 import {
     LoginDto,
     RegisterDto,
@@ -16,7 +16,6 @@ import {
     LogoutDto,
     CreateUserDto
 } from '@dto/auth.dto';
-import { authLimiter } from "@middlewares/rate-limiter.middleware";
 
 /**
  * @swagger
@@ -178,7 +177,7 @@ import { authLimiter } from "@middlewares/rate-limiter.middleware";
  *       bearerFormat: JWT
  */
 
-export function createAuthRoutes(authController: AuthenticationController): Router {
+export function createAuthRoutes(authController: AuthenticationController): Router{
     const router = Router();
 
     // Public routes (no authentication required)
@@ -235,7 +234,6 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      *               $ref: '#/components/schemas/ErrorResponse'
      */
     router.post('/login',
-        // authLimiter,
         validateDto(LoginDto),
         asyncHandlerMiddleware(authController.login.bind(authController))
     );
@@ -417,7 +415,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      *               $ref: '#/components/schemas/ErrorResponse'
      */
     router.get('/verify-email/:userId/:token',
-        validateQuery,
+        requirePermissions(['verify.email']),
         asyncHandlerMiddleware(authController.verifyEmail.bind(authController))
     );
 
@@ -564,6 +562,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      */
     router.get('/profile',
         authMiddleware,
+        requirePermissions(['profile.read']),
         asyncHandlerMiddleware(authController.getProfile.bind(authController))
     );
 
@@ -622,6 +621,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      */
     router.put('/profile',
         authMiddleware,
+        requirePermissions(['profile.update']),
         validateDto(UpdateProfileDto),
         asyncHandlerMiddleware(authController.updateProfile.bind(authController))
     );
@@ -683,6 +683,7 @@ export function createAuthRoutes(authController: AuthenticationController): Rout
      */
     router.post('/change-password',
         authMiddleware,
+        requirePermissions(['password.update']),
         validateDto(ChangePasswordDto),
         asyncHandlerMiddleware(authController.changePassword.bind(authController))
     );

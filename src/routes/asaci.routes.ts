@@ -1,28 +1,8 @@
 import { Router } from 'express';
-import {
-    GenerateTokenDto,
-    OtpValidateDto,
-    ForgotPasswordDto,
-    ResetPasswordDto,
-    ResendWelcomeDto,
-    SetInitialPasswordDto,
-    RevokeTokensDto,
-    CreateProductionRequestDto,
-    CreateOrderDto,
-    UpdateOrderDto,
-    CancelCertificateDto,
-    SuspendCertificateDto,
-    CreateTransactionDto,
-    UpdateTransactionDto,
-    RejectTransactionDto,
-    CancelTransactionDto
-} from '@dto/asaci.dto';
-import { validateDto } from "@middlewares/validation.middleware";
 import { asyncHandlerMiddleware } from "@middlewares/async-handler.middleware";
-import { authMiddleware, requirePermissions, requireRoles } from "@middlewares/auth.middleware";
+import { authMiddleware } from "@middlewares/auth.middleware";
 import { AsaciAttestationController } from "@controllers/asaci-attestation.controller";
 import { AsaciAuthenticationController } from "@controllers/asaci-authentication.controller";
-import {certificateCreationLimiter} from "@middlewares/rate-limiter.middleware";
 
 export function createAsaciRoutes(
     authController: AsaciAuthenticationController,
@@ -39,8 +19,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/login',
         authMiddleware,
-        requirePermissions(['asaci:login']),
-        validateDto(GenerateTokenDto),
         asyncHandlerMiddleware(authController.generateToken.bind(authController))
     );
 
@@ -51,8 +29,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/otp/validate',
         authMiddleware,
-        requirePermissions(['asaci:otp']),
-        validateDto(OtpValidateDto),
         asyncHandlerMiddleware(authController.validateOtp.bind(authController))
     );
 
@@ -63,8 +39,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/otp/resend',
         authMiddleware,
-        requirePermissions(['asaci:otp']),
-        validateDto(OtpValidateDto),
         asyncHandlerMiddleware(authController.resendOtp.bind(authController))
     );
 
@@ -75,8 +49,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/forgot-password',
         authMiddleware,
-        requirePermissions(['asaci:password_reset']),
-        validateDto(ForgotPasswordDto),
         asyncHandlerMiddleware(authController.forgotPassword.bind(authController))
     );
 
@@ -87,8 +59,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/reset-password',
         authMiddleware,
-        requirePermissions(['asaci:password_reset']),
-        validateDto(ResetPasswordDto),
         asyncHandlerMiddleware(authController.resetPassword.bind(authController))
     );
 
@@ -99,8 +69,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/welcome/send',
         authMiddleware,
-        requireRoles(['ADMIN', 'SUPER_ADMIN']),
-        validateDto(ResendWelcomeDto),
         asyncHandlerMiddleware(authController.resendWelcomeEmail.bind(authController))
     );
 
@@ -111,8 +79,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/welcome/:userId/set-password',
         authMiddleware,
-        requireRoles(['ADMIN', 'SUPER_ADMIN']),
-        validateDto(SetInitialPasswordDto),
         asyncHandlerMiddleware(authController.setInitialPassword.bind(authController))
     );
 
@@ -123,7 +89,6 @@ export function createAsaciRoutes(
      */
     router.get('/auth/user',
         authMiddleware,
-        requirePermissions(['asaci:read']),
         asyncHandlerMiddleware(authController.getCurrentUser.bind(authController))
     );
 
@@ -134,7 +99,6 @@ export function createAsaciRoutes(
      */
     router.get('/auth/tokens',
         authMiddleware,
-        requirePermissions(['asaci:tokens']),
         asyncHandlerMiddleware(authController.getUserTokens.bind(authController))
     );
 
@@ -145,8 +109,6 @@ export function createAsaciRoutes(
      */
     router.post('/auth/tokens/revoke',
         authMiddleware,
-        requirePermissions(['asaci:tokens']),
-        validateDto(RevokeTokensDto),
         asyncHandlerMiddleware(authController.revokeTokens.bind(authController))
     );
 
@@ -157,7 +119,6 @@ export function createAsaciRoutes(
      */
     router.delete('/auth/tokens',
         authMiddleware,
-        requirePermissions(['asaci:tokens']),
         asyncHandlerMiddleware(authController.deleteCurrentToken.bind(authController))
     );
 
@@ -168,7 +129,6 @@ export function createAsaciRoutes(
      */
     router.get('/auth/email/send-verification',
         authMiddleware,
-        requirePermissions(['asaci:email_verification']),
         asyncHandlerMiddleware(authController.resendEmailVerification.bind(authController))
     );
 
@@ -179,7 +139,6 @@ export function createAsaciRoutes(
      */
     router.get('/auth/email/verify/:id/:hash',
         authMiddleware,
-        requirePermissions(['asaci:email_verification']),
         asyncHandlerMiddleware(authController.verifyEmail.bind(authController))
     );
 
@@ -192,9 +151,6 @@ export function createAsaciRoutes(
      */
     router.post('/productions',
         authMiddleware,
-        certificateCreationLimiter,
-        requirePermissions(['asaci:productions:create']),
-        // validateDto(CreateProductionRequestDto),
         asyncHandlerMiddleware(attestationController.createProductionRequest.bind(attestationController))
     );
 
@@ -205,7 +161,6 @@ export function createAsaciRoutes(
      */
     router.get('/productions',
         authMiddleware,
-        requirePermissions(['asaci:productions:read']),
         asyncHandlerMiddleware(attestationController.getProductionRequests.bind(attestationController))
     );
 
@@ -216,7 +171,6 @@ export function createAsaciRoutes(
      */
     router.get('/productions/:reference/download',
         authMiddleware,
-        requirePermissions(['asaci:productions:download']),
         asyncHandlerMiddleware(attestationController.downloadProductionZip.bind(attestationController))
     );
 
@@ -229,8 +183,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders',
         authMiddleware,
-        requirePermissions(['asaci:orders:create']),
-        validateDto(CreateOrderDto),
         asyncHandlerMiddleware(attestationController.createOrder.bind(attestationController))
     );
 
@@ -241,7 +193,6 @@ export function createAsaciRoutes(
      */
     router.get('/orders',
         authMiddleware,
-        requirePermissions(['asaci:orders:read']),
         asyncHandlerMiddleware(attestationController.getOrders.bind(attestationController))
     );
 
@@ -252,7 +203,6 @@ export function createAsaciRoutes(
      */
     router.get('/orders/:reference',
         authMiddleware,
-        requirePermissions(['asaci:orders:read']),
         asyncHandlerMiddleware(attestationController.getOrder.bind(attestationController))
     );
 
@@ -263,8 +213,6 @@ export function createAsaciRoutes(
      */
     router.put('/orders/:reference',
         authMiddleware,
-        requirePermissions(['asaci:orders:update']),
-        validateDto(UpdateOrderDto),
         asyncHandlerMiddleware(attestationController.updateOrder.bind(attestationController))
     );
 
@@ -275,7 +223,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/approve',
         authMiddleware,
-        requirePermissions(['asaci:orders:approve']),
         asyncHandlerMiddleware(attestationController.approveOrder.bind(attestationController))
     );
 
@@ -286,7 +233,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/reject',
         authMiddleware,
-        requirePermissions(['asaci:orders:reject']),
         asyncHandlerMiddleware(attestationController.rejectOrder.bind(attestationController))
     );
 
@@ -297,7 +243,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/cancel',
         authMiddleware,
-        requirePermissions(['asaci:orders:cancel']),
         asyncHandlerMiddleware(attestationController.cancelOrder.bind(attestationController))
     );
 
@@ -308,7 +253,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/suspend',
         authMiddleware,
-        requirePermissions(['asaci:orders:suspend']),
         asyncHandlerMiddleware(attestationController.suspendOrder.bind(attestationController))
     );
 
@@ -319,7 +263,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/submit-for-confirmation',
         authMiddleware,
-        requirePermissions(['asaci:orders:submit']),
         asyncHandlerMiddleware(attestationController.submitOrderForConfirmation.bind(attestationController))
     );
 
@@ -330,7 +273,6 @@ export function createAsaciRoutes(
      */
     router.post('/orders/:reference/confirm-delivery',
         authMiddleware,
-        requirePermissions(['asaci:orders:confirm']),
         asyncHandlerMiddleware(attestationController.confirmOrderDelivery.bind(attestationController))
     );
 
@@ -343,7 +285,6 @@ export function createAsaciRoutes(
      */
     router.get('/certificates',
         authMiddleware,
-        requirePermissions(['asaci:certificates:read']),
         asyncHandlerMiddleware(attestationController.getCertificates.bind(attestationController))
     );
 
@@ -354,7 +295,6 @@ export function createAsaciRoutes(
      */
     router.get('/certificates/:reference',
         authMiddleware,
-        requirePermissions(['asaci:certificates:read']),
         asyncHandlerMiddleware(attestationController.getCertificate.bind(attestationController))
     );
 
@@ -365,7 +305,6 @@ export function createAsaciRoutes(
      */
     router.get('/certificates/:reference/download',
         authMiddleware,
-        requirePermissions(['asaci:certificates:download']),
         asyncHandlerMiddleware(attestationController.downloadCertificate.bind(attestationController))
     );
 
@@ -376,8 +315,6 @@ export function createAsaciRoutes(
      */
     router.post('/certificates/:reference/cancel',
         authMiddleware,
-        requirePermissions(['asaci:certificates:cancel']),
-        validateDto(CancelCertificateDto),
         asyncHandlerMiddleware(attestationController.cancelCertificate.bind(attestationController))
     );
 
@@ -388,8 +325,6 @@ export function createAsaciRoutes(
      */
     router.post('/certificates/:reference/suspend',
         authMiddleware,
-        requirePermissions(['asaci:certificates:suspend']),
-        validateDto(SuspendCertificateDto),
         asyncHandlerMiddleware(attestationController.suspendCertificate.bind(attestationController))
     );
 
@@ -400,7 +335,6 @@ export function createAsaciRoutes(
      */
     router.post('/certificates/:reference/check',
         authMiddleware,
-        requirePermissions(['asaci:certificates:check']),
         asyncHandlerMiddleware(attestationController.checkCertificate.bind(attestationController))
     );
 
@@ -411,7 +345,6 @@ export function createAsaciRoutes(
      */
     router.get('/certificate-types',
         authMiddleware,
-        requirePermissions(['asaci:certificates:read']),
         asyncHandlerMiddleware(attestationController.getCertificateTypes.bind(attestationController))
     );
 
@@ -422,7 +355,6 @@ export function createAsaciRoutes(
      */
     router.get('/certificate-variants',
         authMiddleware,
-        requirePermissions(['asaci:certificates:read']),
         asyncHandlerMiddleware(attestationController.getCertificateVariants.bind(attestationController))
     );
 
@@ -435,8 +367,6 @@ export function createAsaciRoutes(
      */
     router.post('/transactions',
         authMiddleware,
-        requirePermissions(['asaci:transactions:create']),
-        validateDto(CreateTransactionDto),
         asyncHandlerMiddleware(attestationController.createTransaction.bind(attestationController))
     );
 
@@ -447,7 +377,6 @@ export function createAsaciRoutes(
      */
     router.get('/transactions',
         authMiddleware,
-        requirePermissions(['asaci:transactions:read']),
         asyncHandlerMiddleware(attestationController.getTransactions.bind(attestationController))
     );
 
@@ -458,7 +387,6 @@ export function createAsaciRoutes(
      */
     router.get('/transactions/:reference',
         authMiddleware,
-        requirePermissions(['asaci:transactions:read']),
         asyncHandlerMiddleware(attestationController.getTransaction.bind(attestationController))
     );
 
@@ -469,8 +397,6 @@ export function createAsaciRoutes(
      */
     router.put('/transactions/:reference',
         authMiddleware,
-        requirePermissions(['asaci:transactions:update']),
-        validateDto(UpdateTransactionDto),
         asyncHandlerMiddleware(attestationController.updateTransaction.bind(attestationController))
     );
 
@@ -481,7 +407,6 @@ export function createAsaciRoutes(
      */
     router.post('/transactions/:reference/approve',
         authMiddleware,
-        requirePermissions(['asaci:transactions:approve']),
         asyncHandlerMiddleware(attestationController.approveTransaction.bind(attestationController))
     );
 
@@ -492,8 +417,6 @@ export function createAsaciRoutes(
      */
     router.post('/transactions/:reference/reject',
         authMiddleware,
-        requirePermissions(['asaci:transactions:reject']),
-        validateDto(RejectTransactionDto),
         asyncHandlerMiddleware(attestationController.rejectTransaction.bind(attestationController))
     );
 
@@ -504,8 +427,6 @@ export function createAsaciRoutes(
      */
     router.post('/transactions/:reference/cancel',
         authMiddleware,
-        requirePermissions(['asaci:transactions:cancel']),
-        validateDto(CancelTransactionDto),
         asyncHandlerMiddleware(attestationController.cancelTransaction.bind(attestationController))
     );
 
@@ -518,7 +439,6 @@ export function createAsaciRoutes(
      */
     router.get('/statistics/certificates/usage',
         authMiddleware,
-        requirePermissions(['asaci:statistics:read']),
         asyncHandlerMiddleware(attestationController.getCertificateUsageStatistics.bind(attestationController))
     );
 
@@ -529,7 +449,6 @@ export function createAsaciRoutes(
      */
     router.get('/statistics/certificates/available',
         authMiddleware,
-        requirePermissions(['asaci:statistics:read']),
         asyncHandlerMiddleware(attestationController.getAvailableCertificatesStatistics.bind(attestationController))
     );
 
@@ -540,7 +459,6 @@ export function createAsaciRoutes(
      */
     router.get('/statistics/certificates/used',
         authMiddleware,
-        requirePermissions(['asaci:statistics:read']),
         asyncHandlerMiddleware(attestationController.getUsedCertificatesStatistics.bind(attestationController))
     );
 
