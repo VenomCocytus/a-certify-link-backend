@@ -275,3 +275,6 @@
 {"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 15:20:27"}
 {"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 15:33:54"}
 {"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 15:40:10"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:44:17"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:22"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:58"}

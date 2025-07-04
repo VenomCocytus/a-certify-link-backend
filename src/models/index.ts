@@ -17,8 +17,8 @@ function initModels(): void {
     try {
         console.log('🔄 Initializing models for MSSQL...');
 
-        User = initUserModel(sequelize);
         Role = initRoleModel(sequelize);
+        User = initUserModel(sequelize);
         PasswordHistory = initPasswordHistoryModel(sequelize);
         AsaciRequest = initAsaciRequestModel(sequelize);
         OperationLog = initOperationLogModel(sequelize);
@@ -279,15 +279,16 @@ export async function initializeDatabase(): Promise<void> {
         console.log('✅ Database connection established');
 
         initModels();
-        defineModelsAssociations();
 
-        // MSSQL specific sync options
+        // MSSQL-specific sync options
         await sequelize.sync({
             alter: process.env.NODE_ENV === 'development',
             force: false, // Never force in production
             logging: process.env.NODE_ENV === 'development' ? console.log : false
         });
         console.log('✅ Database synchronized for MSSQL');
+
+        defineModelsAssociations();
 
         await seedDatabase();
         console.log('✅ Database seeded with initial data');

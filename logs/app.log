@@ -5791,3 +5791,55 @@
 {"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-03 15:40:09"}
 {"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-03 15:40:09"}
 {"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-03 15:40:10"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-04 16:43:31"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:43:31"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-04 16:43:31"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:43:31"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-04 16:43:31"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:44:17"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:21"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:21"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:21"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:21"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:21"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:45:22"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:50"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:50"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:50"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:50"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:50"}
+{"level":"error","message":"❌ Failed to start server:","service":"A-CertifyLink","timestamp":"2025-07-04 16:51:58"}
+{"level":"info","message":"🚀 Starting undefined API Server...","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:25"}
+{"level":"info","message":"Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:25"}
+{"level":"info","message":"Port: 3000","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:25"}
+{"level":"info","message":"API Prefix: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:25"}
+{"level":"info","message":"✅ Environment variables validated","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:25"}
+{"level":"info","message":"✅ i18next initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Application middleware initialized","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Oracle client initialized","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ ORASS services initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ ORASS service manager created successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Asaci services initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Health check endpoints configured","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Swagger documentation routes initialized at: /api/v1/docs","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Health check routes mounted at: /health","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Authentication routes mounted at: /auth","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Asaci routes mounted at: /asaci","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ CertifyLink routes mounted at: /certify-link","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ All application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Application routes initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Error handlers initialized","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Application created successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:33"}
+{"level":"info","message":"✅ Asaci services authenticated successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"✅ Application initialized successfully","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"🚀 Server running on port 3000","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3000undefined/docs","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3000/health","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"🏥 Asaci Health Check: http://localhost:3000/health/asaci","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"🔗 API base URL: http://localhost:3000undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"📊 Environment: undefined","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"\n🎯 Server ready to accept requests!","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:35"}
+{"level":"info","message":"📊 Startup Health Check: degraded","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:37"}
+{"level":"warn","message":"⚠️ Some services may not be fully operational","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:37"}
+{"application":{"environment":"development","memory":{"arrayBuffers":4952637,"external":9013086,"heapTotal":293855232,"heapUsed":269432448,"rss":356700160},"status":"healthy","uptime":21.4298905},"asaci":{"authenticated":true,"status":"ok","timestamp":"2025-07-04T15:55:37.407Z"},"authentication":{"initialized":true,"status":"healthy"},"database":{"connection":"active","status":"healthy"},"level":"warn","message":"Health details:","orass":{"services":{"certifyLink":{"dependencies":{"asaci":"healthy","orass":{"connected":false,"connectionInfo":{"host":"10.0.7.24","port":1521,"sid":"ORASSCMRDB","username":"orassadm"},"error":"Connection test failed","lastChecked":"2025-07-04T15:55:37.408Z","service":"orass","status":"unhealthy","timestamp":"2025-07-04T15:55:37.408Z"}},"service":"certify-link","status":"degraded","timestamp":"2025-07-04T15:55:37.408Z"},"orass":{"connected":false,"connectionInfo":{"host":"10.0.7.24","port":1521,"sid":"ORASSCMRDB","username":"orassadm"},"error":"Connection test failed","lastChecked":"2025-07-04T15:55:37.408Z","service":"orass","status":"unhealthy","timestamp":"2025-07-04T15:55:37.408Z"}},"status":"degraded","timestamp":"2025-07-04T15:55:37.408Z"},"service":"A-CertifyLink","timestamp":"2025-07-04 16:55:37"}
+{"level":"info","message":"🔄 Received SIGINT. Starting graceful shutdown...","service":"A-CertifyLink","timestamp":"2025-07-04 16:55:55"}

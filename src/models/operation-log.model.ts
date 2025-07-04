@@ -273,20 +273,12 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         userId: {
             type: DataTypes.UUID,
             field: 'user_id',
-            allowNull: true,
-            references: {
-                model: 'users',
-                key: 'id'
-            }
+            allowNull: true
         },
         asaciRequestId: {
             type: DataTypes.UUID,
             field: 'asaci_request_id',
-            allowNull: true,
-            references: {
-                model: 'asaci_requests',
-                key: 'id'
-            }
+            allowNull: true
         },
         operation: {
             type: DataTypes.STRING(50), // Changed from ENUM to STRING for MSSQL
