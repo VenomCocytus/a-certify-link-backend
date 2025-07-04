@@ -17,6 +17,8 @@ export class CertifyLinkController {
      */
     async searchOrassPolicies(req: AuthenticatedRequest, res: Response): Promise<void> {
         const searchDto: SearchOrassPoliciesDto = {
+            //TODO: If Office and organization codes are submitted look for them
+            //TODO: If the triple is submit, look for the corresponding policies
             policyNumber: req.query.policyNumber as string,
             applicantCode: req.query.applicantCode as string,
             endorsementNumber: req.query.endorsementNumber as string,
@@ -57,9 +59,7 @@ export class CertifyLinkController {
     //     });
     // }
     async createEditionRequestFromOrassPolicy(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const createEditionRequest: CreateEditionFromOrassDataRequest = req.body;
         const userId = req.user?.id;
-
         if (!userId) {
             res.status(401).json({
                 message: 'User authentication required',
@@ -68,7 +68,7 @@ export class CertifyLinkController {
             return;
         }
 
-        const result = await this.certifyLinkService.createEditionRequest(createEditionRequest, userId);
+        const result = await this.certifyLinkService.createEditionRequest(req.body, userId);
 
         res.status(201).json({
             message: 'Certificate production created successfully from ORASS policy',
@@ -230,8 +230,8 @@ export class CertifyLinkController {
      * Get certificate download link by ASACI certificate reference/ID (POST version for body data)
      * @route POST /certify-link/certificates/download-link
      */
-    async getCertificateDownloadLinkPost(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const { certificateReference } = req.body;
+    async getCertificateDownloadLink(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const certificateReference = req.params.reference;
         const userId = req.user?.id;
 
         if (!certificateReference) {

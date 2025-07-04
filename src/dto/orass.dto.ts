@@ -5,11 +5,9 @@ import {
     IsNotEmpty,
     IsNumber,
     IsOptional,
-    IsString, Matches,
-    Max,
+    IsString, Max,
     MaxLength,
-    Min, MinLength,
-    ValidateIf, ValidateNested
+    Min, ValidateIf, ValidateNested
 } from "class-validator";
 import { Transform, Type } from 'class-transformer';
 import {
@@ -126,13 +124,13 @@ export class CreateEditionFromOrassDataRequest {
 
     @IsString({message: 'Le téléphone du souscripteur doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le téléphone du souscripteur est requis.'})
-    @Matches(/^\+?[1-9]\d{1,14}$/, {message: 'Le numéro de téléphone du souscripteur doit être un numéro valide (format international recommandé).'})
     subscriberPhone: string;
 
     @IsEmail({}, {message: 'L\'adresse email du souscripteur doit être valide.'})
     @IsNotEmpty({message: 'L\'email du souscripteur est requis.'})
     subscriberEmail: string;
 
+    @IsOptional()
     @IsString({message: 'La boîte postale du souscripteur doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'La boîte postale du souscripteur est requise.'})
     subscriberPoBox: string;
@@ -144,7 +142,6 @@ export class CreateEditionFromOrassDataRequest {
 
     @IsString({message: 'Le téléphone de l\'assuré doit être une chaîne de caractères.'})
     @IsNotEmpty({message: 'Le téléphone de l\'assuré est requis.'})
-    @Matches(/^\+?[1-9]\d{1,14}$/, {message: 'Le numéro de téléphone de l\'assuré doit être un numéro valide (format international recommandé).'})
     insuredPhone: string;
 
     @IsEmail({}, {message: 'L\'adresse email de l\'assuré doit être valide.'})
@@ -199,19 +196,21 @@ export class CreateEditionFromOrassDataRequest {
     @Type(() => Number)
     vehicleSeats: number;
 
+    @IsOptional()
     @IsNumber({}, {message: 'La puissance fiscale doit être un nombre.'})
-    @IsNotEmpty({message: 'La puissance fiscale est requise.'})
     @Min(1, {message: 'La puissance fiscale doit être au moins 1.'})
     @Max(50, {message: 'La puissance fiscale ne peut pas être supérieure à 50.'})
     @Type(() => Number)
     vehicleFiscalPower: number;
 
+    @IsOptional()
     @IsNumber({}, {message: 'La charge utile doit être un nombre.'})
     @Min(0, {message: 'La charge utile ne peut pas être négative.'})
     @Max(100000, {message: 'La charge utile ne peut pas être supérieure à 100000.'})
     @Type(() => Number)
     vehicleUsefulLoad: number;
 
+    @IsOptional()
     @IsNumber({}, {message: 'La réduction flotte doit être un nombre.'})
     @Min(0, {message: 'La réduction flotte ne peut pas être négative.'})
     @Max(100, {message: 'La réduction flotte ne peut pas être supérieure à 100.'})
@@ -283,7 +282,7 @@ export class CreateEditionFromOrassDataRequest {
             organization_code: this.organizationCode,
             certificate_type: this.certificateType,
             email_notification: this.emailNotification,
-            generated_by: this.generatedBy || 'ORASS_INTEGRATION',
+            generated_by: this.generatedBy,
             channel: this.channel,
             productions: [
                 {

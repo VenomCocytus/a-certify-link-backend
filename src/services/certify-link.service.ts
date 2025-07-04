@@ -89,7 +89,7 @@ export class CertifyLinkService {
         let asaciRequest: AsaciRequestModel | null = null;
 
         try {
-            // Create initial database record
+            // Create an initial database record
             const asaciRequestData: AsaciRequestCreationAttributes = {
                 userId,
                 officeCode: createProductionRequest.officeCode,

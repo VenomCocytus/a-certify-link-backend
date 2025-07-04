@@ -160,10 +160,10 @@ export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkContro
      * @body certificateReference - The ASACI certificate reference/ID
      */
     //TODO: Turn this route into a query
-    router.post('/certificates/download-link',
+    router.get('/certificates/:reference/download-link',
         authMiddleware,
         // requirePermissions(['asaci:certificates:download']),
-        asyncHandlerMiddleware(certifyLinkController.getCertificateDownloadLinkPost.bind(certifyLinkController))
+        asyncHandlerMiddleware(certifyLinkController.getCertificateDownloadLink.bind(certifyLinkController))
     );
 
     /**

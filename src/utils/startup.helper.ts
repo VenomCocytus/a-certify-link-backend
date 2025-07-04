@@ -15,7 +15,7 @@ export async function initializeApplication(): Promise<void> {
         //TODO: Check if the orass service is healthy before making a new attestation creation
         app = createApp();
         await app.authenticateAsaci();
-        // await app.connectOrass();
+        await app.connectOrass();
 
         logger.info('✅ Application initialized successfully');
     } catch (error: any) {

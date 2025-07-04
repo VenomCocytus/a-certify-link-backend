@@ -105,6 +105,16 @@ export enum VehicleGenre {
  * TYPE DE SOUSCRIPTEUR - Types de souscripteur
  */
 export enum SubscriberType {
+    PHYSICAL_PERSON= 'TSPP',
+    LEGAL_ENTITY= 'TSPM'
+}
+
+export enum InsuredType {
+    PHYSICAL_PERSON= 'TAPP',
+    LEGAL_ENTITY= 'TAPM'
+}
+
+export enum InsuredProfession {
     COMMERCIAL_AGENT= 'ST01',
     COLLECTION_AGENT= 'ST02',
     FARMER= 'ST03',

@@ -1,16 +1,4 @@
 export const AsaciConstants = {
-    // Insured Types
-    INSURED_TYPES: {
-        PHYSICAL_PERSON: 'TAPP',
-        LEGAL_ENTITY: 'TAPM',
-    },
-
-    // Subscriber Types
-    SUBSCRIBER_TYPES: {
-        PHYSICAL_PERSON: 'TSPP',
-        LEGAL_ENTITY: 'TSPM',
-    },
-
     // Certificate Colors
     CERTIFICATE_COLORS: {
         YELLOW: 'JAUN',
