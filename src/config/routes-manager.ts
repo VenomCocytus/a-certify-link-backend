@@ -7,7 +7,7 @@ import { createAsaciRoutes } from "@/routes/asaci.routes";
 import { createAuthRoutes } from "@/routes/auth.routes";
 import { AuthenticationService } from "@services/authentication.service";
 import { AuthenticationController } from "@controllers/authentication.controller";
-import {Environment, isDevelopment} from "@config/environment";
+import {isDevelopment} from "@config/environment";
 import { setupSwagger } from "@config/swagger";
 import {OrassServiceManager} from "@config/orass-service-manager";
 import {CertifyLinkController} from "@controllers/certify-link.controller";
