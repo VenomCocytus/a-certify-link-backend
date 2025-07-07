@@ -8,16 +8,6 @@ import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";
 export function createCertifyLinkRoutes(certifyLinkController: CertifyLinkController): Router {
     const router = Router();
 
-    // Health check route (public)
-    /**
-     * @route GET /health
-     * @desc Health check for certify-link service
-     * @access Public
-     */
-    router.get('/health',
-        asyncHandlerMiddleware(certifyLinkController.healthCheck.bind(certifyLinkController))
-    );
-
     /**
      * @route GET /policies/search
      * @desc Search ORASS policies with various criteria

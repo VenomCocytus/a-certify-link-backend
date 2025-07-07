@@ -269,16 +269,4 @@ export class CertifyLinkController {
             user: req.user?.email
         });
     }
-
-    /**
-     * Health check for certify-link service
-     * @route GET /certify-link/health
-     */
-    async healthCheck(req: Request, res: Response): Promise<void> {
-        const health = await this.certifyLinkService.healthCheck();
-
-        const statusCode = health.status === 'healthy' ? 200 : 503;
-
-        res.status(statusCode).json(health);
-    }
 }

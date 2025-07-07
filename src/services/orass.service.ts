@@ -1,14 +1,10 @@
 import oracledb from 'oracledb';
-import { logger } from '@utils/logger';
+import {logger} from '@utils/logger';
 import {getOrassConfig} from '@config/environment';
-import { BaseException } from '@exceptions/base.exception';
+import {BaseException} from '@exceptions/base.exception';
 import {ErrorCodes} from "@/constants/error-codes";
-import {
-    OrassConnectionStatus, OrassPolicyResponse,
-    OrassPolicySearchCriteria,
-    OrassQueryResult
-} from "@dto/orass.dto";
-import {CertificateColor, CertificateType, ChannelType} from "@interfaces/common.enum";
+import {OrassConnectionStatus, OrassPolicyResponse, OrassPolicySearchCriteria, OrassQueryResult} from "@dto/orass.dto";
+import {CertificateColor, CertificateType, ChannelType, ConnectionStatus, HealthStatus} from "@interfaces/common.enum";
 import {OrassConfig} from "@interfaces/common.interfaces";
 
 export class OrassService {
@@ -338,11 +334,25 @@ export class OrassService {
     async healthCheck(): Promise<any> {
         const status = await this.getConnectionStatus();
 
-        return {
-            service: 'orass',
-            status: status.connected ? 'healthy' : 'unhealthy',
-            ...status,
-            timestamp: new Date().toISOString()
-        };
+        try {
+            return {
+                connection: status.connected ?
+                    ConnectionStatus.ACTIVE : ConnectionStatus.FAILED,
+                status: status.connected ? HealthStatus.HEALTHY : HealthStatus.UNHEALTHY,
+                details: {...status},
+                timestamp: new Date().toISOString()
+            };
+        }
+        catch (error: any) {
+            return {
+                connection: ConnectionStatus.FAILED,
+                status: HealthStatus.UNHEALTHY,
+                details: {...status},
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+
     }
 }

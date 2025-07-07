@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, {Express} from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -6,20 +6,24 @@ import cookieParser from 'cookie-parser';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
-import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
-import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
-import { logger } from '@utils/logger';
-import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-manager";
+import {globalExceptionHandlerMiddleware} from '@middlewares/global-exception-handler.middleware';
+import {AsaciServices, createAsaciServiceManager} from "@services/asaci-services";
+import {logger} from '@utils/logger';
+import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-config";
 import {AuthenticationService} from "@services/authentication.service";
 import * as process from "node:process";
-import {createOrassServiceManager, OrassServiceManager} from "@config/orass-service-manager";
 import {getAsaciConfig, isProduction} from "@config/environment";
+import {checkDatabaseHealth} from "@/models";
+import {HealthStatus} from "@interfaces/common.enum";
+import {OrassService} from "@services/orass.service";
+import {CertifyLinkService} from "@services/certify-link.service";
 
 export class App {
     public app: Express;
-    private asaciManager: AsaciServiceManager;
-    private orassManager: OrassServiceManager;
+    private asaciServices: AsaciServices;
     private authService: AuthenticationService;
+    private orassService: OrassService;
+    private certificateLinkService: CertifyLinkService;
 
     constructor() {
         this.app = express();
@@ -84,22 +88,13 @@ export class App {
     private initializeServices(): void {
         try {
             this.authService = new AuthenticationService();
-            this.asaciManager = createAsaciServiceManager(getAsaciConfig());
-            this.orassManager = createOrassServiceManager(
-                this.asaciManager.getProductionService()
-            );
+            this.orassService = new OrassService();
+            this.asaciServices = createAsaciServiceManager(getAsaciConfig());
+            this.certificateLinkService = new CertifyLinkService(
+                this.orassService, this.asaciServices.getProductionService());
+            //TODO: Automatically start Orass at launch without failure
 
-            // Setup Asaci health check endpoint
-            this.app.get('/health/asaci', async (req, res) => {
-                try {
-                    const health = await this.asaciManager.healthCheck();
-                    res.status(200).json(health);
-                } catch (error: any) {
-                    res.status(500).json({ status: 'error', message: error.message });
-                }
-            });
-
-            logger.info('✅ Asaci services initialized successfully');
+            logger.info('✅ Services initialized successfully');
         } catch (error: any) {
             logger.error('❌ Failed to initialize Asaci services:', error.message);
             throw error;
@@ -108,17 +103,15 @@ export class App {
 
     private setupApplicationRoutes(): void {
         try {
-            // Health check endpoints
             this.setupHealthChecks();
 
-            // Get route configuration with all services
             const routeConfig = getDefaultRouteConfig(
                 this.authService,
-                this.asaciManager,
-                this.orassManager
+                this.asaciServices,
+                this.orassService,
+                this.certificateLinkService
             );
 
-            // Create and mount application routes
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
             this.app.use(process.env.API_PREFIX as string, applicationRoutes);
 
@@ -139,14 +132,11 @@ export class App {
     }
 
     private setupErrorHandlers(): void {
-        // Global error handler (must be last)
         this.app.use(globalExceptionHandlerMiddleware);
-
         logger.info('✅ Error handlers initialized');
     }
 
     private setupHealthChecks(): void {
-        // General health check endpoint
         this.app.get('/health', async (req, res) => {
             try {
                 const health = await this.getHealthStatus();
@@ -161,10 +151,24 @@ export class App {
             }
         });
 
+        this.app.get('/health/database', async (req, res) => {
+            try {
+                const health = await checkDatabaseHealth();
+                const statusCode = health.status === 'healthy' ? 200 : 503;
+                res.status(statusCode).json(health);
+            } catch (error: any) {
+                res.status(503).json({
+                    status: 'unhealthy',
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        });
+
         // ASACI health check
         this.app.get('/health/asaci', async (req, res) => {
             try {
-                const health = await this.asaciManager.healthCheck();
+                const health = await this.asaciServices.healthCheck();
                 const statusCode = health.status === 'healthy' ? 200 : 503;
                 res.status(statusCode).json(health);
             } catch (error: any) {
@@ -180,7 +184,7 @@ export class App {
         // ORASS health check
         this.app.get('/health/orass', async (req, res) => {
             try {
-                const health = await this.orassManager.healthCheck();
+                const health = await this.orassService.healthCheck();
                 const statusCode = health.status === 'healthy' ? 200 : 503;
                 res.status(statusCode).json(health);
             } catch (error: any) {
@@ -203,7 +207,7 @@ export class App {
                 return;
             }
 
-            await this.asaciManager.authenticate(
+            await this.asaciServices.authenticate(
                 process.env.ASACI_EMAIL,
                 process.env.ASACI_PASSWORD,
                 process.env.ASACI_CLIENT_NAME
@@ -218,7 +222,7 @@ export class App {
 
     async connectOrass(): Promise<void> {
         if(process.env.ORASS_AUTO_CONNECT)
-            this.orassManager.connect().catch(error => {
+            this.orassService.connect().catch(error => {
                 logger.error('❌ Failed to connect to ORASS:', error.message);
                 throw error;
             });
@@ -226,7 +230,7 @@ export class App {
 
     async disconnectOrass(): Promise<void> {
         const disconnectionPromises: Promise<void>[] = [
-            this.orassManager.disconnect().catch(error => {
+            this.orassService.disconnect().catch(error => {
                 logger.error('Error disconnecting ORASS:', error);
             })
         ];
@@ -242,52 +246,16 @@ export class App {
     async getHealthStatus(): Promise<any> {
         const services: Record<string, any> = {};
 
-        // Check Asaci service health
-        try {
-            services.asaci = await this.asaciManager.healthCheck();
-        } catch (error: any) {
-            services.asaci = {
-                status: 'error',
-                error: error.message,
-                authenticated: false
-            };
-        }
+        //TODO: correctly build the responses of this service
+        services.asaci = await this.asaciServices.healthCheck();
+        services.orass = await this.orassService.healthCheck();
+        services.database = await checkDatabaseHealth();
 
-        // Check ORASS service health
-        try {
-            services.orass = await this.orassManager.healthCheck();
-        } catch (error: any) {
-            services.orass = {
-                status: 'error',
-                error: error.message,
-                connected: false
-            };
-        }
-
-        // Add database health check
-        services.database = {
-            status: 'healthy', // This should be replaced with an actual database health check
-            connection: 'active'
-        };
-
-        // Add authentication service health
-        services.authentication = {
-            status: 'healthy',
-            initialized: true
-        };
-
-        // Add other service health checks
-        services.application = {
-            status: 'healthy',
-            uptime: process.uptime(),
-            memory: process.memoryUsage(),
-            environment: process.env.NODE_ENV
-        };
-
-        const healthyStatuses = ['healthy', 'ok'];
-        const overallStatus = Object.values(services).every(service =>
-            healthyStatuses.includes(service.status)
-        ) ? 'healthy' : 'degraded';
+        //TODO: Check application health
+        const overallStatus = Object.values(services)
+            .every(service =>
+                HealthStatus.HEALTHY.includes(service.status))
+            ? HealthStatus.HEALTHY : HealthStatus.UNHEALTHY;
 
         return {
             status: overallStatus,

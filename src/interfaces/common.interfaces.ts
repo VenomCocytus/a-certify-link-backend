@@ -1,3 +1,7 @@
+import {AuthenticationService} from "@services/authentication.service";
+import {AsaciServices} from "@services/asaci-services";
+import {CertifyLinkService} from "@services/certify-link.service";
+import {OrassService} from "@services/orass.service";
 
 export interface DatabaseConfig {
     host: string;
@@ -26,4 +30,34 @@ export interface AsaciConfig {
     password: string;
     clientName: string;
     timeout?: number;
+}
+
+export interface RouteConfig {
+    auth?: {
+        enabled?: boolean;
+        basePath?: string;
+        authService?: AuthenticationService;
+    };
+    asaci?: {
+        enabled?: boolean;
+        basePath?: string;
+        manager?: AsaciServices;
+    };
+    orass?: {
+        enabled?: boolean;
+        orassService?: OrassService;
+    };
+    certifyLink?: {
+        enabled?: boolean;
+        basePath?: string;
+        certifyLinkService?: CertifyLinkService;
+    };
+    swagger?: {
+        enabled?: boolean;
+        basePath?: string;
+    };
+    health?: {
+        enabled?: boolean;
+        basePath?: string;
+    };
 }

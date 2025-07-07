@@ -6,6 +6,8 @@ import { PasswordHistoryModel, initPasswordHistoryModel } from './password-histo
 import { AsaciRequestModel, initAsaciRequestModel } from './asaci-request.model';
 import { OperationLogModel, initOperationLogModel } from './operation-log.model';
 import bcrypt from "bcryptjs";
+import {isDevelopment} from "@config/environment";
+import {ConnectionStatus, HealthStatus} from "@interfaces/common.enum";
 
 let User: typeof UserModel;
 let Role: typeof RoleModel;
@@ -175,7 +177,7 @@ async function seedDatabase(): Promise<void> {
                     'profile.update',
                     'password.change'
                 ],
-                isActive: true // Changed to 1 for MSSQL BIT type
+                isActive: true
             },
             {
                 name: 'VIEWER',
@@ -185,7 +187,7 @@ async function seedDatabase(): Promise<void> {
                     'users.read',
                     'logs.read'
                 ],
-                isActive: true // Changed to 1 for MSSQL BIT type
+                isActive: true
             }
         ];
 
@@ -279,12 +281,10 @@ export async function initializeDatabase(): Promise<void> {
         console.log('✅ Database connection established');
 
         initModels();
-
-        // MSSQL-specific sync options
         await sequelize.sync({
-            alter: process.env.NODE_ENV === 'development',
+            alter: isDevelopment(),
             force: false, // Never force in production
-            logging: process.env.NODE_ENV === 'development' ? console.log : false
+            logging: isDevelopment() ? console.log : false
         });
         console.log('✅ Database synchronized for MSSQL');
 
@@ -304,14 +304,16 @@ export async function initializeDatabase(): Promise<void> {
 }
 
 export async function checkDatabaseHealth(): Promise<{
-    status: 'healthy' | 'unhealthy';
+    status: HealthStatus;
+    connection: string;
     details: any;
+    timestamp: string;
+    error?: any
 }> {
     try {
-        // Test basic connection
         await sequelize.authenticate();
 
-        // Test table access
+        const timestamp = new Date().toISOString();
         const userCount = await User.count();
         const roleCount = await Role.count();
         const asaciRequestCount = await AsaciRequest.count();
@@ -324,27 +326,27 @@ export async function checkDatabaseHealth(): Promise<{
         });
 
         return {
-            status: 'healthy',
+            status: HealthStatus.HEALTHY,
+            timestamp: timestamp,
+            connection: ConnectionStatus.ACTIVE,
             details: {
-                connection: 'active',
-                database: 'mssql',
+                database: process.env.DB_INSTANCE_NAME,
                 users: userCount,
                 roles: roleCount,
                 asaciRequests: asaciRequestCount,
                 recentLogs: logCount,
-                timestamp: new Date().toISOString()
             }
         };
 
     } catch (error: any) {
         return {
-            status: 'unhealthy',
+            status: HealthStatus.UNHEALTHY,
+            timestamp: new Date().toISOString(),
+            connection: ConnectionStatus.FAILED,
             details: {
-                connection: 'failed',
-                database: 'mssql',
-                error: error.message,
-                timestamp: new Date().toISOString()
-            }
+                database: process.env.DB_INSTANCE_NAME,
+            },
+            error: error.message,
         };
     }
 }

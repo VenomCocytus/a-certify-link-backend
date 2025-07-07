@@ -1,5 +1,5 @@
 import { Router, Express } from 'express';
-import { AsaciServiceManager } from '@config/asaci-config';
+import { AsaciServices } from '@services/asaci-services';
 import { logger } from '@utils/logger';
 import { AsaciAuthenticationController } from "@controllers/asaci-authentication.controller";
 import { AsaciAttestationController } from "@controllers/asaci-attestation.controller";
@@ -9,38 +9,14 @@ import { AuthenticationService } from "@services/authentication.service";
 import { AuthenticationController } from "@controllers/authentication.controller";
 import {isDevelopment} from "@config/environment";
 import { setupSwagger } from "@config/swagger";
-import {OrassServiceManager} from "@config/orass-service-manager";
 import {CertifyLinkController} from "@controllers/certify-link.controller";
 import {createCertifyLinkRoutes} from "@/routes/certify-link.routes";
 import process from "node:process";
+import {CertifyLinkService} from "@services/certify-link.service";
+import {RouteConfig} from "@interfaces/common.interfaces";
+import {OrassService} from "@services/orass.service";
 
-export interface RouteConfig {
-    auth?: {
-        enabled?: boolean;
-        basePath?: string;
-        authService?: AuthenticationService;
-    };
-    asaci?: {
-        enabled?: boolean;
-        basePath?: string;
-        manager?: AsaciServiceManager;
-    };
-    certifyLink?: {
-        enabled?: boolean;
-        basePath?: string;
-        orassManager?: OrassServiceManager;
-    };
-    swagger?: {
-        enabled?: boolean;
-        basePath?: string;
-    };
-    health?: {
-        enabled?: boolean;
-        basePath?: string;
-    };
-}
-
-export class RoutesManager {
+export class RoutesConfig {
     private app: Express;
     private config: RouteConfig;
     private routes: Router;
@@ -56,7 +32,7 @@ export class RoutesManager {
      */
     setupRoutes(): Router {
         try {
-            // Setup Swagger documentation first (should be available early)
+            // Set up Swagger documentation first (should be available early)
             if (this.config.swagger?.enabled !== false) {
                 this.setupSwaggerRoutes();
             }
@@ -208,7 +184,11 @@ export class RoutesManager {
             if (this.config.certifyLink?.enabled) {
                 this.routes.get(`${basePath}/orass`, async (req, res) => {
                     try {
-                        const health = await this.config.certifyLink!.orassManager!.healthCheck();
+                        if (!this.config.orass?.orassService) {
+                            throw new Error('ORASS service not provided in route config');
+                        }
+
+                        const health = await this.config.orass.orassService.healthCheck();
                         const statusCode = health.status === 'healthy' ? 200 : 503;
                         res.status(statusCode).json(health);
                     } catch (error: any) {
@@ -278,8 +258,6 @@ export class RoutesManager {
             }
 
             const authService = this.config.auth.authService;
-
-            // Create an authentication controller
             const authController = new AuthenticationController(authService);
 
             // Create and mount authentication routes
@@ -329,24 +307,20 @@ export class RoutesManager {
     }
 
     /**
-     * Setup CertifyLink/ORASS routes
+     * Set up CertifyLink/ORASS routes
      */
     private setupCertifyLinkRoutes(): void {
         try {
-            if (!this.config.certifyLink?.orassManager) {
-                throw new Error('ORASS service manager not provided in route config');
+            if (!this.config.certifyLink?.certifyLinkService) {
+                throw new Error('Certificate Link service not provided in route config');
             }
 
-            const orassManager = this.config.certifyLink.orassManager;
-
-            // Create CertifyLink controller
-            const certifyLinkController = new CertifyLinkController(
-                orassManager.getCertifyLinkService()
-            );
+            const certifyLinkService = this.config.certifyLink?.certifyLinkService;
+            const certifyLinkController = new CertifyLinkController(certifyLinkService)
 
             // Create and mount CertifyLink routes
             const certifyLinkRoutes = createCertifyLinkRoutes(certifyLinkController);
-            const basePath = this.config.certifyLink.basePath || '/certify-link';
+            const basePath = this.config.certifyLink?.basePath || '/certify-link';
 
             this.routes.use(basePath, certifyLinkRoutes);
 
@@ -446,7 +420,7 @@ export class RoutesManager {
      */
     private async checkReadiness(): Promise<boolean> {
         try {
-            // Check if authentication service is ready
+            // Check if the authentication service is ready
             if (this.config.auth?.enabled !== false && !this.config.auth?.authService) {
                 return false;
             }
@@ -531,7 +505,7 @@ export const createApplicationRoutes = (
     app: Express,
     config: RouteConfig = {}
 ): Router => {
-    const routesManager = new RoutesManager(app, config);
+    const routesManager = new RoutesConfig(app, config);
     const routes = routesManager.setupRoutes();
 
     // Setup 404 handler for API routes
@@ -545,8 +519,9 @@ export const createApplicationRoutes = (
  */
 export const getDefaultRouteConfig = (
     authService?: AuthenticationService,
-    asaciManager?: AsaciServiceManager,
-    orassManager?: OrassServiceManager
+    asaciManager?: AsaciServices,
+    orassService?: OrassService,
+    certifyLinkService?: CertifyLinkService
 ): RouteConfig => {
     return {
         auth: {
@@ -559,10 +534,14 @@ export const getDefaultRouteConfig = (
             basePath: '/asaci', //TODO: Make this configurable
             manager: asaciManager
         },
+        orass: {
+            enabled: true,
+            orassService
+        },
         certifyLink: {
             enabled: true,
             basePath: '/certify-link',
-            orassManager: orassManager
+            certifyLinkService
         },
         swagger: {
             enabled: isDevelopment(), // Enable swagger in development by default
