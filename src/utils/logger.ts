@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { Environment } from '@config/environment';
+import {isDevelopment, isTest} from '@config/environment';
 
 const logFormat = winston.format.combine(
     winston.format.timestamp({
@@ -10,21 +10,21 @@ const logFormat = winston.format.combine(
 );
 
 const logger = winston.createLogger({
-    level: Environment.LOG_LEVEL,
+    level: process.env.LOG_LEVEL,
     format: logFormat,
-    defaultMeta: { service: Environment.APP_NAME },
+    defaultMeta: { service: process.env.APP_NAME },
     transports: [
         new winston.transports.File({
             filename: 'logs/error.log',
             level: 'error',
         }),
         new winston.transports.File({
-            filename: Environment.LOG_FILE,
+            filename: process.env.LOG_FILE,
         }),
     ],
 });
 
-if (Environment.NODE_ENV !== 'production') {
+if (isDevelopment() || isTest()) {
     logger.add(
         new winston.transports.Console({
             format: winston.format.combine(

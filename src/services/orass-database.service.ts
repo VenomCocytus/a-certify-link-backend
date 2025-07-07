@@ -1,34 +1,24 @@
 import oracledb from 'oracledb';
 import { logger } from '@utils/logger';
-import { Environment } from '@config/environment';
+import {getOrassConfig} from '@config/environment';
 import { BaseException } from '@exceptions/base.exception';
 import {ErrorCodes} from "@/constants/error-codes";
 import {
-    OrassConnectionConfig,
     OrassConnectionStatus, OrassPolicyResponse,
     OrassPolicySearchCriteria,
     OrassQueryResult
 } from "@dto/orass.dto";
 import {CertificateColor, CertificateType, ChannelType} from "@interfaces/common.enum";
+import {OrassConfig} from "@interfaces/common.interfaces";
 
 export class OrassService {
     private pool: oracledb.Pool | null = null;
-    private config: OrassConnectionConfig;
+    private config: OrassConfig;
     private isConnected: boolean = false;
     private lastConnectionCheck: Date = new Date();
 
-    constructor(config?: OrassConnectionConfig) {
-        this.config = config || {
-            host: Environment.ORASS_HOST,
-            port: Environment.ORASS_PORT,
-            sid: Environment.ORASS_SID,
-            username: Environment.ORASS_USERNAME,
-            password: Environment.ORASS_PASSWORD,
-            connectionTimeout: Environment.ORASS_CONNECTION_TIMEOUT || 30000,
-            requestTimeout: Environment.ORASS_REQUEST_TIMEOUT || 60000,
-        };
-
-        // Initialize the Oracle client if not already initialized
+    constructor() {
+        this.config = getOrassConfig()
         this.initializeOracleClient();
     }
 

@@ -7,13 +7,13 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
-import { Environment } from '@config/environment';
 import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
 import { logger } from '@utils/logger';
 import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-manager";
 import {AuthenticationService} from "@services/authentication.service";
 import * as process from "node:process";
-import {createOrassServiceManager, getDefaultOrassConfig, OrassServiceManager} from "@config/orass-service-manager";
+import {createOrassServiceManager, OrassServiceManager} from "@config/orass-service-manager";
+import {getAsaciConfig, isProduction} from "@config/environment";
 
 export class App {
     public app: Express;
@@ -42,7 +42,7 @@ export class App {
         }));
 
         this.app.use(cors({
-            origin: Environment.NODE_ENV !== 'production',
+            origin: isProduction,
             credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -64,8 +64,8 @@ export class App {
             .use(Backend)
             .use(i18nextMiddleware.LanguageDetector)
             .init({
-                fallbackLng: Environment.DEFAULT_LANGUAGE,
-                supportedLngs: Environment.SUPPORTED_LANGUAGES?.split(','),
+                fallbackLng: process.env.DEFAULT_LANGUAGE,
+                supportedLngs: process.env.SUPPORTED_LANGUAGES?.split(','),
                 backend: {
                     loadPath: './src/locales/{{lng}}.json',
                 },
@@ -84,13 +84,8 @@ export class App {
     private initializeServices(): void {
         try {
             this.authService = new AuthenticationService();
-            this.asaciManager = createAsaciServiceManager({
-                baseUrl: Environment.ASACI_BASE_URL,
-                timeout: Environment.ASACI_TIMEOUT,
-            });
-            const orassConfig = getDefaultOrassConfig();
+            this.asaciManager = createAsaciServiceManager(getAsaciConfig());
             this.orassManager = createOrassServiceManager(
-                orassConfig,
                 this.asaciManager.getProductionService()
             );
 
@@ -125,13 +120,13 @@ export class App {
 
             // Create and mount application routes
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
-            this.app.use(Environment.API_PREFIX as string, applicationRoutes);
+            this.app.use(process.env.API_PREFIX as string, applicationRoutes);
 
             // Setup root endpoint
             this.app.get('/', (req, res) => {
                 res.json({
-                    message: `${Environment.APP_NAME} API Server`,
-                    environment: Environment.NODE_ENV,
+                    message: `${process.env.APP_NAME} API Server`,
+                    environment: process.env.NODE_ENV,
                     timestamp: new Date().toISOString()
                 });
             });
@@ -203,15 +198,15 @@ export class App {
 
     async authenticateAsaci(): Promise<void> {
         try {
-            if (!Environment.ASACI_EMAIL || !Environment.ASACI_PASSWORD) {
+            if (!process.env.ASACI_EMAIL || !process.env.ASACI_PASSWORD) {
                 logger.warn('⚠️ Asaci credentials not provided. Services will require manual authentication');
                 return;
             }
 
             await this.asaciManager.authenticate(
-                Environment.ASACI_EMAIL,
-                Environment.ASACI_PASSWORD,
-                Environment.ASACI_CLIENT_NAME
+                process.env.ASACI_EMAIL,
+                process.env.ASACI_PASSWORD,
+                process.env.ASACI_CLIENT_NAME
             );
 
             logger.info('✅ Asaci services authenticated successfully');
@@ -286,7 +281,7 @@ export class App {
             status: 'healthy',
             uptime: process.uptime(),
             memory: process.memoryUsage(),
-            environment: Environment.NODE_ENV
+            environment: process.env.NODE_ENV
         };
 
         const healthyStatuses = ['healthy', 'ok'];

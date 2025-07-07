@@ -1,19 +1,14 @@
 import { CertifyLinkService } from '@services/certify-link.service';
 import { AsaciProductionService } from '@services/asaci-production.service';
 import { logger } from '@utils/logger';
-import { Environment } from '@config/environment';
 import {OrassService} from "@services/orass-database.service";
-import {OrassConnectionConfig, OrassServiceManagerConfig} from "@dto/orass.dto";
 
 export class OrassServiceManager {
     private orassService: OrassService;
     private certifyLinkService: CertifyLinkService;
     private isInitialized: boolean = false;
 
-    constructor(
-        private config: OrassServiceManagerConfig,
-        private asaciProductionService: AsaciProductionService
-    ) {
+    constructor(private asaciProductionService: AsaciProductionService) {
         this.initializeServices();
     }
 
@@ -22,21 +17,7 @@ export class OrassServiceManager {
      */
     private initializeServices(): void {
         try {
-            // Create ORASS connection config
-            const connectionConfig: OrassConnectionConfig = {
-                host: this.config.host,
-                port: this.config.port,
-                sid: this.config.sid,
-                username: this.config.username,
-                password: this.config.password,
-                connectionTimeout: this.config.connectionTimeout || 30000,
-                requestTimeout: this.config.requestTimeout || 60000,
-            };
-
-            // Initialize ORASS service
-            this.orassService = new OrassService(connectionConfig);
-
-            // Initialize CertifyLink service with dependencies
+            this.orassService = new OrassService();
             this.certifyLinkService = new CertifyLinkService(
                 this.orassService,
                 this.asaciProductionService
@@ -69,7 +50,7 @@ export class OrassServiceManager {
     }
 
     /**
-     * Disconnect from ORASS database
+     * Disconnect from an ORASS database
      */
     async disconnect(): Promise<void> {
         if (!this.isInitialized) {
@@ -95,7 +76,7 @@ export class OrassServiceManager {
     }
 
     /**
-     * Get CertifyLink service instance
+     * Get a CertifyLink service instance
      */
     getCertifyLinkService(): CertifyLinkService {
         if (!this.isInitialized) {
@@ -160,32 +141,14 @@ export class OrassServiceManager {
 /**
  * Factory function to create ORASS service manager
  */
-export function createOrassServiceManager(
-    config: OrassServiceManagerConfig,
-    asaciProductionService: AsaciProductionService
-): OrassServiceManager {
+export function createOrassServiceManager(asaciProductionService: AsaciProductionService)
+    : OrassServiceManager {
     try {
-        const manager = new OrassServiceManager(config, asaciProductionService);
+        const manager = new OrassServiceManager(asaciProductionService);
         logger.info('✅ ORASS service manager created successfully');
         return manager;
     } catch (error: any) {
         logger.error('❌ Failed to create ORASS service manager:', error);
         throw error;
     }
-}
-
-/**
- * Get default ORASS configuration from environment
- */
-export function getDefaultOrassConfig(): OrassServiceManagerConfig {
-    return {
-        host: Environment.ORASS_HOST,
-        port: Environment.ORASS_PORT,
-        sid: Environment.ORASS_SID,
-        username: Environment.ORASS_USERNAME,
-        password: Environment.ORASS_PASSWORD,
-        connectionTimeout: Environment.ORASS_CONNECTION_TIMEOUT || 30000,
-        requestTimeout: Environment.ORASS_REQUEST_TIMEOUT || 60000,
-        autoConnect: Environment.ORASS_AUTO_CONNECT
-    };
 }

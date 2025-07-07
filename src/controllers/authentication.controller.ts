@@ -4,7 +4,7 @@ import {
     VerifyEmailDto,
     LogoutDto
 } from '@dto/auth.dto';
-import {AuthenticatedRequest} from "@interfaces/common.interfaces";
+import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 
 export class AuthenticationController {
     constructor(private readonly authService: AuthenticationService) {}

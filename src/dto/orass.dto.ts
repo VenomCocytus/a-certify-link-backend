@@ -20,27 +20,6 @@ import {
 } from "@interfaces/common.enum";
 
 //TODO: clean this class
-export class OrassConnectionConfig {
-    host: string;
-    port: number;
-    sid: string;
-    username: string;
-    password: string;
-    connectionTimeout?: number;
-    requestTimeout?: number;
-}
-
-export class OrassServiceManagerConfig {
-    host: string;
-    port: number;
-    sid: string;
-    username: string;
-    password: string;
-    connectionTimeout?: number;
-    requestTimeout?: number;
-    autoConnect?: boolean;
-}
-
 export interface OrassPolicyResponse {
     policyNumber: string;
     organizationCode: string;

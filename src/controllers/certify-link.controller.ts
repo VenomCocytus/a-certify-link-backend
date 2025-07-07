@@ -3,7 +3,7 @@ import { CertifyLinkService } from '@services/certify-link.service';
 import {
     SearchOrassPoliciesDto
 } from '@dto/certify-link.dto';
-import {AuthenticatedRequest} from "@interfaces/common.interfaces";
+import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";
 import {AsaciRequestStatus} from "@models/asaci-request.model";
 

@@ -1,36 +1,29 @@
-import {Request} from "express";
 
-export interface JwtPayload {
-    userId: string;
-    type: string;
-    iat: number;
-    exp: number;
+export interface DatabaseConfig {
+    host: string;
+    port: number;
+    database: string;
+    username: string;
+    password: string;
+    ssl: boolean;
+    url: string;
 }
 
-export interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        roleId: string;
-        role?: {
-            id: string;
-            name: string;
-            permissions: string[];
-        };
-        isActive: boolean;
-        isEmailVerified: boolean;
-        twoFactorEnabled: boolean;
-    };
+export interface OrassConfig {
+    host: string;
+    port: number;
+    sid: string;
+    username: string;
+    password: string;
+    connectionTimeout?: number;
+    requestTimeout?: number;
+    autoConnect?: boolean;
 }
 
-export interface ErrorResponse {
-    type: string;
-    title: string;
-    status: number;
-    instance: string;
-    traceId: string;
-    timestamp: string;
-    [key: string]: unknown;
+export interface AsaciConfig {
+    baseUrl: string;
+    email: string;
+    password: string;
+    clientName: string;
+    timeout?: number;
 }

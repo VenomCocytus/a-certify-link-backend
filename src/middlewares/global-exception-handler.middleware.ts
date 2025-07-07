@@ -5,7 +5,7 @@ import { BaseException } from '@exceptions/base.exception';
 import { ValidationException } from '@exceptions/validation.exception';
 import { logger } from '@utils/logger';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorResponse } from '@/interfaces/common.interfaces';
+import {ErrorResponse} from "@interfaces/middleware.interfaces";
 
 export const globalExceptionHandlerMiddleware = (
     error: Error,

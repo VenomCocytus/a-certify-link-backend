@@ -1,35 +1,34 @@
 import {Options, Sequelize, Transaction} from 'sequelize';
-import {Environment} from './environment';
+import {isDevelopment, isProduction} from './environment';
 import {logger} from '@utils/logger';
 import TYPES = Transaction.TYPES;
+import process from "node:process";
+import {parseNumber} from "@utils/generic.helper";
 
-// Extended Sequelize configuration with additional options for our models
 const sequelizeConfig: Options = {
-    host: Environment.DB_HOST,
-    port: Environment.DB_PORT,
-    database: Environment.DB_NAME,
-    username: Environment.DB_USERNAME,
-    password: Environment.DB_PASSWORD,
-    dialect: 'mssql', // Changed from 'postgres' to 'mssql'
+    host: process.env.DB_HOST,
+    port: parseNumber(process.env.DB_PORT, 3000),
+    database: process.env.DB_NAME,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    dialect: 'mssql',
     dialectOptions: {
-        // MSSQL specific options
         options: {
-            encrypt: Environment.NODE_ENV === 'production', // Use encryption for production
-            trustServerCertificate: Environment.NODE_ENV !== 'production', // Trust server certificate in dev
+            encrypt: isProduction(),
+            trustServerCertificate: isDevelopment(), // Trust server certificate in dev
             requestTimeout: 60000,
             connectionTimeout: 60000,
-            appName: Environment.APP_NAME,
+            appName: process.env.APP_NAME,
             enableArithAbort: true,
-            instanceName: 'SQLEXPRESS',
+            instanceName: process.env.DB_INSTANCE_NAME,
         },
-        // Connection options for Azure SQL Database (if using)
-        ...(Environment.NODE_ENV === 'production' && {
+        ...(isProduction() && {
             authentication: {
                 type: 'default',
             },
-            server: Environment.DB_HOST,
+            server: process.env.DB_HOST,
             options: {
-                database: Environment.DB_NAME,
+                database: process.env.DB_NAME,
                 encrypt: true,
                 trustServerCertificate: false,
             }
@@ -37,14 +36,14 @@ const sequelizeConfig: Options = {
     },
 
     pool: {
-        max: Math.max(1, parseInt(Environment.DB_POOL_MAX?.toString() || '5', 10)),
-        min: Math.max(0, parseInt(Environment.DB_POOL_MIN?.toString() || '0', 10)),
-        acquire: Environment.DB_POOL_ACQUIRE,
-        idle: Environment.DB_POOL_IDLE,
+        max: Math.max(1, parseInt(process.env.DB_POOL_MAX?.toString() || '5', 10)),
+        min: Math.max(0, parseInt(process.env.DB_POOL_MIN?.toString() || '0', 10)),
+        acquire: parseNumber(process.env.DB_POOL_ACQUIRE, 30000),
+        idle: parseNumber(process.env.DB_POOL_IDLE, 10000),
         evict: 1000,
     },
 
-    logging: Environment.NODE_ENV === 'development'
+    logging: isDevelopment()
         ? (sql: string, timing?: number) => {
             logger.debug(`SQL: ${sql}${timing ? ` (${timing}ms)` : ''}`);
         }
@@ -82,6 +81,7 @@ const sequelizeConfig: Options = {
             /SequelizeHostNotReachableError/,
             /SequelizeInvalidConnectionError/,
             /SequelizeConnectionTimedOutError/,
+
             // MSSQL specific errors
             /ConnectionError/,
             /RequestError/,
@@ -89,16 +89,15 @@ const sequelizeConfig: Options = {
         ],
     },
 
-    benchmark: Environment.NODE_ENV === 'development',
+    benchmark: process.env.NODE_ENV === 'development',
 
     sync: {
         force: false,
-        alter: Environment.NODE_ENV === 'development',
+        alter: process.env.NODE_ENV === 'development',
         hooks: true,
-        logging: Environment.NODE_ENV === 'development' ? console.log : false,
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
     },
-
-    // MSSQL specific transaction options
+    
     transactionType: TYPES.IMMEDIATE,
     isolationLevel: 'READ_COMMITTED',
 };

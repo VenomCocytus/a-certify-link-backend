@@ -7,11 +7,12 @@ import { createAsaciRoutes } from "@/routes/asaci.routes";
 import { createAuthRoutes } from "@/routes/auth.routes";
 import { AuthenticationService } from "@services/authentication.service";
 import { AuthenticationController } from "@controllers/authentication.controller";
-import { Environment } from "@config/environment";
+import {Environment, isDevelopment} from "@config/environment";
 import { setupSwagger } from "@config/swagger";
 import {OrassServiceManager} from "@config/orass-service-manager";
 import {CertifyLinkController} from "@controllers/certify-link.controller";
 import {createCertifyLinkRoutes} from "@/routes/certify-link.routes";
+import process from "node:process";
 
 export interface RouteConfig {
     auth?: {
@@ -102,7 +103,7 @@ export class RoutesManager {
 
             // Add a route that lists all available documentation endpoints
             this.routes.get('/docs', (req, res) => {
-                const apiPrefix = Environment.API_PREFIX || '/api';
+                const apiPrefix = process.env.API_PREFIX || '/api';
                 res.json({
                     message: 'API Documentation Available',
                     endpoints: {
@@ -113,7 +114,7 @@ export class RoutesManager {
                         health: `${apiPrefix}/docs/health`
                     },
                     info: {
-                        title: `${Environment.APP_NAME} Management API`,
+                        title: `${process.env.APP_NAME} Management API`,
                         version: '1.0.0',
                         description: 'Comprehensive API documentation for the eAttestation system'
                     },
@@ -121,7 +122,7 @@ export class RoutesManager {
                 });
             });
 
-            logger.info(`✅ Swagger documentation routes initialized at: ${Environment.API_PREFIX}/docs`);
+            logger.info(`✅ Swagger documentation routes initialized at: ${process.env.API_PREFIX}/docs`);
         } catch (error: any) {
             logger.error('❌ Failed to setup Swagger routes:', error.message);
             // Don't throw error for swagger setup failure
@@ -408,7 +409,7 @@ export class RoutesManager {
             timestamp: new Date().toISOString(),
             uptime: process.uptime(),
             memory: process.memoryUsage(),
-            environment: Environment.NODE_ENV
+            environment: process.env.NODE_ENV
         };
     }
 
@@ -427,9 +428,9 @@ export class RoutesManager {
                 health: this.config.health?.enabled !== false
             },
             configuration: {
-                apiPrefix: Environment.API_PREFIX,
-                nodeEnv: Environment.NODE_ENV,
-                appName: Environment.APP_NAME
+                apiPrefix: process.env.API_PREFIX,
+                nodeEnv: process.env.NODE_ENV,
+                appName: process.env.APP_NAME
             },
             system: {
                 nodeVersion: process.version,
@@ -479,7 +480,7 @@ export class RoutesManager {
      */
     setup404Handler(): void {
         this.routes.use('*', (req, res) => {
-            const apiPrefix = Environment.API_PREFIX || '/api';
+            const apiPrefix = process.env.API_PREFIX || '/api';
 
             res.status(404).json({
                 type: `https://tools.ietf.org/html/rfc7231#section-6.5.4`,
@@ -564,7 +565,7 @@ export const getDefaultRouteConfig = (
             orassManager: orassManager
         },
         swagger: {
-            enabled: Environment.NODE_ENV !== 'production', // Enable swagger in development by default
+            enabled: isDevelopment(), // Enable swagger in development by default
             basePath: '/docs'
         },
         health: {
