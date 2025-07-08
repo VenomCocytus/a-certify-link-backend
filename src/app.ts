@@ -140,10 +140,37 @@ export class App {
 
     async connectOrass(): Promise<void> {
         if(process.env.ORASS_AUTO_CONNECT)
-            this.orassService.connect().catch(error => {
-                logger.error('❌ Failed to connect to ORASS:', error.message);
-                throw error;
+            await this.orassService.connect().catch(error => {
+                this.scheduleOrassReconnection();
             });
+    }
+
+    /**
+     * Schedule periodic ORASS reconnection attempts
+     */
+    async scheduleOrassReconnection(): Promise<void> {
+        const reconnectInterval = 30000; // 30 seconds
+        const maxRetries = 10;
+        let retryCount = 0;
+
+        const reconnectTimer = setInterval(async () => {
+            if (retryCount >= maxRetries) {
+                logger.warn(`⚠️ ORASS reconnection stopped after ${maxRetries} attempts`);
+                clearInterval(reconnectTimer);
+                return;
+            }
+
+            try {
+                retryCount++;
+                logger.info(`🔄 ORASS reconnection attempt ${retryCount}/${maxRetries}...`);
+
+                await this.connectOrass();
+                logger.info('✅ ORASS reconnection successful');
+                clearInterval(reconnectTimer);
+            } catch (error: any) {
+                logger.warn(`⚠️ ORASS reconnection attempt ${retryCount} failed:`, error.message);
+            }
+        }, reconnectInterval);
     }
 
     async disconnectOrass(): Promise<void> {

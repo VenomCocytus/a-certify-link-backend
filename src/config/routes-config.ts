@@ -79,27 +79,6 @@ export class RoutesConfig {
             // Add swagger routes info to the main router (for route listing)
             const basePath = this.config.swagger?.basePath || '/docs';
 
-            // Add a route that lists all available documentation endpoints
-            this.routes.get('/docs', (req, res) => {
-                const apiPrefix = process.env.API_PREFIX || '/api';
-                res.json({
-                    message: 'API Documentation Available',
-                    endpoints: {
-                        documentation: `${apiPrefix}/docs`,
-                        interactive: `${apiPrefix}/docs`,
-                        jsonSpec: `${apiPrefix}/docs.json`,
-                        openApiSpec: `${apiPrefix}/docs/openapi.json`,
-                        health: `${apiPrefix}/docs/health`
-                    },
-                    info: {
-                        title: `${process.env.APP_NAME} Management API`,
-                        version: '1.0.0',
-                        description: 'Comprehensive API documentation for the eAttestation system'
-                    },
-                    timestamp: new Date().toISOString()
-                });
-            });
-
             logger.info(`✅ Swagger documentation routes initialized at: ${process.env.API_PREFIX}/docs`);
         } catch (error: any) {
             logger.error('❌ Failed to setup Swagger routes:', error.message);
