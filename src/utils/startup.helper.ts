@@ -4,6 +4,7 @@ import { logger } from "@utils/logger";
 import { initializeDatabase, sequelize } from "@/models";
 import { validateEnvironment } from "@config/asaci-endpoints";
 import {HealthStatus} from "@interfaces/common.enum";
+import process from "node:process";
 
 dotenv.config();
 
@@ -40,7 +41,6 @@ export async function startHttpServer(): Promise<void> {
             logger.info(`🚀 Server running on port ${port}`);
             logger.info(`📚 API Documentation: http://localhost:${port}${process.env.API_PREFIX}/docs`);
             logger.info(`🏥 Health Check: http://localhost:${port}/health`);
-            logger.info(`🏥 Asaci Health Check: http://localhost:${port}/health/asaci`);
             logger.info(`🔗 API base URL: http://localhost:${port}${process.env.API_PREFIX}`);
             logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
 
@@ -83,14 +83,12 @@ export async function performHealthCheck(): Promise<void> {
         setTimeout(async () => {
             try {
                 const health = await app.getHealthStatus();
-                logger.info(`📊 Startup Health Check: ${health.status}`);
 
-                if (health.status !== HealthStatus.HEALTHY) {
-                    logger.warn('⚠️ Some services may not be fully operational');
-                    logger.warn('Health details:', health.services);
-                } else {
+                if (health.status !== HealthStatus.HEALTHY)
+                    logger.warn('Health details (Some services may not be fully operational) : ',
+                        health.services);
+                else
                     logger.info('✅ All services are operational');
-                }
             } catch (error: any) {
                 logger.warn('⚠️ Health check failed on startup:', error.message);
             }
@@ -159,11 +157,6 @@ export function setupErrorHandlers(): void {
 
 export async function startServer(): Promise<void> {
     try {
-        logger.info(`🚀 Starting ${process.env.APP_NAME} API Server...`);
-        logger.info(`Environment: ${process.env.NODE_ENV}`);
-        logger.info(`Port: ${process.env.PORT}`);
-        logger.info(`API Prefix: ${process.env.API_PREFIX}`);
-
         validateEnvironment();
         await initializeDatabase();
         await initializeApplication();

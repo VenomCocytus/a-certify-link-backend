@@ -84,13 +84,8 @@ export class AsaciServices {
     }
 }
 
-export const initializeAsaciServices = (config: AsaciConfig): AsaciServices => {
-    return new AsaciServices(config);
-};
-
 export const defaultPreprodConfig: AsaciConfig = getAsaciConfig();
 
-// Factory function to create a configured service manager
 export const createAsaciServiceManager = (config?: Partial<AsaciConfig>): AsaciServices => {
     const finalConfig = { ...defaultPreprodConfig, ...config };
     return new AsaciServices(finalConfig);

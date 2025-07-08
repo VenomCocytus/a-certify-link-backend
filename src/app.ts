@@ -46,9 +46,9 @@ export class App {
         }));
 
         this.app.use(cors({
-            origin: isProduction,
+            origin: !isProduction,
             credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+            methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
         }));
 
@@ -78,11 +78,7 @@ export class App {
                     caches: false,
                 },
             });
-
-        logger.info('✅ i18next initialized successfully');
         this.app.use(i18nextMiddleware.handle(i18next));
-
-        logger.info('✅ Application middleware initialized');
     }
 
     private initializeServices(): void {
@@ -94,7 +90,6 @@ export class App {
                 this.orassService, this.asaciServices.getProductionService());
             //TODO: Automatically start Orass at launch without failure
 
-            logger.info('✅ Services initialized successfully');
         } catch (error: any) {
             logger.error('❌ Failed to initialize Asaci services:', error.message);
             throw error;
@@ -103,8 +98,6 @@ export class App {
 
     private setupApplicationRoutes(): void {
         try {
-            this.setupHealthChecks();
-
             const routeConfig = getDefaultRouteConfig(
                 this.authService,
                 this.asaciServices,
@@ -114,17 +107,6 @@ export class App {
 
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
             this.app.use(process.env.API_PREFIX as string, applicationRoutes);
-
-            // Setup root endpoint
-            this.app.get('/', (req, res) => {
-                res.json({
-                    message: `${process.env.APP_NAME} API Server`,
-                    environment: process.env.NODE_ENV,
-                    timestamp: new Date().toISOString()
-                });
-            });
-
-            logger.info('✅ Application routes initialized successfully');
         } catch (error: any) {
             logger.error('❌ Failed to setup routes:', error.message);
             throw error;
@@ -133,71 +115,6 @@ export class App {
 
     private setupErrorHandlers(): void {
         this.app.use(globalExceptionHandlerMiddleware);
-        logger.info('✅ Error handlers initialized');
-    }
-
-    private setupHealthChecks(): void {
-        this.app.get('/health', async (req, res) => {
-            try {
-                const health = await this.getHealthStatus();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        this.app.get('/health/database', async (req, res) => {
-            try {
-                const health = await checkDatabaseHealth();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        // ASACI health check
-        this.app.get('/health/asaci', async (req, res) => {
-            try {
-                const health = await this.asaciServices.healthCheck();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    service: 'asaci',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        // ORASS health check
-        this.app.get('/health/orass', async (req, res) => {
-            try {
-                const health = await this.orassService.healthCheck();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    service: 'orass',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        logger.info('✅ Health check endpoints configured');
     }
 
     async authenticateAsaci(): Promise<void> {
@@ -213,12 +130,13 @@ export class App {
                 process.env.ASACI_CLIENT_NAME
             );
 
-            logger.info('✅ Asaci services authenticated successfully');
         } catch (error: any) {
             logger.error('❌ Failed to authenticate Asaci services:', error.message);
             throw error;
         }
     }
+
+
 
     async connectOrass(): Promise<void> {
         if(process.env.ORASS_AUTO_CONNECT)
@@ -267,9 +185,7 @@ export class App {
 
 export const createApp = (): App => {
     try {
-        const app = new App();
-        logger.info('✅ Application created successfully');
-        return app;
+        return new App();
     } catch (error: any) {
         logger.error('❌ Failed to create application:', error.message);
         throw error;
