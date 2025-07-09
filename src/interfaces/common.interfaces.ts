@@ -61,3 +61,29 @@ export interface RouteConfig {
         basePath?: string;
     };
 }
+
+export interface AuthTokens {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    tokenType: string;
+}
+
+export interface UserProfile {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    phoneNumber?: string;
+    role: {
+        id: string;
+        name: string;
+        permissions: string[];
+    };
+    isActive: boolean;
+    isEmailVerified: boolean;
+    twoFactorEnabled: boolean;
+    lastLoginAt?: Date;
+    createdAt: Date;
+}

@@ -24,7 +24,6 @@ module.exports = {
     // Test files patterns
     testMatch: [
         '**/*.test.ts',
-        '**/__tests__/**/*.ts',
         '**/?(*.)+(spec|test).ts',
         '**/tests/unit/**/*.(test|spec).ts',
         '**/tests/integration/**/*.(test|spec).ts'
@@ -41,6 +40,10 @@ module.exports = {
         '!src/server.ts',
         '!src/migrations/**',
         '!src/seeders/**',
+        '!src/**/index.ts',
+        '!src/**/*.interface.ts',
+        '!src/**/*.enum.ts',
+        '!src/**/types.ts'
     ],
     coverageDirectory: 'coverage',
     coverageReporters: [
@@ -57,10 +60,10 @@ module.exports = {
     ],
     coverageThreshold: {
         global: {
-            branches: 70,
-            functions: 70,
-            lines: 70,
-            statements: 70
+            branches: 85,
+            functions: 85,
+            lines: 85,
+            statements: 85
         }
     },
 
@@ -82,5 +85,19 @@ module.exports = {
     testTimeout: 30000,
 
     // Display a detailed report of tests
-    verbose: true
+    verbose: true,
+
+    clearMocks: true,
+    restoreMocks: true,
+    resetMocks: true,
+    maxWorkers: '50%',
+
+    setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+
+    globals: {
+        'ts-jest': {
+            tsconfig: 'tsconfig.json'
+        }
+    }
+
 };

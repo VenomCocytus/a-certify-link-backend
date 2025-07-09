@@ -1,3 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="0" failures="0" errors="0" time="14.017">
+<testsuites name="jest tests" tests="102" failures="0" errors="0" time="8.423">
+  <testsuite name="AuthenticationController" errors="0" failures="0" skipped="0" timestamp="2025-07-09T10:57:59" time="7.3" tests="53">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should login successfully and set cookies" time="0.018">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set secure cookies in production" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle login errors" time="0.025">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should register successfully and set cookies" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle registration errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should change password successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle password change errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle forgot password request" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle forgot password errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should reset password successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle reset password errors" time="0.004">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should verify email successfully" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle email verification errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should resend verification email" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle resend verification errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should get user profile successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle profile retrieval errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should update profile successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle profile update errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should setup two-factor authentication" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor setup errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should enable two-factor authentication" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor enable errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should disable two-factor authentication" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor disable errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from cookies" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from body" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should prioritize cookie over body" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return 401 when no refresh token provided" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle refresh token errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout successfully" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout from all devices" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout with empty body" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should create user successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle user creation errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return health status" time="0.005">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return valid ISO timestamp" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle service errors and let them bubble up" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle missing user in authenticated requests" time="0.008">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle undefined user properties" time="0.008">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle async service errors properly" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle malformed request data" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle empty request body in login" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle missing params in verifyEmail" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle empty cookies and body in refreshToken" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle user ID as string in authenticated requests" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format login response correctly" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format profile response correctly" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format health check response correctly" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set cookies with correct attributes in development" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should clear cookies on logout" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should update refresh token cookie on token refresh" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthenticationService" errors="0" failures="0" skipped="0" timestamp="2025-07-09T10:57:59" time="7.318" tests="49">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully login a user with valid credentials" time="0.009">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for non-existent user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid password" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for inactive user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should generate tokens with remember me option" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully register a new user" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched passwords" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for existing user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException when no default role exists" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should use provided roleId when specified" time="0.003">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully change password" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched new passwords" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for incorrect current password" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException when password cannot be changed" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for existing user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for non-existent user (security)" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully reset password" time="0.063">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched passwords" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid token" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should reset login attempts if account was locked" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should verify email successfully" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return already verified message for verified user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid token" time="0.007">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should setup two-factor authentication" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException if 2FA already enabled" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should enable two-factor authentication with valid code" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid code" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for user without secret" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should disable two-factor authentication" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid password" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid 2FA code" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException when 2FA is not enabled" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should refresh token successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for inactive user" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for non-existent user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return user profile" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should update user profile successfully" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should create user successfully" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for existing user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid role" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout from all devices" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should resend verification for existing unverified user" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return already verified message for verified user" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for non-existent user (security)" time="0">
+    </testcase>
+  </testsuite>
 </testsuites>

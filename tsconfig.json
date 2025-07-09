@@ -4,7 +4,7 @@
     "module": "commonjs",
     "lib": ["ES2020"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -17,6 +17,7 @@
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
     "baseUrl": "./src",
+    "types": ["jest", "node"],
     "paths": {
       "@/*": ["./*"],
       "@config/*": ["./config/*"],
@@ -32,8 +33,7 @@
   },
   "include": [
     "src/**/*",
-    ".env",
-    "src/config/*.ts"
+    "tests/**/*"
   ],
-  "exclude": ["node_modules", "dist", "tests"]
+  "exclude": ["node_modules", "dist"]
 }
