@@ -1,17 +1,17 @@
-import { jest } from '@jest/globals';
-import { AuthenticationController } from '@controllers/authentication.controller';
-import { AuthenticationService } from '@services/authentication.service';
+import {jest} from '@jest/globals';
+import {AuthenticationController} from '@controllers/authentication.controller';
+import {AuthenticationService} from '@services/authentication.service';
 import {
-    createMockTokens,
-    createMockUserProfile,
+    createMockAuthenticatedRequest,
     createMockRequest,
     createMockResponse,
-    createMockAuthenticatedRequest,
+    createMockTokens,
+    createMockUserProfile,
+    createValidChangePasswordDto,
     createValidLoginDto,
     createValidRegisterDto,
-    createValidChangePasswordDto,
-    TEST_DATA,
-    setupTestEnvironment
+    setupTestEnvironment,
+    TEST_DATA
 } from '../../helpers/test-utils';
 
 // Mock the authentication service
@@ -147,8 +147,7 @@ describe('AuthenticationController', () => {
 
         it('should handle registration errors', async () => {
             // Arrange
-            const registerData = createValidRegisterDto();
-            mockRequest.body = registerData;
+            mockRequest.body = createValidRegisterDto();
             const error = new Error('User already exists');
             mockAuthService.register.mockRejectedValue(error);
 
@@ -181,8 +180,7 @@ describe('AuthenticationController', () => {
 
         it('should handle password change errors', async () => {
             // Arrange
-            const changePasswordData = createValidChangePasswordDto();
-            mockAuthenticatedRequest.body = changePasswordData;
+            mockAuthenticatedRequest.body = createValidChangePasswordDto();
             const error = new Error('Current password is incorrect');
             mockAuthService.changePassword.mockRejectedValue(error);
 
@@ -211,8 +209,7 @@ describe('AuthenticationController', () => {
 
         it('should handle forgot password errors', async () => {
             // Arrange
-            const forgotPasswordData = { email: TEST_DATA.VALID_EMAIL };
-            mockRequest.body = forgotPasswordData;
+            mockRequest.body = {email: TEST_DATA.VALID_EMAIL};
             const error = new Error('Service unavailable');
             mockAuthService.forgotPassword.mockRejectedValue(error);
 
@@ -245,12 +242,11 @@ describe('AuthenticationController', () => {
 
         it('should handle reset password errors', async () => {
             // Arrange
-            const resetPasswordData = {
+            mockRequest.body = {
                 token: 'invalid-token',
                 newPassword: TEST_DATA.VALID_PASSWORD,
                 confirmPassword: TEST_DATA.VALID_PASSWORD
             };
-            mockRequest.body = resetPasswordData;
             const error = new Error('Invalid or expired reset token');
             mockAuthService.resetPassword.mockRejectedValue(error);
 
@@ -310,8 +306,7 @@ describe('AuthenticationController', () => {
 
         it('should handle resend verification errors', async () => {
             // Arrange
-            const resendData = { email: TEST_DATA.VALID_EMAIL };
-            mockRequest.body = resendData;
+            mockRequest.body = {email: TEST_DATA.VALID_EMAIL};
             const error = new Error('Service unavailable');
             mockAuthService.resendEmailVerification.mockRejectedValue(error);
 
@@ -383,8 +378,7 @@ describe('AuthenticationController', () => {
 
         it('should handle profile update errors', async () => {
             // Arrange
-            const updateData = { firstName: 'UpdatedFirst' };
-            mockAuthenticatedRequest.body = updateData;
+            mockAuthenticatedRequest.body = {firstName: 'UpdatedFirst'};
             const error = new Error('Validation failed');
             mockAuthService.updateProfile.mockRejectedValue(error);
 
@@ -448,8 +442,7 @@ describe('AuthenticationController', () => {
 
         it('should handle two-factor enable errors', async () => {
             // Arrange
-            const enableData = { code: TEST_DATA.INVALID_TWO_FACTOR_CODE };
-            mockAuthenticatedRequest.body = enableData;
+            mockAuthenticatedRequest.body = {code: TEST_DATA.INVALID_TWO_FACTOR_CODE};
             const error = new Error('Invalid verification code');
             mockAuthService.enableTwoFactor.mockRejectedValue(error);
 
@@ -484,11 +477,10 @@ describe('AuthenticationController', () => {
 
         it('should handle two-factor disable errors', async () => {
             // Arrange
-            const disableData = {
+            mockAuthenticatedRequest.body = {
                 password: 'wrong-password',
                 code: TEST_DATA.TWO_FACTOR_CODE
             };
-            mockAuthenticatedRequest.body = disableData;
             const error = new Error('Invalid password');
             mockAuthService.disableTwoFactor.mockRejectedValue(error);
 
@@ -644,8 +636,7 @@ describe('AuthenticationController', () => {
 
         it('should handle logout errors', async () => {
             // Arrange
-            const logoutData = { logoutAll: false };
-            mockAuthenticatedRequest.body = logoutData;
+            mockAuthenticatedRequest.body = {logoutAll: false};
             const error = new Error('Logout failed');
             mockAuthService.logout.mockRejectedValue(error);
 
@@ -690,13 +681,12 @@ describe('AuthenticationController', () => {
 
         it('should handle user creation errors', async () => {
             // Arrange
-            const createUserData = {
+            mockAuthenticatedRequest.body = {
                 email: 'existing@example.com',
                 firstName: 'Admin',
                 lastName: 'User',
                 roleId: 'admin-role-id'
             };
-            mockAuthenticatedRequest.body = createUserData;
             const error = new Error('User with this email already exists');
             mockAuthService.createUser.mockRejectedValue(error);
 
@@ -733,8 +723,7 @@ describe('AuthenticationController', () => {
     describe('Error Handling', () => {
         it('should handle service errors and let them bubble up', async () => {
             // Arrange
-            const loginData = createValidLoginDto();
-            mockRequest.body = loginData;
+            mockRequest.body = createValidLoginDto();
             const error = new Error('Service error');
             mockAuthService.login.mockRejectedValue(error);
 
@@ -763,8 +752,7 @@ describe('AuthenticationController', () => {
 
         it('should handle async service errors properly', async () => {
             // Arrange
-            const updateData = { firstName: 'Test' };
-            mockAuthenticatedRequest.body = updateData;
+            mockAuthenticatedRequest.body = {firstName: 'Test'};
             const asyncError = Promise.reject(new Error('Async service error'));
             mockAuthService.updateProfile.mockReturnValue(asyncError);
 
