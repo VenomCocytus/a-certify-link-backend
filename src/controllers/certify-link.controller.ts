@@ -6,6 +6,7 @@ import {
 import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";
 import {AsaciRequestStatus} from "@models/asaci-request.model";
+import {parseIntOrDefault} from "@utils/generic.helper";
 
 export class CertifyLinkController {
     constructor(private readonly certifyLinkService: CertifyLinkService) {}
@@ -21,8 +22,8 @@ export class CertifyLinkController {
             endorsementNumber: req.query.endorsementNumber as string,
             organizationCode: req.query.organizationCode as string,
             officeCode: req.query.officeCode as string,
-            limit: req.query.limit ? parseInt(req.query.limit as string) : 100,
-            offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
+            limit: parseIntOrDefault(req.query.limit as string, 100),
+            offset: parseIntOrDefault(req.query.offset as string, 0),
         };
 
         const result = await this.certifyLinkService.searchOrassPolicies(searchDto);

@@ -1,5 +1,15 @@
 import {AuthTokens, UserProfile} from "@interfaces/common.interfaces";
 import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
+import {OrassService} from "@services/orass.service";
+import {AsaciProductionService} from "@services/asaci-production.service";
+import {
+    CertificateColor,
+    CertificateType,
+    ChannelType, SubscriberType,
+    VehicleCategory, VehicleEnergy, VehicleGenre,
+    VehicleType,
+    VehicleUsage
+} from "@interfaces/common.enum";
 
 /**
  * Factory function to create mock user data
@@ -392,6 +402,611 @@ export const expectExecutionTime = async (fn: () => Promise<any>, maxTime: numbe
     expect(duration).toBeLessThan(maxTime);
 };
 
+// CertifyLink specific test factories
+export const createMockAsaciRequest = (overrides: Partial<any> = {}): any => ({
+    id: TEST_DATA.VALID_UUID,
+    userId: TEST_DATA.VALID_UUID,
+    officeCode: 'OFF001',
+    organizationCode: 'ORG001',
+    certificateType: 'cima',
+    emailNotification: 'test@example.com',
+    generatedBy: 'test-generator',
+    channel: 'api',
+    status: 'COMPLETED',
+    asaciReference: 'CERT-12345',
+    certificateUrl: 'https://example.com/cert.pdf',
+    downloadCount: 3,
+    asaciResponsePayload: {
+        data: {
+            reference: 'CERT-12345',
+            download_link: 'https://example.com/cert.pdf'
+        }
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    // Add missing properties from AsaciRequestModel
+    retryCount: 0,
+    maxRetries: 3,
+    isCompleted: true,
+    isFailed: false,
+    orassData: null,
+    asaciRequestPayload: null,
+    errorDetails: null,
+    completedAt: new Date(),
+    failedAt: null,
+    // Mock methods
+    setOrassData: jest.fn().mockResolvedValue(undefined),
+    setAsaciRequest: jest.fn().mockResolvedValue(undefined),
+    setAsaciResponse: jest.fn().mockResolvedValue(undefined),
+    markAsCompleted: jest.fn().mockResolvedValue(undefined),
+    markAsFailed: jest.fn().mockResolvedValue(undefined),
+    incrementDownloadCount: jest.fn().mockResolvedValue(undefined),
+    reload: jest.fn().mockResolvedValue(undefined),
+    save: jest.fn().mockResolvedValue(undefined),
+    update: jest.fn().mockResolvedValue(undefined),
+    destroy: jest.fn().mockResolvedValue(undefined),
+    toJSON: jest.fn().mockReturnValue({}),
+    ...overrides
+});
+
+export const createMockOrassPolicy = (overrides: Partial<any> = {}) => ({
+    policyNumber: 'POL123456',
+    organizationCode: 'ORG001',
+    officeCode: 'OFF001',
+    certificateType: 'cima' as CertificateType,
+    emailNotification: 'test@example.com',
+    generatedBy: 'test-generator',
+    channel: 'api' as ChannelType,
+    certificateColor: 'cima-jaune' as CertificateColor,
+    subscriberName: 'John Doe',
+    subscriberPhone: '+1234567890',
+    subscriberEmail: 'subscriber@example.com',
+    subscriberPoBox: 'PO Box 123',
+    insuredName: 'Jane Doe',
+    insuredPhone: '+1234567891',
+    insuredEmail: 'insured@example.com',
+    insuredPoBox: 'PO Box 456',
+    vehicleRegistrationNumber: 'ABC123',
+    vehicleChassisNumber: 'VIN123456789',
+    vehicleBrand: 'Toyota',
+    vehicleModel: 'Camry',
+    vehicleType: 'TV01' as VehicleType,
+    vehicleCategory: '01' as VehicleCategory,
+    vehicleUsage: 'UV01' as VehicleUsage,
+    vehicleGenre: 'GV01' as VehicleGenre,
+    vehicleEnergy: 'SEDI' as VehicleEnergy,
+    vehicleSeats: 5,
+    vehicleFiscalPower: 8,
+    vehicleUsefulLoad: 500,
+    fleetReduction: 0,
+    subscriberType: 'ST01' as SubscriberType,
+    premiumRC: 150000,
+    policyEffectiveDate: new Date('2023-01-01'),
+    policyExpiryDate: new Date('2023-12-31'),
+    rNum: 1,
+    opATD: 'OP123',
+    ...overrides
+});
+
+export const createMockOrassQueryResult = (overrides: Partial<any> = {}) => ({
+    policies: [createMockOrassPolicy()],
+    totalCount: 1,
+    hasMore: false,
+    ...overrides
+});
+
+export const createMockAsaciResponse = (overrides: Partial<any> = {}) => ({
+    status: 201,
+    data: {
+        reference: 'CERT-12345',
+        id: TEST_DATA.VALID_UUID,
+        download_link: 'https://example.com/cert.pdf',
+        certificates: [
+            {
+                download_link: 'https://example.com/cert-detailed.pdf'
+            }
+        ]
+    },
+    ...overrides
+});
+
+export const createMockAsaciProductionResponse = (overrides: Partial<any> = {}) => ({
+    id: TEST_DATA.VALID_UUID,
+    reference: 'CERT-12345',
+    status: 'COMPLETED',
+    download_link: 'https://example.com/cert.pdf',
+    user: {
+        username: 'test-generator'
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    ...overrides
+});
+
+export const createMockStatistics = (overrides: Partial<any> = {}) => ({
+    totalRequests: 150,
+    completedRequests: 120,
+    failedRequests: 20,
+    pendingRequests: 10,
+    totalDownloads: 95,
+    averageProcessingTime: 45,
+    requestsByType: {
+        cima: 80,
+        pooltpv: 40,
+        matca: 20,
+        pooltpvbleu: 10
+    },
+    requestsByStatus: {
+        COMPLETED: 120,
+        FAILED: 20,
+        PENDING: 10
+    },
+    ...overrides
+});
+
+export const createValidSearchOrassPoliciesDto = (overrides: Partial<any> = {}) => ({
+    policyNumber: 'POL123456',
+    applicantCode: 'APP123',
+    endorsementNumber: 'END789',
+    organizationCode: 'ORG001',
+    officeCode: 'OFF001',
+    limit: 100,
+    offset: 0,
+    ...overrides
+});
+
+export const createValidCreateEditionFromOrassDataRequest = (overrides: Partial<any> = {}) => ({
+    policyNumber: 'POL123456',
+    organizationCode: 'ORG001',
+    officeCode: 'OFF001',
+    certificateType: 'cima' as CertificateType,
+    emailNotification: 'test@example.com',
+    generatedBy: 'test-generator',
+    channel: 'api' as ChannelType,
+    certificateColor: 'cima-jaune' as CertificateColor,
+    subscriberName: 'John Doe',
+    subscriberPhone: '+1234567890',
+    subscriberEmail: 'subscriber@example.com',
+    subscriberPoBox: 'PO Box 123',
+    insuredName: 'Jane Doe',
+    insuredPhone: '+1234567891',
+    insuredEmail: 'insured@example.com',
+    insuredPoBox: 'PO Box 456',
+    vehicleRegistrationNumber: 'ABC123',
+    vehicleChassisNumber: 'VIN123456789',
+    vehicleBrand: 'Toyota',
+    vehicleModel: 'Camry',
+    vehicleType: 'TV01' as VehicleType,
+    vehicleCategory: '01' as VehicleCategory,
+    vehicleUsage: 'UV01' as VehicleUsage,
+    vehicleGenre: 'GV01' as VehicleGenre,
+    vehicleEnergy: 'SEDI' as VehicleEnergy,
+    vehicleSeats: 5,
+    vehicleFiscalPower: 8,
+    vehicleUsefulLoad: 500,
+    fleetReduction: 0,
+    subscriberType: 'ST01' as SubscriberType,
+    premiumRC: 150000,
+    policyEffectiveDate: '2023-01-01',
+    policyExpiryDate: '2023-12-31',
+    rNum: 1,
+    opATD: 'OP123',
+    isValidDateRange: true,
+    toAsaciProductionRequest: jest.fn().mockReturnValue({
+        office_code: 'OFF001',
+        organization_code: 'ORG001',
+        certificate_type: 'cima',
+        email_notification: 'test@example.com',
+        generated_by: 'test-generator',
+        channel: 'api',
+        productions: [
+            {
+                COULEUR_D_ATTESTATION_A_EDITER: 'GREEN',
+                PRIME_RC: 150000,
+                ENERGIE_DU_VEHICULE: 'GASOLINE',
+                NUMERO_DE_CHASSIS_DU_VEHICULE: 'VIN123456789',
+                MODELE_DU_VEHICULE: 'Camry',
+                GENRE_DU_VEHICULE: 'AUTOMOBILE',
+                CATEGORIE_DU_VEHICULE: 'PASSENGER',
+                USAGE_DU_VEHICULE: 'PERSONAL',
+                MARQUE_DU_VEHICULE: 'Toyota',
+                TYPE_DU_VEHICULE: 'SEDAN',
+                NOMBRE_DE_PLACE_DU_VEHICULE: 5,
+                TYPE_DE_SOUSCRIPTEUR: 'INDIVIDUAL',
+                NUMERO_DE_TELEPHONE_DU_SOUSCRIPTEUR: '+1234567890',
+                BOITE_POSTALE_DU_SOUSCRIPTEUR: 'PO Box 123',
+                ADRESSE_EMAIL_DU_SOUSCRIPTEUR: 'subscriber@example.com',
+                NOM_DU_SOUSCRIPTEUR: 'John Doe',
+                TELEPHONE_MOBILE_DE_L_ASSURE: '+1234567891',
+                BOITE_POSTALE_DE_L_ASSURE: 'PO Box 456',
+                ADRESSE_EMAIL_DE_L_ASSURE: 'insured@example.com',
+                NOM_DE_L_ASSURE: 'Jane Doe',
+                IMMATRICULATION_DU_VEHICULE: 'ABC123',
+                NUMERO_DE_POLICE: 'POL123456',
+                DATE_D_EFFET_DU_CONTRAT: '2023-01-01',
+                DATE_D_ECHEANCE_DU_CONTRAT: '2023-12-31',
+                OP_ATD: 'OP123',
+                PUISSANCE_FISCALE: 8,
+                CHARGE_UTILE: 500,
+                REDUCTION_FLOTTE: 0
+            }
+        ]
+    }),
+    ...overrides
+});
+
+export const createMockBatchDownloadResult = (overrides: Partial<any> = {}) => ({
+    success: true,
+    summary: {
+        total: 3,
+        successful: 2,
+        failed: 1
+    },
+    results: [
+        {
+            certificateReference: 'CERT-001',
+            downloadLink: 'https://example.com/cert-001.pdf',
+            success: true
+        },
+        {
+            certificateReference: 'CERT-002',
+            downloadLink: 'https://example.com/cert-002.pdf',
+            success: true
+        }
+    ],
+    errors: [
+        {
+            certificateReference: 'CERT-003',
+            error: 'Certificate not found',
+            success: false
+        }
+    ],
+    message: 'Batch operation completed. 2 successful, 1 failed.',
+    ...overrides
+});
+
+export const createMockDownloadResult = (overrides: Partial<any> = {}) => ({
+    success: true,
+    certificateUrl: 'https://example.com/cert.pdf',
+    downloadCount: 6,
+    message: 'Certificate download initiated',
+    ...overrides
+});
+
+export const createMockDownloadLinkResult = (overrides: Partial<any> = {}) => ({
+    success: true,
+    source: 'database',
+    certificateReference: 'CERT-12345',
+    downloadLink: 'https://example.com/cert.pdf',
+    downloadCount: 5,
+    asaciRequestId: TEST_DATA.VALID_UUID,
+    message: 'Certificate download link retrieved from database',
+    ...overrides
+});
+
+export const createMockOrassStatistics = (overrides: Partial<any> = {}) => ({
+    totalPolicies: 15000,
+    lastUpdated: new Date().toISOString(),
+    ...overrides
+});
+
+export const createMockAsaciEditionRequest = (overrides: Partial<any> = {}) => ({
+    success: true,
+    asaciRequestId: TEST_DATA.VALID_UUID,
+    productionData: {
+        office_code: 'OFF001',
+        organization_code: 'ORG001',
+        certificate_type: 'cima'
+    },
+    asaciResult: createMockAsaciResponse(),
+    message: 'Certificate production created successfully',
+    ...overrides
+});
+
+export const createMockAsaciProductionRequest = (overrides: Partial<any> = {}) => ({
+    office_code: 'OFF001',
+    organization_code: 'ORG001',
+    certificate_type: 'cima',
+    email_notification: 'test@example.com',
+    generated_by: 'test-generator',
+    channel: 'api',
+    productions: [
+        {
+            COULEUR_D_ATTESTATION_A_EDITER: 'GREEN',
+            PRIME_RC: 150000,
+            ENERGIE_DU_VEHICULE: 'GASOLINE',
+            NUMERO_DE_CHASSIS_DU_VEHICULE: 'VIN123456789',
+            MODELE_DU_VEHICULE: 'Camry',
+            GENRE_DU_VEHICULE: 'AUTOMOBILE',
+            CATEGORIE_DU_VEHICULE: 'PASSENGER',
+            USAGE_DU_VEHICULE: 'PERSONAL',
+            MARQUE_DU_VEHICULE: 'Toyota',
+            TYPE_DU_VEHICULE: 'SEDAN',
+            NOMBRE_DE_PLACE_DU_VEHICULE: 5,
+            TYPE_DE_SOUSCRIPTEUR: 'INDIVIDUAL',
+            NUMERO_DE_TELEPHONE_DU_SOUSCRIPTEUR: '+1234567890',
+            BOITE_POSTALE_DU_SOUSCRIPTEUR: 'PO Box 123',
+            ADRESSE_EMAIL_DU_SOUSCRIPTEUR: 'subscriber@example.com',
+            NOM_DU_SOUSCRIPTEUR: 'John Doe',
+            TELEPHONE_MOBILE_DE_L_ASSURE: '+1234567891',
+            BOITE_POSTALE_DE_L_ASSURE: 'PO Box 456',
+            ADRESSE_EMAIL_DE_L_ASSURE: 'insured@example.com',
+            NOM_DE_L_ASSURE: 'Jane Doe',
+            IMMATRICULATION_DU_VEHICULE: 'ABC123',
+            NUMERO_DE_POLICE: 'POL123456',
+            DATE_D_EFFET_DU_CONTRAT: '2023-01-01',
+            DATE_D_ECHEANCE_DU_CONTRAT: '2023-12-31',
+            OP_ATD: 'OP123',
+            PUISSANCE_FISCALE: 8,
+            CHARGE_UTILE: 500,
+            REDUCTION_FLOTTE: 0
+        }
+    ],
+    ...overrides
+});
+
+// Mock service instances
+export const createMockCertifyLinkService = () => ({
+    searchOrassPolicies: jest.fn(),
+    createEditionRequest: jest.fn(),
+    getEditionRequestFromAsaci: jest.fn(),
+    getStoredAsaciRequests: jest.fn(),
+    getAsaciRequestById: jest.fn(),
+    downloadCertificate: jest.fn(),
+    getEditionRequestDownloadLink: jest.fn(),
+    getBatchCertificateDownloadLinks: jest.fn(),
+    getUserStatistics: jest.fn(),
+    getOrassStatistics: jest.fn()
+});
+
+export const createMockOrassService = () => ({
+    searchPolicies: jest.fn(),
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+    getConnectionStatus: jest.fn(),
+    healthCheck: jest.fn()
+} as unknown as jest.Mocked<OrassService>);
+
+export const createMockAsaciProductionService = () => ({
+    createProductionRequest: jest.fn(),
+    getProductionRequests: jest.fn(),
+    getProductionRequest: jest.fn(),
+    updateProductionRequest: jest.fn(),
+    deleteProductionRequest: jest.fn(),
+    healthCheck: jest.fn()
+}as unknown as jest.Mocked<AsaciProductionService>);
+
+// Additional validation helpers for CertifyLink
+export const createValidBatchDownloadDto = (overrides: Partial<any> = {}) => ({
+    certificateReferences: ['CERT-001', 'CERT-002', 'CERT-003'],
+    ...overrides
+});
+
+export const createValidDownloadLinkDto = (overrides: Partial<any> = {}) => ({
+    certificateReference: 'CERT-12345',
+    ...overrides
+});
+
+export const createValidGetStoredRequestsDto = (overrides: Partial<any> = {}) => ({
+    status: 'COMPLETED',
+    certificateType: 'cima',
+    limit: 50,
+    offset: 0,
+    ...overrides
+});
+
+// Mock database models
+export const createMockAsaciRequestModel = () => ({
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    findByPk: jest.fn(),
+    count: jest.fn(),
+    getStatsByUser: jest.fn(),
+    update: jest.fn(),
+    destroy: jest.fn(),
+    sequelize: {
+        transaction: jest.fn(),
+        authenticate: jest.fn(),
+        close: jest.fn()
+    }
+});
+
+export const createMockOperationLogModel = () => ({
+    create: jest.fn(),
+    findAll: jest.fn(),
+    logOrassOperation: jest.fn(),
+    logAsaciOperation: jest.fn(),
+    getOperationStats: jest.fn()
+});
+
+// Error factories for CertifyLink
+export const createOrassServiceError = (message: string = 'ORASS service error') => {
+    const error = new Error(message);
+    error.name = 'OrassServiceError';
+    return error;
+};
+
+export const createAsaciServiceError = (message: string = 'ASACI service error') => {
+    const error = new Error(message);
+    error.name = 'AsaciServiceError';
+    return error;
+};
+
+export const createDatabaseError = (message: string = 'Database error') => {
+    const error = new Error(message);
+    error.name = 'DatabaseError';
+    return error;
+};
+
+// Test data constants for CertifyLink
+export const CERTIFY_LINK_TEST_DATA = {
+    VALID_POLICY_NUMBER: 'POL123456789',
+    VALID_APPLICANT_CODE: 'APP123',
+    VALID_ENDORSEMENT_NUMBER: 'END789',
+    VALID_ORGANIZATION_CODE: 'ORG001',
+    VALID_OFFICE_CODE: 'OFF001',
+    VALID_CERTIFICATE_REFERENCE: 'CERT-12345',
+    VALID_CERTIFICATE_TYPE: 'cima',
+    VALID_CERTIFICATE_COLOR: 'GREEN',
+    VALID_VEHICLE_REGISTRATION: 'ABC123',
+    VALID_VEHICLE_CHASSIS: 'VIN123456789',
+    VALID_DOWNLOAD_URL: 'https://example.com/cert.pdf',
+    VALID_PREMIUM_RC: 150000,
+    VALID_FISCAL_POWER: 8,
+    VALID_USEFUL_LOAD: 500,
+    VALID_FLEET_REDUCTION: 0
+};
+
+// Performance test helpers for CertifyLink
+export const createLargeOrassQueryResult = (count: number = 1000) => ({
+    policies: Array(count).fill(null).map(() => createMockOrassPolicy()),
+    totalCount: count * 5, // Simulate larger dataset
+    hasMore: true
+});
+
+export const createLargeAsaciRequestArray = (count: number = 100) =>
+    Array(count).fill(null).map(() => createMockAsaciRequest());
+
+export const createLargeBatchDownloadRequest = (count: number = 50) => ({
+    certificateReferences: Array(count).fill(null).map((_, i) => `CERT-${String(i).padStart(3, '0')}`)
+});
+
+// Assertion helpers for CertifyLink
+export const expectOrassServiceCall = (mockService: any, method: string, ...args: any[]) => {
+    expect(mockService[method]).toHaveBeenCalledWith(...args);
+};
+
+export const expectAsaciServiceCall = (mockService: any, method: string, ...args: any[]) => {
+    expect(mockService[method]).toHaveBeenCalledWith(...args);
+};
+
+export const expectDatabaseCall = (mockModel: any, method: string, ...args: any[]) => {
+    expect(mockModel[method]).toHaveBeenCalledWith(...args);
+};
+
+export const expectOperationLog = (mockLogger: any, operation: string, status: string) => {
+    expect(mockLogger.logAsaciOperation || mockLogger.logOrassOperation).toHaveBeenCalledWith(
+        expect.any(String), // userId
+        expect.any(String), // requestId
+        operation,
+        status,
+        expect.any(String), // method
+        expect.any(String), // endpoint
+        expect.any(Number), // executionTime
+        expect.any(Object), // request
+        expect.any(Object), // response
+        expect.any(Number)  // statusCode
+    );
+};
+
+// Mock configuration helpers
+export const setupCertifyLinkTestEnvironment = () => {
+    setupTestEnvironment();
+    process.env.ASACI_GENERATED_BY = 'test-generator';
+    process.env.ORASS_USERNAME = 'test-orass-user';
+    process.env.ORASS_PASSWORD = 'test-orass-password';
+    process.env.ASACI_BASE_URL = 'https://api.asaci.test';
+    process.env.ASACI_API_KEY = 'test-api-key';
+};
+
+export const cleanupCertifyLinkTestEnvironment = () => {
+    cleanupTestEnvironment();
+    delete process.env.ASACI_GENERATED_BY;
+    delete process.env.ORASS_USERNAME;
+    delete process.env.ORASS_PASSWORD;
+    delete process.env.ASACI_BASE_URL;
+    delete process.env.ASACI_API_KEY;
+};
+
+// Mock middleware for CertifyLink routes
+export const createMockCertifyLinkMiddleware = () => ({
+    validateDto: jest.fn((dto) => (req: any, res: any, next: any) => {
+        // Simple validation mock
+        if (req.body && typeof req.body === 'object') {
+            next();
+        } else {
+            res.status(400).json({ error: 'Invalid request body' });
+        }
+    }),
+    asyncHandlerMiddleware: jest.fn((handler) => handler),
+    authMiddleware: jest.fn((req: any, res: any, next: any) => {
+        if (req.user) {
+            next();
+        } else {
+            res.status(401).json({ error: 'Authentication required' });
+        }
+    }),
+    requirePermissions: jest.fn((permissions) => (req: any, res: any, next: any) => {
+        // Mock permission check
+        next();
+    })
+});
+
+// Test scenario builders
+export const createSuccessfulSearchScenario = () => ({
+    request: createValidSearchOrassPoliciesDto(),
+    response: createMockOrassQueryResult({
+        policies: [
+            createMockOrassPolicy({ policyNumber: 'POL001' }),
+            createMockOrassPolicy({ policyNumber: 'POL002' })
+        ],
+        totalCount: 2,
+        hasMore: false
+    })
+});
+
+export const createSuccessfulEditionRequestScenario = () => ({
+    request: createValidCreateEditionFromOrassDataRequest(),
+    response: createMockAsaciEditionRequest()
+});
+
+export const createSuccessfulBatchDownloadScenario = () => ({
+    request: createValidBatchDownloadDto(),
+    response: createMockBatchDownloadResult()
+});
+
+export const createFailedServiceScenario = (serviceName: string, errorMessage: string) => ({
+    error: serviceName === 'orass'
+        ? createOrassServiceError(errorMessage)
+        : createAsaciServiceError(errorMessage)
+});
+
+// Integration test helpers
+export const createMockIntegrationEnvironment = () => ({
+    orass: createMockOrassService(),
+    asaci: createMockAsaciProductionService(),
+    database: {
+        asaciRequest: createMockAsaciRequestModel(),
+        operationLog: createMockOperationLogModel()
+    }
+});
+
+// Test utilities for async operations
+export const waitForAsyncOperation = (ms: number = 100) =>
+    new Promise(resolve => setTimeout(resolve, ms));
+
+export const createTimeoutPromise = (ms: number) =>
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Operation timeout')), ms));
+
+// Mock response builders for different scenarios
+export const createMockPaginatedResponse = (data: any[], page: number = 1, limit: number = 10) => ({
+    data: data.slice((page - 1) * limit, page * limit),
+    pagination: {
+        total: data.length,
+        limit,
+        offset: (page - 1) * limit,
+        hasMore: page * limit < data.length
+    }
+});
+
+export const createMockErrorResponse = (status: number, message: string, details?: any) => ({
+    status,
+    message,
+    error: details || message,
+    timestamp: new Date().toISOString()
+});
+
 /**
  * Mock JWT implementation
  */
@@ -551,3 +1166,8 @@ export const restoreAllMocks = () => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
 };
+
+
+
+
+

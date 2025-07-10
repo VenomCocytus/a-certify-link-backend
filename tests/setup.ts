@@ -1,4 +1,5 @@
 import {setupTestEnvironment} from "./helpers/test-utils";
+import setTimeout = jest.setTimeout;
 
 
 beforeAll(() => {
@@ -11,7 +12,7 @@ afterEach(() => {
 });
 
 // Global test configuration
-jest.setTimeout(30000);
+setTimeout(3000);
 
 // Mock console methods to reduce noise during testing
 global.console = {
