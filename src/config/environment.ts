@@ -148,7 +148,7 @@ export class Environment {
 
         // Logging
         this.LOG_LEVEL = process.env.LOG_LEVEL || 'info';
-        this.LOG_FILE = process.env.LOG_FILE || '';
+        this.LOG_FILE = process.env.LOG_FILE || 'logs/app.log';
 
         // Security Configuration
         this.BCRYPT_ROUNDS = parseNumber(process.env.BCRYPT_ROUNDS, 12);
@@ -202,7 +202,8 @@ export class Environment {
             'ORASS_PASSWORD',
             'ORASS_PORT',
             'ORASS_TIMEOUT',
-            'ORASS_AUTO_CONNECT'
+            'ORASS_AUTO_CONNECT',
+            'LOG_FILE'
         ];
 
         const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
@@ -240,7 +241,7 @@ export class Environment {
     }
 
     /**
-     * Get ORASS configuration object
+     * Get an ORASS configuration object
      */
     public getOrassConfig(): OrassConfig {
         return {

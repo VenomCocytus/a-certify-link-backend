@@ -19,7 +19,7 @@ const logger = winston.createLogger({
             level: 'error',
         }),
         new winston.transports.File({
-            filename: process.env.LOG_FILE,
+            filename: process.env.LOG_FILE || 'logs/app.log',
         }),
     ],
 });

@@ -1192,9 +1192,9 @@ export const createMockOrassConnectionStatus = (overrides: Partial<any> = {}) =>
 
 // In test-utils.ts
 
-export const createMockOracleConnection = (overrides: Partial<oracledb.Connection> = {}): oracledb.Connection => ({
-    execute: jest.fn().mockResolvedValue({ rows: [] }),
-    close: jest.fn().mockResolvedValue(undefined),
+export const createMockOracleConnection = (overrides: Partial<any> = {}) => ({
+    execute: jest.fn(),
+    close: jest.fn(),
     commit: jest.fn().mockResolvedValue(undefined),
     rollback: jest.fn().mockResolvedValue(undefined),
     break: jest.fn().mockResolvedValue(undefined),
@@ -1206,9 +1206,9 @@ export const createMockOracleConnection = (overrides: Partial<oracledb.Connectio
     ping: jest.fn().mockResolvedValue(undefined),
     release: jest.fn().mockResolvedValue(undefined),
     ...overrides
-} as unknown as oracledb.Connection);
+});
 
-export const createMockOraclePool = (overrides: Partial<oracledb.Pool> = {}): oracledb.Pool => ({
+export const createMockOraclePool = (overrides: Partial<any> = {}) => ({
     getConnection: jest.fn(),
     close: jest.fn().mockResolvedValue(undefined),
     terminate: jest.fn().mockResolvedValue(undefined),
@@ -1222,7 +1222,7 @@ export const createMockOraclePool = (overrides: Partial<oracledb.Pool> = {}): or
     poolPingInterval: 60,
     stmtCacheSize: 30,
     ...overrides
-} as unknown as oracledb.Pool);
+});
 
 export const createMockOracleQueryResult = (overrides: Partial<any> = {}) => ({
     rows: [
