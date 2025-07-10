@@ -12,7 +12,7 @@ import {logger} from '@utils/logger';
 import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-config";
 import {AuthenticationService} from "@services/authentication.service";
 import * as process from "node:process";
-import {getAsaciConfig, isProduction} from "@config/environment";
+import {Environment, getAsaciConfig, isProduction} from "@config/environment";
 import {checkDatabaseHealth} from "@/models";
 import {HealthStatus} from "@interfaces/common.enum";
 import {OrassService} from "@services/orass.service";
@@ -46,9 +46,10 @@ export class App {
         }));
 
         this.app.use(cors({
-            origin: !isProduction,
+            // origin: !isProduction,
             credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            origin: process.env.NODE_ENV !== 'production',
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
         }));
 

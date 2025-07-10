@@ -216,7 +216,7 @@ export class CertifyLinkController {
         const result = await this.certifyLinkService.getEditionRequestDownloadLink(certificateReference, userId);
 
         res.status(200).json({
-            message: 'Certificate download link retrieved successfully',
+            message: result.message,
             data: result,
             user: req.user?.email
         });
