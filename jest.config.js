@@ -28,6 +28,11 @@ module.exports = {
         '**/tests/unit/**/*.(test|spec).ts',
         '**/tests/integration/**/*.(test|spec).ts'
     ],
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+    ],
     transform: {
         '^.+\\.ts$': 'ts-jest',
     },
