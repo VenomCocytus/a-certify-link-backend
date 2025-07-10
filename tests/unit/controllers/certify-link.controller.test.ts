@@ -13,7 +13,7 @@ import {
     TEST_DATA,
     setupTestEnvironment,
     expectHttpStatus,
-    expectJsonResponse, createMockOrassService, createMockAsaciProductionService, setupCertifyLinkTestEnvironment
+    expectJsonResponse, setupCertifyLinkTestEnvironment
 } from '../../helpers/test-utils';
 import {AsaciProductionService} from "@services/asaci-production.service";
 import {OrassService} from "@services/orass.service";

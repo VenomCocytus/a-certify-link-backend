@@ -3,8 +3,6 @@ import { CertifyLinkService } from '@services/certify-link.service';
 import { AsaciProductionService } from '@services/asaci-production.service';
 import { OrassService } from '@services/orass.service';
 import AsaciRequestModel, { AsaciRequestStatus } from '@models/asaci-request.model';
-import OperationLogModel, { OperationStatus, OperationType } from '@models/operation-log.model';
-import { ASACI_ENDPOINTS } from '@config/asaci-endpoints';
 import { logger } from '@utils/logger';
 import {
     createMockAsaciRequest,
@@ -15,8 +13,7 @@ import {
     createValidCreateEditionFromOrassDataRequest,
     TEST_DATA,
     setupTestEnvironment,
-    expectValidationError,
-    expectBaseError, setupCertifyLinkTestEnvironment
+    setupCertifyLinkTestEnvironment
 } from '../../helpers/test-utils';
 
 // Mock dependencies
@@ -29,8 +26,6 @@ jest.mock('@utils/logger');
 const MockedAsaciProductionService = AsaciProductionService as jest.MockedClass<typeof AsaciProductionService>;
 const MockedOrassService = OrassService as jest.MockedClass<typeof OrassService>;
 const MockedAsaciRequestModel = AsaciRequestModel as jest.MockedClass<typeof AsaciRequestModel>;
-const MockedOperationLogModel = OperationLogModel as jest.MockedClass<typeof OperationLogModel>;
-
 describe('CertifyLinkService', () => {
     let service: CertifyLinkService;
     let mockOrassService: jest.Mocked<OrassService>;
