@@ -1,7 +1,6 @@
-import { DataTypes, Model, Op, Optional, Sequelize } from 'sequelize';
-import {CertificateType} from "@interfaces/common.enum";
+import {DataTypes, Model, Op, Optional, Sequelize} from 'sequelize';
+import {CertificateType, ChannelType} from "@interfaces/common.enum";
 
-// Enums for better type safety
 export enum AsaciRequestStatus {
     ORASS_FETCHING = 'ORASS_FETCHING',
     ORASS_FETCHED = 'ORASS_FETCHED',
@@ -12,59 +11,6 @@ export enum AsaciRequestStatus {
     CANCELLED = 'CANCELLED'
 }
 
-export interface AsaciCertificate {
-    production: {
-        reference: string;
-    };
-    reference: string;
-    state: {
-        name: string;
-        label: string;
-    };
-    download_link: string;
-    licence_plate: string;
-    chassis_number: string;
-    police_number: string;
-    insured_name: string;
-    starts_at: string;
-    ends_at: string;
-    printed_at: string;
-}
-
-export interface AsaciOrganization {
-    id: string;
-    code: string;
-    name: string;
-    address: string;
-    email: string;
-    telephone: string;
-    logo_url: string;
-    disabled_at: string | null;
-    is_disabled: boolean;
-    created_at: string;
-    formatted_created_at: string;
-    updated_at: string;
-    formatted_updated_at: string;
-}
-
-export interface AsaciResponsePayload {
-    status: number;
-    message: string;
-    data: {
-        id: string;
-        reference: string;
-        sent_to_storage: string | null;
-        channel: string;
-        download_link: string;
-        created_at: string;
-        quantity: number;
-        formatted_created_at: string;
-        organization: AsaciOrganization;
-        certificates: AsaciCertificate[];
-    };
-}
-
-// Vehicle data interface
 export interface VehicleData {
     chassisNumber: string;
     model: string;
@@ -80,7 +26,6 @@ export interface VehicleData {
     fleetReduction?: number;
 }
 
-// Person data interface
 export interface PersonData {
     name: string;
     email: string;
@@ -88,12 +33,10 @@ export interface PersonData {
     postalBox: string;
 }
 
-// Subscriber data interface (extends PersonData)
 export interface SubscriberData extends PersonData {
     type: string;
 }
 
-// Contract data interface
 export interface ContractData {
     policyNumber: string;
     effectiveDate: string;
@@ -103,64 +46,53 @@ export interface ContractData {
     opAtd?: string;
 }
 
-// Production Request attributes interface
 export interface AsaciRequestAttributes {
     id: string;
     userId: string;
 
-    // Orass Integration
     orassReference?: string;
     orassData?: object;
     orassFetchedAt?: Date;
 
-    // Asaci Integration
     asaciReference?: string;
     asaciRequestPayload?: object;
     asaciResponsePayload?: object;
     asaciSubmittedAt?: Date;
     asaciCompletedAt?: Date;
 
-    // Request Details
     officeCode: string;
     organizationCode: string;
     certificateType: CertificateType;
     emailNotification?: string;
     generatedBy?: string;
-    channel: 'api' | 'web';
+    channel: ChannelType;
 
-    // Status Tracking
     status: AsaciRequestStatus;
     statusMessage?: string;
 
-    // Vehicle/Insurance Data
-    vehicleData?: VehicleData;
     insuredData?: PersonData;
     subscriberData?: SubscriberData;
     contractData?: ContractData;
 
-    // Results
     certificateUrl?: string;
     certificateData?: object;
     downloadCount: number;
     lastDownloadAt?: Date;
 
-    // Error Handling
     errorMessage?: string;
     errorDetails?: object;
     retryCount: number;
     maxRetries: number;
 
-    // Audit
     createdAt: Date;
     updatedAt: Date;
     completedAt?: Date;
 }
 
-// Optional attributes for creation
 export interface AsaciRequestCreationAttributes extends Optional<AsaciRequestAttributes,
     'id' | 'orassReference' | 'orassData' | 'orassFetchedAt' | 'asaciReference' |
     'asaciRequestPayload' | 'asaciResponsePayload' | 'asaciSubmittedAt' | 'asaciCompletedAt' |
-    'emailNotification' | 'generatedBy' | 'status' | 'statusMessage' | 'vehicleData' |
+    'emailNotification' | 'generatedBy' | 'status' | 'statusMessage' |
     'insuredData' | 'subscriberData' | 'contractData' | 'certificateUrl' | 'certificateData' |
     'downloadCount' | 'lastDownloadAt' | 'errorMessage' | 'errorDetails' | 'retryCount' |
     'maxRetries' | 'createdAt' | 'updatedAt' | 'completedAt'> {}
@@ -171,54 +103,44 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
     public id!: string;
     public userId!: string;
 
-    // Orass Integration
     public orassReference?: string;
     public orassData?: object;
     public orassFetchedAt?: Date;
 
-    // Asaci Integration
     public asaciReference?: string;
     public asaciRequestPayload?: object;
-    public asaciResponsePayload?: AsaciResponsePayload;
+    public asaciResponsePayload?: object;
     public asaciSubmittedAt?: Date;
     public asaciCompletedAt?: Date;
 
-    // Request Details
     public officeCode!: string;
     public organizationCode!: string;
     public certificateType!: CertificateType;
     public emailNotification?: string;
     public generatedBy?: string;
-    public channel!: 'api' | 'web';
+    public channel!: ChannelType;
 
-    // Status Tracking
     public status!: AsaciRequestStatus;
     public statusMessage?: string;
 
-    // Vehicle/Insurance Data
-    public vehicleData?: VehicleData;
     public insuredData?: PersonData;
     public subscriberData?: SubscriberData;
     public contractData?: ContractData;
 
-    // Results
     public certificateUrl?: string;
     public certificateData?: object;
     public downloadCount!: number;
     public lastDownloadAt?: Date;
 
-    // Error Handling
     public errorMessage?: string;
     public errorDetails?: object;
     public retryCount!: number;
     public maxRetries!: number;
 
-    // Audit
     public readonly createdAt!: Date;
     public updatedAt!: Date;
     public completedAt?: Date;
 
-    // Virtual fields
     public get isCompleted(): boolean {
         return this.status === AsaciRequestStatus.COMPLETED;
     }
@@ -314,15 +236,14 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
     public static async findByStatus(status: AsaciRequestStatus): Promise<AsaciRequestModel[]> {
         return this.findAll({
             where: { status },
-            include: ['user'],
-            order: [['created_at', 'DESC']]
+            order: [['createdAt', 'DESC']]
         });
     }
 
     public static async findByUser(userId: string, limit: number = 10): Promise<AsaciRequestModel[]> {
         return this.findAll({
-            where: { userId: userId }, // Fixed: use snake_case
-            order: [['created_at', 'DESC']], // Fixed: use snake_case
+            where: { userId },
+            order: [['createdAt', 'DESC']],
             limit
         });
     }
@@ -331,17 +252,17 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
         return this.findAll({
             where: {
                 status: AsaciRequestStatus.FAILED,
-                retryCount: { // Fixed: use snake_case
-                    [Op.lt]: sequelize.literal('max_retries')
+                retryCount: {
+                    [Op.lt]: sequelize.col('maxRetries')
                 }
             },
-            order: [['updated_at', 'ASC']] // Fixed: use snake_case
+            order: [['updatedAt', 'ASC']]
         });
     }
 
     public static async getStatsByUser(userId: string, sequelize: Sequelize): Promise<any> {
         const stats = await this.findAll({
-            where: { userId: userId }, // Fixed: use snake_case
+            where: { userId },
             attributes: [
                 'status',
                 [sequelize.fn('COUNT', sequelize.col('id')), 'count']
@@ -357,6 +278,28 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
     }
 }
 
+// Helper function to serialize JSON for MSSQL
+function serializeJson(value: any): string | null {
+    if (value === null || value === undefined) return null;
+    try {
+        return JSON.stringify(value);
+    } catch (error) {
+        console.error('Error serializing JSON:', error);
+        return null;
+    }
+}
+
+// Helper function to deserialize JSON for MSSQL
+function deserializeJson(value: string | null): any {
+    if (!value) return null;
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('Error deserializing JSON:', error);
+        return null;
+    }
+}
+
 // Model initialization function
 export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequestModel {
     AsaciRequestModel.init({
@@ -368,6 +311,7 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         userId: {
             type: DataTypes.UUID,
             allowNull: false,
+            field: 'user_id',
             references: {
                 model: 'users',
                 key: 'id'
@@ -377,43 +321,73 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         // Orass Integration
         orassReference: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'orass_reference'
         },
         orassData: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'orass_data',
+            get() {
+                const value = this.getDataValue('orassData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('orassData', serializeJson(value) as any);
+            }
         },
         orassFetchedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'orass_fetched_at'
         },
 
         // Asaci Integration
         asaciReference: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_reference'
         },
         asaciRequestPayload: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'asaci_request_payload',
+            get() {
+                const value = this.getDataValue('asaciRequestPayload') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('asaciRequestPayload', serializeJson(value) as any);
+            }
         },
         asaciResponsePayload: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'asaci_response_payload',
+            get() {
+                const value = this.getDataValue('asaciResponsePayload') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('asaciResponsePayload', serializeJson(value) as any);
+            }
         },
         asaciSubmittedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_submitted_at'
         },
         asaciCompletedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'asaci_completed_at'
         },
 
         // Request Details
         officeCode: {
             type: DataTypes.STRING(255),
             allowNull: false,
+            field: 'office_code',
             validate: {
                 notEmpty: true
             }
@@ -421,145 +395,211 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         organizationCode: {
             type: DataTypes.STRING(255),
             allowNull: false,
+            field: 'organization_code',
             validate: {
                 notEmpty: true
             }
         },
         certificateType: {
-            type: DataTypes.ENUM(...Object.values(CertificateType)),
-            allowNull: false
+            type: DataTypes.STRING(50), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            field: 'certificate_type',
+            validate: {
+                isIn: [Object.values(CertificateType)]
+            }
         },
         emailNotification: {
             type: DataTypes.STRING(255),
             allowNull: true,
+            field: 'email_notification',
             validate: {
                 isEmail: true
             }
         },
         generatedBy: {
             type: DataTypes.STRING(255),
-            allowNull: true
+            allowNull: true,
+            field: 'generated_by'
         },
         channel: {
-            type: DataTypes.ENUM('api', 'web'),
+            type: DataTypes.STRING(10),
             allowNull: false,
-            defaultValue: 'web'
+            validate: {
+                isIn: [['api', 'web']]
+            }
         },
 
         // Status Tracking
         status: {
-            type: DataTypes.ENUM(...Object.values(AsaciRequestStatus)),
+            type: DataTypes.STRING(50),
             allowNull: false,
-            defaultValue: AsaciRequestStatus.ORASS_FETCHING
+            validate: {
+                isIn: [Object.values(AsaciRequestStatus)]
+            }
         },
         statusMessage: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'status_message'
         },
 
-        // Vehicle/Insurance Data
-        vehicleData: {
-            type: DataTypes.JSON,
-            allowNull: true
-        },
         insuredData: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'insured_data',
+            get() {
+                const value = this.getDataValue('insuredData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('insuredData', serializeJson(value) as any);
+            }
         },
         subscriberData: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'subscriber_data',
+            get() {
+                const value = this.getDataValue('subscriberData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('subscriberData', serializeJson(value) as any);
+            }
         },
         contractData: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'contract_data',
+            get() {
+                const value = this.getDataValue('contractData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('contractData', serializeJson(value) as any);
+            }
         },
 
         // Results
         certificateUrl: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'certificate_url'
         },
         certificateData: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'certificate_data',
+            get() {
+                const value = this.getDataValue('certificateData') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('certificateData', serializeJson(value) as any);
+            }
         },
         downloadCount: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            field: 'download_count'
         },
         lastDownloadAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'last_download_at'
         },
 
         // Error Handling
         errorMessage: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: true,
+            field: 'error_message'
         },
         errorDetails: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'error_details',
+            get() {
+                const value = this.getDataValue('errorDetails') as unknown as string;
+                return deserializeJson(value);
+            },
+            set(value: any) {
+                this.setDataValue('errorDetails', serializeJson(value) as any);
+            }
         },
         retryCount: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            field: 'retry_count'
         },
         maxRetries: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 3
+            field: 'max_retries'
         },
 
         // Audit
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: DataTypes.NOW
+            defaultValue: DataTypes.NOW,
+            field: 'created_at'
         },
         updatedAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: DataTypes.NOW
+            defaultValue: DataTypes.NOW,
+            field: 'updated_at'
         },
         completedAt: {
             type: DataTypes.DATE,
-            allowNull: true
+            allowNull: true,
+            field: 'completed_at'
         }
     }, {
         sequelize,
         modelName: 'AsaciRequest',
         tableName: 'asaci_requests',
         timestamps: true,
-        underscored: true, // This converts camelCase to snake_case
+        underscored: true,
         indexes: [
             {
-                // ✅ Fixed: Use snake_case column names for indexes
+                name: 'idx_asaci_requests_user_id',
                 fields: ['user_id']
             },
             {
+                name: 'idx_asaci_requests_status',
                 fields: ['status']
             },
             {
+                name: 'idx_asaci_requests_certificate_type',
                 fields: ['certificate_type']
             },
             {
+                name: 'idx_asaci_requests_orass_reference',
                 fields: ['orass_reference']
             },
             {
+                name: 'idx_asaci_requests_asaci_reference',
                 fields: ['asaci_reference']
             },
             {
+                name: 'idx_asaci_requests_created_at',
                 fields: ['created_at']
             },
             {
+                name: 'idx_asaci_requests_status_retry_count',
                 fields: ['status', 'retry_count']
             }
         ],
         hooks: {
+            beforeCreate: (asaciRequest: AsaciRequestModel) => {
+                if (asaciRequest.channel === undefined) asaciRequest.setDataValue('channel', ChannelType.WEB);
+                if (asaciRequest.status === undefined) asaciRequest.setDataValue('status', AsaciRequestStatus.ORASS_FETCHING);
+                if (asaciRequest.downloadCount === undefined) asaciRequest.setDataValue('downloadCount', 0);
+                if (asaciRequest.retryCount === undefined) asaciRequest.setDataValue('retryCount', 0);
+                if (asaciRequest.maxRetries === undefined) asaciRequest.setDataValue('maxRetries', 3);
+            },
             beforeUpdate: (asaciRequest: AsaciRequestModel) => {
                 asaciRequest.updatedAt = new Date();
             }

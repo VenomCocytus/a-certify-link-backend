@@ -43,16 +43,16 @@ export function createCircuitBreaker<T extends unknown[], R>(
 // Pre-configured circuit breakers for external services
 export const orassCircuitBreaker = <T extends unknown[], R>(fn: (...args: T) => Promise<R>) =>
     createCircuitBreaker(fn, {
-        timeout: Environment.CIRCUIT_BREAKER_TIMEOUT,
-        errorThresholdPercentage: Environment.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,
-        resetTimeout: Environment.CIRCUIT_BREAKER_RESET_TIMEOUT,
+        timeout: process.env.CIRCUIT_BREAKER_TIMEOUT as unknown as number,
+        errorThresholdPercentage: process.env.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE as unknown as number,
+        resetTimeout: process.env.CIRCUIT_BREAKER_RESET_TIMEOUT as unknown as number,
         name: 'Orass API',
     });
 
 export const asaciCircuitBreaker = <T extends unknown[], R>(fn: (...args: T) => Promise<R>) =>
     createCircuitBreaker(fn, {
-        timeout: Environment.CIRCUIT_BREAKER_TIMEOUT,
-        errorThresholdPercentage: Environment.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE,
-        resetTimeout: Environment.CIRCUIT_BREAKER_RESET_TIMEOUT,
+        timeout: process.env.CIRCUIT_BREAKER_TIMEOUT as unknown as number,
+        errorThresholdPercentage: process.env.CIRCUIT_BREAKER_ERROR_THRESHOLD_PERCENTAGE as unknown as number,
+        resetTimeout: process.env.CIRCUIT_BREAKER_RESET_TIMEOUT as unknown as number,
         name: 'Asaci API',
     });

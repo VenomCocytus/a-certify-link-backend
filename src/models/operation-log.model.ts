@@ -240,6 +240,28 @@ export class OperationLogModel extends Model<OperationLogAttributes, OperationLo
     }
 }
 
+// Helper function to serialize JSON for MSSQL
+function serializeJsonLog(value: any): string | null {
+    if (value === null || value === undefined) return null;
+    try {
+        return JSON.stringify(value);
+    } catch (error) {
+        console.error('Error serializing JSON:', error);
+        return null;
+    }
+}
+
+// Helper function to deserialize JSON for MSSQL
+function deserializeJsonLog(value: string | null): any {
+    if (!value) return null;
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('Error deserializing JSON:', error);
+        return null;
+    }
+}
+
 // Model initialization function
 export function initOperationLogModel(sequelize: Sequelize): typeof OperationLogModel {
     OperationLogModel.init({
@@ -251,28 +273,26 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         userId: {
             type: DataTypes.UUID,
             field: 'user_id',
-            allowNull: true,
-            references: {
-                model: 'users',
-                key: 'id'
-            }
+            allowNull: true
         },
         asaciRequestId: {
             type: DataTypes.UUID,
             field: 'asaci_request_id',
-            allowNull: true,
-            references: {
-                model: 'asaci_requests',
-                key: 'id'
-            }
+            allowNull: true
         },
         operation: {
-            type: DataTypes.ENUM(...Object.values(OperationType)),
-            allowNull: false
+            type: DataTypes.STRING(50), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            validate: {
+                isIn: [Object.values(OperationType)]
+            }
         },
         status: {
-            type: DataTypes.ENUM(...Object.values(OperationStatus)),
-            allowNull: false
+            type: DataTypes.STRING(20), // Changed from ENUM to STRING for MSSQL
+            allowNull: false,
+            validate: {
+                isIn: [Object.values(OperationStatus)]
+            }
         },
         method: {
             type: DataTypes.STRING(10),
@@ -283,14 +303,28 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         requestData: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT,
             field: 'request_data',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('requestData') as unknown as string;
+                return deserializeJsonLog(value);
+            },
+            set(value: any) {
+                this.setDataValue('requestData', serializeJsonLog(value) as any);
+            }
         },
         responseData: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT,
             field: 'response_data',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('responseData') as unknown as string;
+                return deserializeJsonLog(value);
+            },
+            set(value: any) {
+                this.setDataValue('responseData', serializeJsonLog(value) as any);
+            }
         },
         responseStatus: {
             type: DataTypes.INTEGER,
@@ -308,9 +342,16 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         errorDetails: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT,
             field: 'error_details',
-            allowNull: true
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('errorDetails') as unknown as string;
+                return deserializeJsonLog(value);
+            },
+            set(value: any) {
+                this.setDataValue('errorDetails', serializeJsonLog(value) as any);
+            }
         },
         executionTimeMs: {
             type: DataTypes.INTEGER,
@@ -343,8 +384,15 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
             allowNull: true
         },
         metadata: {
-            type: DataTypes.JSON,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: true,
+            get() {
+                const value = this.getDataValue('metadata') as unknown as string;
+                return deserializeJsonLog(value);
+            },
+            set(value: any) {
+                this.setDataValue('metadata', serializeJsonLog(value) as any);
+            }
         },
         createdAt: {
             type: DataTypes.DATE,
@@ -360,30 +408,39 @@ export function initOperationLogModel(sequelize: Sequelize): typeof OperationLog
         underscored: true,
         indexes: [
             {
+                name: 'idx_operation_logs_user_id',
                 fields: ['user_id']
             },
             {
+                name: 'idx_operation_logs_asaci_request_id',
                 fields: ['asaci_request_id']
             },
             {
+                name: 'idx_operation_logs_operation',
                 fields: ['operation']
             },
             {
+                name: 'idx_operation_logs_status',
                 fields: ['status']
             },
             {
+                name: 'idx_operation_logs_created_at',
                 fields: ['created_at']
             },
             {
+                name: 'idx_operation_logs_operation_status',
                 fields: ['operation', 'status']
             },
             {
+                name: 'idx_operation_logs_operation_created_at',
                 fields: ['operation', 'created_at']
             },
             {
+                name: 'idx_operation_logs_user_operation',
                 fields: ['user_id', 'operation']
             },
             {
+                name: 'idx_operation_logs_correlation_id',
                 fields: ['correlation_id']
             }
         ]
