@@ -10,6 +10,7 @@ import {
     VehicleType,
     VehicleUsage
 } from "@interfaces/common.enum";
+import oracledb from "oracledb";
 
 /**
  * Factory function to create mock user data
@@ -1165,6 +1166,659 @@ export const spyOnConsole = () => ({
 export const restoreAllMocks = () => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
+};
+
+// ORASS specific test factories
+export const createMockOrassConfig = (overrides: Partial<any> = {}) => ({
+    host: 'localhost',
+    port: 1521,
+    sid: 'ORASS',
+    username: 'orass_user',
+    ...overrides
+});
+
+export const createMockOrassConnectionStatus = (overrides: Partial<any> = {}) => ({
+    connected: true,
+    lastChecked: new Date(),
+    error: undefined,
+    connectionInfo: {
+        host: 'localhost',
+        port: 1521,
+        sid: 'ORASS',
+        username: 'orass_user'
+    },
+    ...overrides
+});
+
+// In test-utils.ts
+
+export const createMockOracleConnection = (overrides: Partial<oracledb.Connection> = {}): oracledb.Connection => ({
+    execute: jest.fn().mockResolvedValue({ rows: [] }),
+    close: jest.fn().mockResolvedValue(undefined),
+    commit: jest.fn().mockResolvedValue(undefined),
+    rollback: jest.fn().mockResolvedValue(undefined),
+    break: jest.fn().mockResolvedValue(undefined),
+    changePassword: jest.fn().mockResolvedValue(undefined),
+    getDbObjectClass: jest.fn(),
+    getQueue: jest.fn(),
+    getSodaDatabase: jest.fn(),
+    getStatementInfo: jest.fn(),
+    ping: jest.fn().mockResolvedValue(undefined),
+    release: jest.fn().mockResolvedValue(undefined),
+    ...overrides
+} as unknown as oracledb.Connection);
+
+export const createMockOraclePool = (overrides: Partial<oracledb.Pool> = {}): oracledb.Pool => ({
+    getConnection: jest.fn(),
+    close: jest.fn().mockResolvedValue(undefined),
+    terminate: jest.fn().mockResolvedValue(undefined),
+    connectionsInUse: 0,
+    connectionsOpen: 2,
+    poolAlias: 'default',
+    poolMax: 10,
+    poolMin: 2,
+    poolIncrement: 1,
+    poolTimeout: 300,
+    poolPingInterval: 60,
+    stmtCacheSize: 30,
+    ...overrides
+} as unknown as oracledb.Pool);
+
+export const createMockOracleQueryResult = (overrides: Partial<any> = {}) => ({
+    rows: [
+        {
+            NUMERO_DE_POLICE: 'POL123456',
+            OFFICE_CODE: 'OFF001',
+            ORGANIZATION_CODE: 'ORG001',
+            CERTIFICATE_TYPE: 'cima',
+            EMAIL_NOTIFICATION: 'test@example.com',
+            GENERATED_BY: 'test-generator',
+            CHANNEL: 'api',
+            COULEUR_D_ATTESTATION_A_EDITER: 'GREEN',
+            PRIME_RC: 150000,
+            ENERGIE_DU_VEHICULE: 'GASOLINE',
+            NUMERO_DE_CHASSIS_DU_VEHICULE: 'VIN123456789',
+            MODELE_DU_VEHICULE: 'Camry',
+            GENRE_DU_VEHICULE: 'AUTOMOBILE',
+            CATEGORIE_DU_VEHICULE: 'PASSENGER',
+            USAGE_DU_VEHICULE: 'PERSONAL',
+            MARQUE_DU_VEHICULE: 'Toyota',
+            TYPE_DU_VEHICULE: 'SEDAN',
+            NOMBRE_DE_PLACE_DU_VEHICULE: 5,
+            TYPE_DE_SOUSCRIPTEUR: 'INDIVIDUAL',
+            NUMERO_DE_TELEPHONE_DU_SOUS: '+1234567890',
+            BOITE_POSTALE_DU_SOUSCRIPTEUR: 'PO Box 123',
+            ADRESSE_EMAIL_DU_SOUSCRIPTEUR: 'subscriber@example.com',
+            NOM_DU_SOUSCRIPTEUR: 'John Doe',
+            TELEPHONE_MOBILE_DE_L_ASSURE: '+1234567891',
+            BOITE_POSTALE_DE_L_ASSURE: 'PO Box 456',
+            NOM_DE_L_ASSURE: 'Jane Doe',
+            ADRESSE_EMAIL_DE_L_ASSURE: 'insured@example.com',
+            IMMATRICULATION_DU_VEHICULE: 'ABC123',
+            DATE_D_EFFET_DU_CONTRAT: new Date('2023-01-01'),
+            DATE_D_ECHEANCE_DU_CONTRAT: new Date('2023-12-31'),
+            PUISSANCE_FISCALE: 8,
+            CHARGE_UTILE: 500,
+            REDUCTION_FLOTTE: 0,
+            RNUM: 1,
+            OP_ATD: 'OP123'
+        }
+    ],
+    metaData: [],
+    resultSet: undefined,
+    orassRow: {
+        NUMERO_DE_POLICE: 'POL123456',
+        OFFICE_CODE: 'OFF001',
+        ORGANIZATION_CODE: 'ORG001',
+        CERTIFICATE_TYPE: 'cima',
+        EMAIL_NOTIFICATION: 'test@example.com',
+        GENERATED_BY: 'test-generator',
+        CHANNEL: 'api',
+        COULEUR_D_ATTESTATION_A_EDITER: 'GREEN',
+        PRIME_RC: 150000,
+        ENERGIE_DU_VEHICULE: 'GASOLINE',
+        NUMERO_DE_CHASSIS_DU_VEHICULE: 'VIN123456789',
+        MODELE_DU_VEHICULE: 'Camry',
+        GENRE_DU_VEHICULE: 'AUTOMOBILE',
+        CATEGORIE_DU_VEHICULE: 'PASSENGER',
+        USAGE_DU_VEHICULE: 'PERSONAL',
+        MARQUE_DU_VEHICULE: 'Toyota',
+        TYPE_DU_VEHICULE: 'SEDAN',
+        NOMBRE_DE_PLACE_DU_VEHICULE: 5,
+        TYPE_DE_SOUSCRIPTEUR: 'INDIVIDUAL',
+        NUMERO_DE_TELEPHONE_DU_SOUS: '+1234567890',
+        BOITE_POSTALE_DU_SOUSCRIPTEUR: 'PO Box 123',
+        ADRESSE_EMAIL_DU_SOUSCRIPTEUR: 'subscriber@example.com',
+        NOM_DU_SOUSCRIPTEUR: 'John Doe',
+        TELEPHONE_MOBILE_DE_L_ASSURE: '+1234567891',
+        BOITE_POSTALE_DE_L_ASSURE: 'PO Box 456',
+        NOM_DE_L_ASSURE: 'Jane Doe',
+        ADRESSE_EMAIL_DE_L_ASSURE: 'insured@example.com',
+        IMMATRICULATION_DU_VEHICULE: 'ABC123',
+        DATE_D_EFFET_DU_CONTRAT: new Date('2023-01-01'),
+        DATE_D_ECHEANCE_DU_CONTRAT: new Date('2023-12-31'),
+        PUISSANCE_FISCALE: 8,
+        CHARGE_UTILE: 500,
+        REDUCTION_FLOTTE: 0,
+        RNUM: 1,
+        OP_ATD: 'OP123'
+    },
+    ...overrides
+});
+
+export const createValidOrassPolicySearchCriteria = (overrides: Partial<any> = {}) => ({
+    policyNumber: CERTIFY_LINK_TEST_DATA.VALID_POLICY_NUMBER,
+    applicantCode: CERTIFY_LINK_TEST_DATA.VALID_APPLICANT_CODE,
+    endorsementNumber: CERTIFY_LINK_TEST_DATA.VALID_ENDORSEMENT_NUMBER,
+    organizationCode: CERTIFY_LINK_TEST_DATA.VALID_ORGANIZATION_CODE,
+    officeCode: CERTIFY_LINK_TEST_DATA.VALID_OFFICE_CODE,
+    ...overrides
+});
+
+// Mock Oracle database errors
+export const createOracleConnectionError = (message: string = 'ORA-12154: TNS:could not resolve the connect identifier') => {
+    const error = new Error(message);
+    error.name = 'OracleError';
+    (error as any).code = 'ORA-12154';
+    return error;
+};
+
+export const createOracleAuthenticationError = (message: string = 'ORA-01017: invalid username/password; logon denied') => {
+    const error = new Error(message);
+    error.name = 'OracleError';
+    (error as any).code = 'ORA-01017';
+    return error;
+};
+
+export const createOracleQueryError = (message: string = 'ORA-00942: table or view does not exist') => {
+    const error = new Error(message);
+    error.name = 'OracleError';
+    (error as any).code = 'ORA-00942';
+    return error;
+};
+
+export const createOracleTimeoutError = (message: string = 'ORA-01013: user requested cancel of current operation') => {
+    const error = new Error(message);
+    error.name = 'OracleError';
+    (error as any).code = 'ORA-01013';
+    return error;
+};
+
+export const createOraclePoolExhaustionError = (message: string = 'ORA-12520: TNS:listener could not find available handler') => {
+    const error = new Error(message);
+    error.name = 'OracleError';
+    (error as any).code = 'ORA-12520';
+    return error;
+};
+
+// ORASS health check mocks
+export const createMockOrassHealthCheck = (overrides: Partial<any> = {}) => ({
+    connection: 'ACTIVE',
+    status: 'HEALTHY',
+    details: createMockOrassConnectionStatus(),
+    timestamp: new Date().toISOString(),
+    ...overrides
+});
+
+// Large dataset test helpers for ORASS
+export const createLargeOrassDataset = (count: number = 1000) => ({
+    rows: Array(count).fill(null).map((_, index) => ({
+        ...createMockOracleQueryResult().orassRow,
+        NUMERO_DE_POLICE: `POL${String(index).padStart(6, '0')}`,
+        RNUM: index + 1
+    }))
+});
+
+// ORASS environment setup
+export const setupOrassTestEnvironment = () => {
+    setupTestEnvironment();
+    process.env.ORASS_USERNAME = 'test_orass_user';
+    process.env.ORASS_PASSWORD = 'test_orass_password';
+    process.env.ORASS_HOST = 'localhost';
+    process.env.ORASS_PORT = '1521';
+    process.env.ORASS_SID = 'ORASS';
+};
+
+export const cleanupOrassTestEnvironment = () => {
+    cleanupTestEnvironment();
+    delete process.env.ORASS_USERNAME;
+    delete process.env.ORASS_PASSWORD;
+    delete process.env.ORASS_HOST;
+    delete process.env.ORASS_PORT;
+    delete process.env.ORASS_SID;
+};
+
+// ORASS query builders for testing
+export const createMockOrassQuery = (tableName: string = 'act_detail_att_digitale') => ({
+    select: `SELECT * FROM ${tableName}`,
+    count: `SELECT COUNT(*) as TOTAL_COUNT FROM ${tableName}`,
+    where: 'WHERE 1=1',
+    orderBy: 'ORDER BY NUMERO_DE_POLICE DESC',
+    pagination: 'WHERE ROWNUM <= :max_row AND rnum > :min_row'
+});
+
+export const createMockOrassBindParameters = (overrides: Partial<any> = {}) => ({
+    numeropolice: 'APP123POL123456END789',
+    max_row: 100,
+    min_row: 0,
+    ...overrides
+});
+
+// Oracle client configuration mocks
+export const createMockOracleClientConfig = () => ({
+    outFormat: 4001, // OUT_FORMAT_OBJECT
+    autoCommit: true,
+    initOracleClient: jest.fn(),
+    createPool: jest.fn(),
+    getConnection: jest.fn()
+});
+
+// ORASS performance test helpers
+export const createOrassPerformanceTestData = (queryCount: number = 100, recordsPerQuery: number = 1000) => ({
+    queries: Array(queryCount).fill(null).map((_, index) => ({
+        criteria: createValidOrassPolicySearchCriteria({
+            policyNumber: `POL${String(index).padStart(6, '0')}`
+        }),
+        expectedRecords: recordsPerQuery
+    }))
+});
+
+// ORASS connection pool test helpers
+export const createMockConnectionPoolStats = (overrides: Partial<any> = {}) => ({
+    connectionsInUse: 2,
+    connectionsOpen: 5,
+    poolMax: 10,
+    poolMin: 2,
+    poolIncrement: 1,
+    poolTimeout: 300,
+    poolPingInterval: 60,
+    stmtCacheSize: 30,
+    ...overrides
+});
+
+// ORASS data type test helpers
+export const createOrassDataTypeTestRow = () => ({
+    // String types
+    NUMERO_DE_POLICE: 'POL123456789',
+    NOM_DU_SOUSCRIPTEUR: 'Jean-Baptiste De La Salle',
+    ADRESSE_EMAIL_DU_SOUSCRIPTEUR: 'jean.baptiste@example.com',
+
+    // Number types
+    PRIME_RC: 150000.50,
+    NOMBRE_DE_PLACE_DU_VEHICULE: 5,
+    PUISSANCE_FISCALE: 8.5,
+    CHARGE_UTILE: 1500.75,
+    REDUCTION_FLOTTE: 10.25,
+    RNUM: 1,
+
+    // Date types
+    DATE_D_EFFET_DU_CONTRAT: new Date('2023-01-01T00:00:00.000Z'),
+    DATE_D_ECHEANCE_DU_CONTRAT: new Date('2023-12-31T23:59:59.999Z'),
+
+    // Nullable fields
+    EMAIL_NOTIFICATION: null,
+    GENERATED_BY: null,
+    OP_ATD: null
+});
+
+// SQL injection test data
+export const createSqlInjectionTestCriteria = () => ({
+    maliciousPolicy: "'; DROP TABLE act_detail_att_digitale; --",
+    maliciousApplicant: "APP123'; DELETE FROM users; --",
+    maliciousEndorsement: "END789' OR '1'='1",
+    specialCharsPolicy: "POL'123\"456",
+    specialCharsApplicant: "APP;123",
+    specialCharsEndorsement: "END%789"
+});
+
+// ORASS assertion helpers
+export const expectOrassConnection = (mockPool: any, config: any) => {
+    expect(mockPool.createPool || jest.fn()).toHaveBeenCalledWith({
+        user: expect.any(String),
+        password: expect.any(String),
+        connectString: `${config.host}:${config.port}/${config.sid}`,
+        poolMin: 2,
+        poolMax: 10,
+        poolIncrement: 1,
+        poolTimeout: 300,
+        poolPingInterval: 60,
+        stmtCacheSize: 30
+    });
+};
+
+export const expectOrassQuery = (mockConnection: any, tableName: string = 'act_detail_att_digitale') => {
+    expect(mockConnection.execute).toHaveBeenCalledWith(
+        expect.stringContaining(tableName),
+        expect.any(Object)
+    );
+};
+
+export const expectOrassQueryWithPagination = (mockConnection: any, limit: number, offset: number) => {
+    expect(mockConnection.execute).toHaveBeenCalledWith(
+        expect.stringContaining('ROWNUM'),
+        expect.objectContaining({
+            max_row: offset + limit,
+            min_row: offset
+        })
+    );
+};
+
+export const expectOrassConnectionClosed = (mockConnection: any) => {
+    expect(mockConnection.close).toHaveBeenCalled();
+};
+
+// ORASS test scenario builders
+export const createSuccessfulOrassSearchScenario = () => ({
+    criteria: createValidOrassPolicySearchCriteria(),
+    mockResponse: createMockOracleQueryResult(),
+    expectedPolicies: 1,
+    expectedTotalCount: 1
+});
+
+export const createEmptyOrassSearchScenario = () => ({
+    criteria: createValidOrassPolicySearchCriteria(),
+    mockResponse: { rows: [] },
+    expectedPolicies: 0,
+    expectedTotalCount: 0
+});
+
+export const createLargeOrassSearchScenario = (count: number = 1000) => ({
+    criteria: createValidOrassPolicySearchCriteria(),
+    mockResponse: createLargeOrassDataset(count),
+    expectedPolicies: count,
+    expectedTotalCount: count * 5 // Simulate larger total dataset
+});
+
+export const createOrassConnectionFailureScenario = () => ({
+    error: createOracleConnectionError(),
+    expectedErrorCode: 'DATABASE_CONNECTION_ERROR',
+    expectedStatusCode: 503
+});
+
+export const createOrassQueryFailureScenario = () => ({
+    error: createOracleQueryError(),
+    expectedErrorCode: 'DATABASE_QUERY_ERROR',
+    expectedStatusCode: 500
+});
+
+// ORASS integration test helpers
+export const createMockOrassIntegrationEnvironment = () => ({
+    config: createMockOrassConfig(),
+    pool: createMockOraclePool(),
+    connection: createMockOracleConnection(),
+    queryResults: createMockOracleQueryResult()
+});
+
+// ORASS stress test helpers
+export const createOrassStressTestData = () => ({
+    concurrentConnections: 50,
+    queriesPerConnection: 100,
+    recordsPerQuery: 1000,
+    totalExpectedQueries: 5000 // 50 * 100
+});
+
+// ORASS timeout test helpers
+export const createTimeoutTestPromise = (delay: number = 5000) =>
+    new Promise((_, reject) =>
+        setTimeout(() => reject(createOracleTimeoutError()), delay)
+    );
+
+// ORASS memory test helpers
+export const createMemoryTestDataset = (sizeInMB: number = 100) => {
+    const recordSize = 1024; // Approximate size per record in bytes
+    const recordCount = (sizeInMB * 1024 * 1024) / recordSize;
+
+    return Array(recordCount).fill(null).map((_, index) => ({
+        ...createMockOracleQueryResult().orassRow,
+        NUMERO_DE_POLICE: `POL${String(index).padStart(10, '0')}`,
+        // Add large text fields to increase memory usage
+        LARGE_FIELD_1: 'A'.repeat(256),
+        LARGE_FIELD_2: 'B'.repeat(256),
+        LARGE_FIELD_3: 'C'.repeat(256)
+    }));
+};
+
+// ORASS configuration validation helpers
+export const createInvalidOrassConfig = () => ({
+    host: '',
+    port: -1,
+    sid: null,
+    username: undefined
+});
+
+export const createValidOrassConfig = () => ({
+    host: 'localhost',
+    port: 1521,
+    sid: 'ORASS',
+    username: 'orass_user'
+});
+
+// ORASS logging test helpers
+export const createMockOrassLogger = () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+    trace: jest.fn()
+});
+
+// ORASS security test helpers
+export const createSqlInjectionTestData = () => [
+    {
+        name: 'SQL injection with DROP TABLE',
+        criteria: {
+            policyNumber: "'; DROP TABLE act_detail_att_digitale; --"
+        },
+        expectedBind: "undefined'; DROP TABLE act_detail_att_digitale; --undefined"
+    },
+    {
+        name: 'SQL injection with UNION SELECT',
+        criteria: {
+            policyNumber: "' UNION SELECT * FROM users --"
+        },
+        expectedBind: "undefined' UNION SELECT * FROM users --undefined"
+    },
+    {
+        name: 'SQL injection with OR condition',
+        criteria: {
+            policyNumber: "' OR '1'='1"
+        },
+        expectedBind: "undefined' OR '1'='1undefined"
+    },
+    {
+        name: 'Special characters',
+        criteria: {
+            policyNumber: "POL'123\"456",
+            applicantCode: "APP;123",
+            endorsementNumber: "END%789"
+        },
+        expectedBind: "APP;123POL'123\"456END%789"
+    }
+];
+
+// ORASS performance benchmarks
+export const ORASS_PERFORMANCE_BENCHMARKS = {
+    CONNECTION_TIME_MS: 5000,
+    QUERY_TIME_MS: 30000,
+    LARGE_QUERY_TIME_MS: 60000,
+    MEMORY_USAGE_MB: 500,
+    MAX_CONCURRENT_CONNECTIONS: 20
+};
+
+// ORASS test utilities for data validation
+export const validateOrassPolicy = (policy: any) => {
+    expect(policy).toHaveProperty('policyNumber');
+    expect(policy).toHaveProperty('organizationCode');
+    expect(policy).toHaveProperty('officeCode');
+    expect(policy).toHaveProperty('certificateType');
+    expect(policy).toHaveProperty('subscriberName');
+    expect(policy).toHaveProperty('insuredName');
+    expect(policy).toHaveProperty('vehicleBrand');
+    expect(policy).toHaveProperty('vehicleModel');
+    expect(policy).toHaveProperty('premiumRC');
+    expect(policy).toHaveProperty('policyEffectiveDate');
+    expect(policy).toHaveProperty('policyExpiryDate');
+
+    // Type validations
+    expect(typeof policy.policyNumber).toBe('string');
+    expect(typeof policy.premiumRC).toBe('number');
+    expect(policy.policyEffectiveDate).toBeInstanceOf(Date);
+    expect(policy.policyExpiryDate).toBeInstanceOf(Date);
+};
+
+export const validateOrassQueryResult = (result: any) => {
+    expect(result).toHaveProperty('policies');
+    expect(result).toHaveProperty('totalCount');
+    expect(result).toHaveProperty('hasMore');
+
+    expect(Array.isArray(result.policies)).toBe(true);
+    expect(typeof result.totalCount).toBe('number');
+    expect(typeof result.hasMore).toBe('boolean');
+
+    result.policies.forEach((policy: any) => validateOrassPolicy(policy));
+};
+
+export const validateOrassConnectionStatus = (status: any) => {
+    expect(status).toHaveProperty('connected');
+    expect(status).toHaveProperty('lastChecked');
+    expect(status).toHaveProperty('connectionInfo');
+
+    expect(typeof status.connected).toBe('boolean');
+    expect(status.lastChecked).toBeInstanceOf(Date);
+    expect(status.connectionInfo).toHaveProperty('host');
+    expect(status.connectionInfo).toHaveProperty('port');
+    expect(status.connectionInfo).toHaveProperty('sid');
+    expect(status.connectionInfo).toHaveProperty('username');
+};
+
+// ORASS mock factory with realistic data
+export const createRealisticOrassPolicy = (overrides: Partial<any> = {}) => ({
+    policyNumber: `CI${Date.now()}`,
+    organizationCode: 'NSIA',
+    officeCode: 'ABJ001',
+    certificateType: 'cima',
+    emailNotification: 'notification@nsia.ci',
+    generatedBy: 'ORASS_SYSTEM',
+    channel: 'api',
+    certificateColor: 'GREEN',
+    subscriberName: 'KOUASSI JEAN BAPTISTE',
+    subscriberPhone: '+22507123456',
+    subscriberEmail: 'kouassi.jean@email.ci',
+    subscriberPoBox: 'BP 1234 ABIDJAN 01',
+    insuredName: 'KOUASSI JEAN BAPTISTE',
+    insuredPhone: '+22507123456',
+    insuredEmail: 'kouassi.jean@email.ci',
+    insuredPoBox: 'BP 1234 ABIDJAN 01',
+    vehicleRegistrationNumber: '0123 AB 01',
+    vehicleChassisNumber: 'WVWZZZ1JZ3W386752',
+    vehicleBrand: 'TOYOTA',
+    vehicleModel: 'CAMRY',
+    vehicleType: 'SEDAN',
+    vehicleCategory: 'PASSENGER',
+    vehicleUsage: 'PERSONAL',
+    vehicleGenre: 'AUTOMOBILE',
+    vehicleEnergy: 'GASOLINE',
+    vehicleSeats: 5,
+    vehicleFiscalPower: 8,
+    vehicleUsefulLoad: 0,
+    fleetReduction: 0,
+    subscriberType: 'INDIVIDUAL',
+    premiumRC: 485000, // CFA Francs
+    policyEffectiveDate: new Date('2024-01-01'),
+    policyExpiryDate: new Date('2024-12-31'),
+    rNum: 1,
+    opATD: 'OP001',
+    ...overrides
+});
+
+// ORASS test data generators
+export const generateOrassTestSuite = () => ({
+    validSearchCriteria: createValidOrassPolicySearchCriteria(),
+    invalidSearchCriteria: { policyNumber: '', applicantCode: null },
+    maliciousSearchCriteria: createSqlInjectionTestCriteria(),
+    largeDataset: createLargeOrassDataset(5000),
+    connectionConfig: createMockOrassConfig(),
+    performanceBenchmarks: ORASS_PERFORMANCE_BENCHMARKS
+});
+
+// ORASS error simulation helpers
+export const simulateOrassNetworkError = () => {
+    const error = new Error('Network error: Connection refused');
+    error.name = 'NetworkError';
+    (error as any).code = 'ECONNREFUSED';
+    return error;
+};
+
+export const simulateOrassTimeoutError = () => {
+    const error = new Error('Query timeout: Operation exceeded time limit');
+    error.name = 'TimeoutError';
+    (error as any).code = 'ETIMEOUT';
+    return error;
+};
+
+export const simulateOrassAuthError = () => {
+    const error = new Error('Authentication failed: Invalid credentials');
+    error.name = 'AuthenticationError';
+    (error as any).code = 'ORA-01017';
+    return error;
+};
+
+// ORASS load testing helpers
+export const createOrassLoadTestScenario = (users: number, duration: number) => ({
+    virtualUsers: users,
+    testDurationMinutes: duration,
+    queriesPerUser: Math.floor(duration * 10), // 10 queries per minute per user
+    expectedTotalQueries: users * Math.floor(duration * 10),
+    maxAcceptableResponseTime: 30000, // 30 seconds
+    maxAcceptableErrorRate: 0.05 // 5%
+});
+
+// ORASS monitoring helpers
+export const createOrassMetrics = () => ({
+    connectionPoolStats: createMockConnectionPoolStats(),
+    queryMetrics: {
+        totalQueries: 0,
+        successfulQueries: 0,
+        failedQueries: 0,
+        averageResponseTime: 0,
+        slowQueries: 0 // queries > 10 seconds
+    },
+    errorMetrics: {
+        connectionErrors: 0,
+        timeoutErrors: 0,
+        authenticationErrors: 0,
+        queryErrors: 0
+    }
+});
+
+// ORASS cleanup helpers
+export const cleanupOrassTestResources = async (service: any) => {
+    try {
+        if (service && typeof service.disconnect === 'function') {
+            await service.disconnect();
+        }
+    } catch (error) {
+        // Ignore cleanup errors in tests
+    }
+};
+
+// ORASS test environment validation
+export const validateOrassTestEnvironment = () => {
+    const requiredEnvVars = [
+        'ORASS_USERNAME',
+        'ORASS_PASSWORD',
+        'ORASS_HOST',
+        'ORASS_PORT',
+        'ORASS_SID'
+    ];
+
+    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+    if (missingVars.length > 0) {
+        throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    }
+
+    return true;
 };
 
 
