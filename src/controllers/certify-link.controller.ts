@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { CertifyLinkService } from '@services/certify-link.service';
 import {
-    SearchOrassPoliciesDto,
-    BulkCreateCertificatesFromOrassDto
+    SearchOrassPoliciesDto
 } from '@dto/certify-link.dto';
-import {AuthenticatedRequest} from "@interfaces/common.interfaces";
+import {AuthenticatedRequest} from "@interfaces/middleware.interfaces";
 import {CreateEditionFromOrassDataRequest} from "@dto/orass.dto";
 import {AsaciRequestStatus} from "@models/asaci-request.model";
+import {parseIntOrDefault} from "@utils/generic.helper";
 
 export class CertifyLinkController {
     constructor(private readonly certifyLinkService: CertifyLinkService) {}
@@ -17,15 +17,13 @@ export class CertifyLinkController {
      */
     async searchOrassPolicies(req: AuthenticatedRequest, res: Response): Promise<void> {
         const searchDto: SearchOrassPoliciesDto = {
-            //TODO: If Office and organization codes are submitted look for them
-            //TODO: If the triple is submit, look for the corresponding policies
             policyNumber: req.query.policyNumber as string,
             applicantCode: req.query.applicantCode as string,
             endorsementNumber: req.query.endorsementNumber as string,
             organizationCode: req.query.organizationCode as string,
             officeCode: req.query.officeCode as string,
-            limit: req.query.limit ? parseInt(req.query.limit as string) : 100,
-            offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
+            limit: parseIntOrDefault(req.query.limit as string, 100),
+            offset: parseIntOrDefault(req.query.offset as string, 0),
         };
 
         const result = await this.certifyLinkService.searchOrassPolicies(searchDto);
@@ -47,19 +45,10 @@ export class CertifyLinkController {
      * Create certificate production from ORASS policy
      * @route POST /certify-link/certificates/create
      */
-    // async createEditionRequestFromOrassPolicy(req: AuthenticatedRequest, res: Response): Promise<void> {
-    //     const createEditionRequest: CreateEditionFromOrassDataRequest = req.body;
-    //
-    //     const result = await this.certifyLinkService.createEditionRequest(createEditionRequest);
-    //
-    //     res.status(201).json({
-    //         message: 'Certificate production created successfully from ORASS policy',
-    //         data: result,
-    //         user: req.user?.email
-    //     });
-    // }
     async createEditionRequestFromOrassPolicy(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const createEditionRequest: CreateEditionFromOrassDataRequest = req.body;
         const userId = req.user?.id;
+
         if (!userId) {
             res.status(401).json({
                 message: 'User authentication required',
@@ -68,7 +57,7 @@ export class CertifyLinkController {
             return;
         }
 
-        const result = await this.certifyLinkService.createEditionRequest(req.body, userId);
+        const result = await this.certifyLinkService.createEditionRequest(createEditionRequest, userId);
 
         res.status(201).json({
             message: 'Certificate production created successfully from ORASS policy',
@@ -81,11 +70,11 @@ export class CertifyLinkController {
      * Get attestations from ASACI API filtered by generated_id
      * @route GET /certify-link/attestations
      */
-    async getAttestationsFromAsaci(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const result = await this.certifyLinkService.getAttestationsFromAsaci();
+    async getEditionRequestFromAsaci(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const result = await this.certifyLinkService.getEditionRequestFromAsaci();
 
         res.status(200).json({
-            message: 'Attestations retrieved successfully from ASACI',
+            message: 'Edition requests retrieved successfully from ASACI',
             data: result.data,
             pagination: result.pagination,
             metadata: result.metadata,
@@ -162,7 +151,7 @@ export class CertifyLinkController {
      * Download certificate and track download count
      * @route POST /certify-link/requests/:requestId/download
      */
-    async downloadCertificate(req: AuthenticatedRequest, res: Response): Promise<void> {
+    async downloadEditionRequest(req: AuthenticatedRequest, res: Response): Promise<void> {
         const requestId = req.params.requestId;
         const userId = req.user?.id;
 
@@ -209,28 +198,10 @@ export class CertifyLinkController {
     }
 
     /**
-     * Create multiple certificates from ORASS policies (bulk operation)
-     * @route POST /certify-link/certificates/bulk-create
-     */
-    // async bulkCreateCertificatesFromOrass(req: AuthenticatedRequest, res: Response): Promise<void> {
-    //     const bulkDto: BulkCreateCertificatesFromOrassDto = req.body;
-    //
-    //     const result = await this.certifyLinkService.bulkCreateCertificatesFromOrass(bulkDto);
-    //
-    //     const statusCode = result.summary.failed === 0 ? 201 : 207; // 207 Multi-Status for partial success
-    //
-    //     res.status(statusCode).json({
-    //         message: `Bulk certificate creation completed. ${result.summary.successful} successful, ${result.summary.failed} failed.`,
-    //         data: result,
-    //         user: req.user?.email
-    //     });
-    // }
-
-    /**
-     * Get certificate download link by ASACI certificate reference/ID (POST version for body data)
+     * Get a certificate download link by ASACI certificate reference/ID (POST version for body data)
      * @route POST /certify-link/certificates/download-link
      */
-    async getCertificateDownloadLink(req: AuthenticatedRequest, res: Response): Promise<void> {
+    async getEditionRequestDownloadLink(req: AuthenticatedRequest, res: Response): Promise<void> {
         const certificateReference = req.params.reference;
         const userId = req.user?.id;
 
@@ -242,10 +213,10 @@ export class CertifyLinkController {
             return;
         }
 
-        const result = await this.certifyLinkService.getCertificateDownloadLink(certificateReference, userId);
+        const result = await this.certifyLinkService.getEditionRequestDownloadLink(certificateReference, userId);
 
         res.status(200).json({
-            message: 'Certificate download link retrieved successfully',
+            message: result.message,
             data: result,
             user: req.user?.email
         });
@@ -255,7 +226,7 @@ export class CertifyLinkController {
      * Batch get certificate download links by multiple ASACI certificate references
      * @route POST /certify-link/certificates/batch-download-links
      */
-    async getBatchCertificateDownloadLinks(req: AuthenticatedRequest, res: Response): Promise<void> {
+    async getBatchEditionRequestDownloadLinks(req: AuthenticatedRequest, res: Response): Promise<void> {
         const { certificateReferences } = req.body;
         const userId = req.user?.id;
 
@@ -287,20 +258,6 @@ export class CertifyLinkController {
     }
 
     /**
-     * Get available certificate colors
-     * @route GET /certify-link/certificate-colors
-     */
-    async getAvailableCertificateColors(req: AuthenticatedRequest, res: Response): Promise<void> {
-        const colors = await this.certifyLinkService.getAvailableCertificateColors();
-
-        res.status(200).json({
-            message: 'Available certificate colors retrieved successfully',
-            data: colors,
-            user: req.user?.email
-        });
-    }
-
-    /**
      * Get ORASS statistics
      * @route GET /certify-link/statistics
      */
@@ -312,17 +269,5 @@ export class CertifyLinkController {
             data: statistics,
             user: req.user?.email
         });
-    }
-
-    /**
-     * Health check for certify-link service
-     * @route GET /certify-link/health
-     */
-    async healthCheck(req: Request, res: Response): Promise<void> {
-        const health = await this.certifyLinkService.healthCheck();
-
-        const statusCode = health.status === 'healthy' ? 200 : 503;
-
-        res.status(statusCode).json(health);
     }
 }

@@ -3,6 +3,8 @@ import { App, createApp } from "@/app";
 import { logger } from "@utils/logger";
 import { initializeDatabase, sequelize } from "@/models";
 import { validateEnvironment } from "@config/asaci-endpoints";
+import {HealthStatus} from "@interfaces/common.enum";
+import process from "node:process";
 
 dotenv.config();
 
@@ -30,18 +32,17 @@ export async function startHttpServer(): Promise<void> {
             throw new Error('Application not initialized');
         }
 
-        const port = process.env.PORT || process.env.port; // Added fallback
+        const port = process.env.PORT;
         if (!port) {
             throw new Error('Port not configured');
         }
 
         server = app.getApp().listen(port, () => {
             logger.info(`🚀 Server running on port ${port}`);
-            logger.info(`📚 API Documentation: http://localhost:${port}${process.env.apiPrefix}/docs`);
+            logger.info(`📚 API Documentation: http://localhost:${port}${process.env.API_PREFIX}/docs`);
             logger.info(`🏥 Health Check: http://localhost:${port}/health`);
-            logger.info(`🏥 Asaci Health Check: http://localhost:${port}/health/asaci`);
-            logger.info(`🔗 API base URL: http://localhost:${port}${process.env.apiPrefix}`);
-            logger.info(`📊 Environment: ${process.env.environment}`);
+            logger.info(`🔗 API base URL: http://localhost:${port}${process.env.API_PREFIX}`);
+            logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
 
             logger.info('\n🎯 Server ready to accept requests!');
         });
@@ -82,14 +83,12 @@ export async function performHealthCheck(): Promise<void> {
         setTimeout(async () => {
             try {
                 const health = await app.getHealthStatus();
-                logger.info(`📊 Startup Health Check: ${health.status}`);
 
-                if (health.status !== 'healthy') {
-                    logger.warn('⚠️ Some services may not be fully operational');
-                    logger.warn('Health details:', health.services);
-                } else {
+                if (health.status !== HealthStatus.HEALTHY)
+                    logger.warn('Health details (Some services may not be fully operational) : ',
+                        health.services);
+                else
                     logger.info('✅ All services are operational');
-                }
             } catch (error: any) {
                 logger.warn('⚠️ Health check failed on startup:', error.message);
             }
@@ -158,11 +157,6 @@ export function setupErrorHandlers(): void {
 
 export async function startServer(): Promise<void> {
     try {
-        logger.info(`🚀 Starting ${process.env.appName} API Server...`);
-        logger.info(`Environment: ${process.env.environment}`);
-        logger.info(`Port: ${process.env.PORT || process.env.port}`);
-        logger.info(`API Prefix: ${process.env.apiPrefix}`);
-
         validateEnvironment();
         await initializeDatabase();
         await initializeApplication();

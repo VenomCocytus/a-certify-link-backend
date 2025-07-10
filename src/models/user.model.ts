@@ -158,8 +158,7 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     // Static methods
     public static async findByEmail(email: string): Promise<UserModel | null> {
         return this.findOne({
-            where: { email: email.toLowerCase() },
-            include: ['role']
+            where: { email: email.toLowerCase() }
         });
     }
 
@@ -214,7 +213,6 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         email: {
             type: DataTypes.STRING(255),
             allowNull: false,
-            unique: true,
             validate: {
                 isEmail: true,
                 len: [5, 255]
@@ -268,13 +266,11 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         isActive: {
             type: DataTypes.BOOLEAN,
             field: 'is_active',
-            defaultValue: true,
             allowNull: false
         },
         isEmailVerified: {
             type: DataTypes.BOOLEAN,
             field: 'is_email_verified',
-            defaultValue: false,
             allowNull: false
         },
         emailVerifiedAt: {
@@ -290,13 +286,11 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         loginAttempts: {
             type: DataTypes.INTEGER,
             field: 'login_attempts',
-            defaultValue: 0,
             allowNull: false
         },
         isBlocked: {
             type: DataTypes.BOOLEAN,
             field: 'is_blocked',
-            defaultValue: false,
             allowNull: false
         },
         blockedAt: {
@@ -327,7 +321,6 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         twoFactorEnabled: {
             type: DataTypes.BOOLEAN,
             field: 'two_factor_enabled',
-            defaultValue: false,
             allowNull: false
         },
         twoFactorSecret: {
@@ -355,19 +348,24 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
         underscored: true,
         indexes: [
             {
+                name: 'idx_users_email',
                 unique: true,
                 fields: ['email']
             },
             {
+                name: 'idx_users_role_id',
                 fields: ['role_id']
             },
             {
+                name: 'idx_users_is_active',
                 fields: ['is_active']
             },
             {
+                name: 'idx_users_is_blocked',
                 fields: ['is_blocked']
             },
             {
+                name: 'idx_users_reset_password_token',
                 fields: ['reset_password_token']
             }
         ],
@@ -376,6 +374,13 @@ export function initUserModel(sequelize: Sequelize): typeof UserModel {
                 if (user.email) {
                     user.setDataValue('email', user.email.toLowerCase());
                 }
+            },
+            beforeCreate: (user: UserModel) => {
+                if (user.isActive === undefined) user.setDataValue('isActive', true);
+                if (user.isEmailVerified === undefined) user.setDataValue('isEmailVerified', false);
+                if (user.loginAttempts === undefined) user.setDataValue('loginAttempts', 0);
+                if (user.isBlocked === undefined) user.setDataValue('isBlocked', false);
+                if (user.twoFactorEnabled === undefined) user.setDataValue('twoFactorEnabled', false);
             },
             beforeUpdate: (user: UserModel) => {
                 user.setDataValue('updatedAt', new Date());

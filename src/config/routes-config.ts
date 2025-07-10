@@ -1,0 +1,462 @@
+import {Express, Router} from 'express';
+import {AsaciServices} from '@services/asaci-services';
+import {logger} from '@utils/logger';
+import {AsaciAuthenticationController} from "@controllers/asaci-authentication.controller";
+import {AsaciAttestationController} from "@controllers/asaci-attestation.controller";
+import {createAsaciRoutes} from "@/routes/asaci.routes";
+import {createAuthRoutes} from "@/routes/auth.routes";
+import {AuthenticationService} from "@services/authentication.service";
+import {AuthenticationController} from "@controllers/authentication.controller";
+import {isDevelopment} from "@config/environment";
+import {setupSwagger} from "@config/swagger";
+import {CertifyLinkController} from "@controllers/certify-link.controller";
+import {createCertifyLinkRoutes} from "@/routes/certify-link.routes";
+import process from "node:process";
+import {CertifyLinkService} from "@services/certify-link.service";
+import {RouteConfig} from "@interfaces/common.interfaces";
+import {OrassService} from "@services/orass.service";
+import {checkDatabaseHealth} from "@/models";
+import {HealthStatus} from "@interfaces/common.enum";
+
+export class RoutesConfig {
+    private expressApp: Express;
+    private config: RouteConfig;
+    private routes: Router;
+
+    constructor(expressApp: Express, config: RouteConfig = {}) {
+        this.expressApp = expressApp;
+        this.config = config;
+        this.routes = Router();
+    }
+
+    /**
+     * Initialize and setup all application routes
+     */
+    setupRoutes(): Router {
+        try {
+            // Set up Swagger documentation first (should be available early)
+            if (this.config.swagger?.enabled !== false) {
+                this.setupSwaggerRoutes();
+            }
+
+            // Setup health check routes
+            if (this.config.health?.enabled !== false) {
+                this.setupHealthRoutes();
+            }
+
+            // Set up Authentication routes (required for other routes)
+            if (this.config.auth?.enabled !== false) {
+                this.setupAuthRoutes();
+            }
+
+            // Setup Asaci routes if enabled
+            if (this.config.asaci?.enabled !== false) {
+                this.setupAsaciRoutes();
+            }
+
+            // Setup CertifyLink/ORASS routes if enabled
+            if (this.config.certifyLink?.enabled !== false) {
+                this.setupCertifyLinkRoutes();
+            }
+
+            logger.info('✅ All application routes initialized successfully');
+            return this.routes;
+
+        } catch (error: any) {
+            logger.error('❌ Failed to setup routes:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Setup Swagger documentation routes
+     */
+    private setupSwaggerRoutes(): void {
+        try {
+            // Setup Swagger documentation
+            setupSwagger(this.expressApp);
+
+            // Add swagger routes info to the main router (for route listing)
+            const basePath = this.config.swagger?.basePath || '/docs';
+
+            logger.info(`✅ Swagger documentation routes initialized at: ${process.env.API_PREFIX}/docs`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup Swagger routes:', error.message);
+            // Don't throw error for swagger setup failure
+            logger.warn('⚠️ Continuing without Swagger documentation');
+        }
+    }
+
+    /**
+     * Setup health check routes
+     */
+    private setupHealthRoutes(): void {
+        //TODO: Create a Health controller and a health service
+        try {
+            const basePath = this.config.health?.basePath || '/health';
+
+            // Application health check
+            this.expressApp.get(`${basePath}/app`, (req, res) => {
+                res.json({
+                    status: HealthStatus.HEALTHY,
+                    timestamp: new Date().toISOString(),
+                    uptime: process.uptime(),
+                    memory: process.memoryUsage(),
+                    environment: process.env.NODE_ENV
+                });
+            });
+
+            // Liveness probe (for container orchestration)
+            this.expressApp.get('/health/live', (req, res) => {
+                res.status(200).json({
+                    status: 'alive',
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            // Readiness probe (for container orchestration)
+            this.expressApp.get('/health/ready', async (req, res) => {
+                try {
+                    // Check if all required services are ready
+                    const isReady = await this.checkReadiness();
+                    res.status(isReady ? 200 : 503).json({
+                        status: isReady ? 'ready' : 'not_ready',
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (error) {
+                    res.status(503).json({
+                        status: 'not_ready',
+                        error: 'Health check failed',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            this.expressApp.get('/health', async (req, res) => {
+                try {
+                    const services: Record<string, any> = {};
+                    services.asaci = await this.config.asaci?.manager?.healthCheck();
+                    services.orass = await this.config.orass?.orassService?.healthCheck();
+                    services.database = await checkDatabaseHealth();
+
+                    const overallStatus = Object.values(services)
+                        .every(service =>
+                            HealthStatus.HEALTHY.includes(service.status))
+                        ? HealthStatus.HEALTHY : HealthStatus.UNHEALTHY;
+
+                    const statusCode = overallStatus === HealthStatus.HEALTHY
+                        ? 200 : 503;
+
+                    res.status(statusCode).json({
+                        status: overallStatus,
+                        services,
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (error: any) {
+                    res.status(503).json({
+                        status: HealthStatus.UNHEALTHY,
+                        error: error.message,
+                        details: error,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            this.expressApp.get('/health/database', async (req, res) => {
+                try {
+                    const health = await checkDatabaseHealth();
+                    const statusCode = health.status === HealthStatus.HEALTHY ?
+                        200 : 503;
+                    res.status(statusCode).json(health);
+                } catch (error: any) {
+                    res.status(503).json({
+                        status: HealthStatus.UNHEALTHY,
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            // ASACI health check
+            this.expressApp.get('/health/asaci', async (req, res) => {
+                try {
+                    const health = await this.config.asaci?.manager?.healthCheck();
+                    const statusCode = health?.status === HealthStatus.HEALTHY ?
+                        200 : 503;
+                    res.status(statusCode).json(health);
+                } catch (error: any) {
+                    res.status(503).json({
+                        status: HealthStatus.UNHEALTHY,
+                        service: 'asaci',
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            // ORASS health check
+            this.expressApp.get('/health/orass', async (req, res) => {
+                try {
+                    const health = await this.config.orass?.orassService?.healthCheck();
+                    const statusCode = health.status === HealthStatus.UNHEALTHY ?
+                        200 : 503;
+                    res.status(statusCode).json(health);
+                } catch (error: any) {
+                    res.status(503).json({
+                        status: HealthStatus.UNHEALTHY,
+                        service: 'orass',
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+
+            logger.info(`✅ Health check routes mounted at: ${basePath}`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup Health routes:', error.message);
+        }
+    }
+
+    /**
+     * Setup Authentication routes
+     */
+    private setupAuthRoutes(): void {
+        try {
+            if (!this.config.auth?.authService) {
+                throw new Error('Authentication service not provided in route config');
+            }
+
+            const authService = this.config.auth.authService;
+            const authController = new AuthenticationController(authService);
+
+            // Create and mount authentication routes
+            const authRoutes = createAuthRoutes(authController);
+            const basePath = this.config.auth.basePath || '/auth';
+
+            this.routes.use(basePath, authRoutes);
+
+            logger.info(`✅ Authentication routes mounted at: ${basePath}`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup Authentication routes:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Setup Asaci eAttestation routes
+     */
+    private setupAsaciRoutes(): void {
+        try {
+            if (!this.config.asaci?.manager) {
+                throw new Error('Asaci service manager not provided in route config');
+            }
+
+            const asaciManager = this.config.asaci.manager;
+
+            // Create controllers
+            const authController = new AsaciAuthenticationController(asaciManager.getAuthService());
+            const attestationController = new AsaciAttestationController(
+                asaciManager.getProductionService(),
+                asaciManager.getOrderService(),
+                asaciManager.getCertificateService(),
+                asaciManager.getTransactionService()
+            );
+
+            // Create and mount Asaci routes
+            const asaciRoutes = createAsaciRoutes(authController, attestationController);
+            const basePath = this.config.asaci.basePath || '/asaci';
+
+            this.routes.use(basePath, asaciRoutes);
+
+            logger.info(`✅ Asaci routes mounted at: ${basePath}`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup Asaci routes:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Set up CertifyLink/ORASS routes
+     */
+    private setupCertifyLinkRoutes(): void {
+        try {
+            if (!this.config.certifyLink?.certifyLinkService) {
+                throw new Error('Certificate Link service not provided in route config');
+            }
+
+            const certifyLinkService = this.config.certifyLink?.certifyLinkService;
+            const certifyLinkController = new CertifyLinkController(certifyLinkService)
+
+            // Create and mount CertifyLink routes
+            const certifyLinkRoutes = createCertifyLinkRoutes(certifyLinkController);
+            const basePath = this.config.certifyLink?.basePath || '/certify-link';
+
+            this.routes.use(basePath, certifyLinkRoutes);
+
+            logger.info(`✅ CertifyLink routes mounted at: ${basePath}`);
+        } catch (error: any) {
+            logger.error('❌ Failed to setup CertifyLink routes:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Check if the application is ready to serve requests
+     */
+    //TODO: Fix this method when calling orass
+    private async checkReadiness(): Promise<boolean> {
+        try {
+            // Check if the authentication service is ready
+            if (this.config.auth?.enabled !== false && !this.config.auth?.authService) {
+                return false;
+            }
+
+            // Check if Asaci service is ready (if enabled)
+            if (this.config.asaci?.enabled !== false && this.config.asaci?.manager) {
+                try {
+                    await this.config.asaci.manager.healthCheck();
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            // Check if orass service is ready (if enabled)
+            if (this.config.orass?.enabled !== false && this.config.orass?.orassService) {
+                try {
+                    await this.config.orass.orassService.healthCheck();
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            // Check if the database is ready (if enabled)
+                try {
+                    await checkDatabaseHealth();
+                } catch (error) {
+                    return false;
+                }
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the main routes router
+     */
+    getRoutes(): Router {
+        return this.routes;
+    }
+
+    /**
+     * Setup 404 handler for API routes
+     */
+    setup404Handler(): void {
+        this.routes.use('*', (req, res) => {
+            const apiPrefix = process.env.API_PREFIX || '/api';
+
+            res.status(404).json({
+                type: `https://tools.ietf.org/html/rfc7231#section-6.5.4`,
+                title: 'Not Found',
+                status: 404,
+                detail: `Route ${req.originalUrl} not found`,
+                instance: req.originalUrl,
+                suggestions: {
+                    documentation: `${apiPrefix}/docs`,
+                    health: `${apiPrefix}/health`,
+                    authentication: `${apiPrefix}/auth`,
+                    asaci: `${apiPrefix}/asaci`
+                },
+                timestamp: new Date().toISOString()
+            });
+        });
+    }
+
+    /**
+     * Get route information for debugging
+     */
+    getRouteInfo(): any {
+        return {
+            authentication: {
+                enabled: this.config.auth?.enabled !== false,
+                basePath: this.config.auth?.basePath || '/auth'
+            },
+            asaci: {
+                enabled: this.config.asaci?.enabled !== false,
+                basePath: this.config.asaci?.basePath || '/asaci'
+            },
+            orass: {
+                enabled: this.config.orass?.enabled !== false,
+            },
+            certifyLink: {
+                enabled: this.config.certifyLink?.enabled !== false,
+                basePath: this.config.certifyLink?.basePath || '/certify-link',
+            },
+            swagger: {
+                enabled: this.config.swagger?.enabled !== false,
+                basePath: this.config.swagger?.basePath || '/docs'
+            },
+            health: {
+                enabled: this.config.health?.enabled !== false,
+                basePath: this.config.health?.basePath || '/health'
+            }
+        };
+    }
+}
+
+/**
+ * Factory function to create routes with configuration
+ */
+export const createApplicationRoutes = (
+    app: Express,
+    config: RouteConfig = {}
+): Router => {
+    const routesManager = new RoutesConfig(app, config);
+    const routes = routesManager.setupRoutes();
+    routesManager.setup404Handler();
+
+    return routes;
+};
+
+/**
+ * Get default route configuration
+ */
+export const getDefaultRouteConfig = (
+    authService?: AuthenticationService,
+    asaciManager?: AsaciServices,
+    orassService?: OrassService,
+    certifyLinkService?: CertifyLinkService
+): RouteConfig => {
+    return {
+        auth: {
+            enabled: true,
+            basePath: '/auth',
+            authService
+        },
+        asaci: {
+            enabled: true,
+            basePath: '/asaci', //TODO: Make this configurable
+            manager: asaciManager
+        },
+        orass: {
+            enabled: true,
+            orassService
+        },
+        certifyLink: {
+            enabled: true,
+            basePath: '/certify-link',
+            certifyLinkService
+        },
+        swagger: {
+            enabled: isDevelopment(), // Enable swagger in development by default
+            basePath: '/docs'
+        },
+        health: {
+            enabled: true,
+            basePath: '/health'
+        }
+    };
+};
+
+export { createAsaciRoutes, createAuthRoutes, createCertifyLinkRoutes  };

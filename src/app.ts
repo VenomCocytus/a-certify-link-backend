@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, {Express} from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -6,20 +6,24 @@ import cookieParser from 'cookie-parser';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
-import { globalExceptionHandlerMiddleware } from '@middlewares/global-exception-handler.middleware';
-import { Environment } from '@config/environment';
-import { createAsaciServiceManager, AsaciServiceManager } from "@config/asaci-config";
-import { logger } from '@utils/logger';
-import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-manager";
+import {globalExceptionHandlerMiddleware} from '@middlewares/global-exception-handler.middleware';
+import {AsaciServices, createAsaciServiceManager} from "@services/asaci-services";
+import {logger} from '@utils/logger';
+import {createApplicationRoutes, getDefaultRouteConfig} from "@config/routes-config";
 import {AuthenticationService} from "@services/authentication.service";
 import * as process from "node:process";
-import {createOrassServiceManager, getDefaultOrassConfig, OrassServiceManager} from "@config/orass-service-manager";
+import {Environment, getAsaciConfig, isProduction} from "@config/environment";
+import {checkDatabaseHealth} from "@/models";
+import {HealthStatus} from "@interfaces/common.enum";
+import {OrassService} from "@services/orass.service";
+import {CertifyLinkService} from "@services/certify-link.service";
 
 export class App {
     public app: Express;
-    private asaciManager: AsaciServiceManager;
-    private orassManager: OrassServiceManager;
+    private asaciServices: AsaciServices;
     private authService: AuthenticationService;
+    private orassService: OrassService;
+    private certificateLinkService: CertifyLinkService;
 
     constructor() {
         this.app = express();
@@ -42,8 +46,9 @@ export class App {
         }));
 
         this.app.use(cors({
-            origin: Environment.NODE_ENV !== 'production',
+            // origin: !isProduction,
             credentials: true,
+            origin: process.env.NODE_ENV !== 'production',
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
         }));
@@ -64,8 +69,8 @@ export class App {
             .use(Backend)
             .use(i18nextMiddleware.LanguageDetector)
             .init({
-                fallbackLng: Environment.DEFAULT_LANGUAGE,
-                supportedLngs: Environment.SUPPORTED_LANGUAGES?.split(','),
+                fallbackLng: process.env.DEFAULT_LANGUAGE,
+                supportedLngs: process.env.SUPPORTED_LANGUAGES?.split(','),
                 backend: {
                     loadPath: './src/locales/{{lng}}.json',
                 },
@@ -74,37 +79,18 @@ export class App {
                     caches: false,
                 },
             });
-
-        logger.info('✅ i18next initialized successfully');
         this.app.use(i18nextMiddleware.handle(i18next));
-
-        logger.info('✅ Application middleware initialized');
     }
 
     private initializeServices(): void {
         try {
             this.authService = new AuthenticationService();
-            this.asaciManager = createAsaciServiceManager({
-                baseUrl: Environment.ASACI_BASE_URL,
-                timeout: Environment.ASACI_TIMEOUT,
-            });
-            const orassConfig = getDefaultOrassConfig();
-            this.orassManager = createOrassServiceManager(
-                orassConfig,
-                this.asaciManager.getProductionService()
-            );
+            this.orassService = new OrassService();
+            this.asaciServices = createAsaciServiceManager(getAsaciConfig());
+            this.certificateLinkService = new CertifyLinkService(
+                this.orassService, this.asaciServices.getProductionService());
+            //TODO: Automatically start Orass at launch without failure
 
-            // Setup Asaci health check endpoint
-            this.app.get('/health/asaci', async (req, res) => {
-                try {
-                    const health = await this.asaciManager.healthCheck();
-                    res.status(200).json(health);
-                } catch (error: any) {
-                    res.status(500).json({ status: 'error', message: error.message });
-                }
-            });
-
-            logger.info('✅ Asaci services initialized successfully');
         } catch (error: any) {
             logger.error('❌ Failed to initialize Asaci services:', error.message);
             throw error;
@@ -113,30 +99,15 @@ export class App {
 
     private setupApplicationRoutes(): void {
         try {
-            // Health check endpoints
-            this.setupHealthChecks();
-
-            // Get route configuration with all services
             const routeConfig = getDefaultRouteConfig(
                 this.authService,
-                this.asaciManager,
-                this.orassManager
+                this.asaciServices,
+                this.orassService,
+                this.certificateLinkService
             );
 
-            // Create and mount application routes
             const applicationRoutes = createApplicationRoutes(this.app, routeConfig);
-            this.app.use(Environment.API_PREFIX as string, applicationRoutes);
-
-            // Setup root endpoint
-            this.app.get('/', (req, res) => {
-                res.json({
-                    message: `${Environment.APP_NAME} API Server`,
-                    environment: Environment.NODE_ENV,
-                    timestamp: new Date().toISOString()
-                });
-            });
-
-            logger.info('✅ Application routes initialized successfully');
+            this.app.use(process.env.API_PREFIX as string, applicationRoutes);
         } catch (error: any) {
             logger.error('❌ Failed to setup routes:', error.message);
             throw error;
@@ -144,94 +115,68 @@ export class App {
     }
 
     private setupErrorHandlers(): void {
-        // Global error handler (must be last)
         this.app.use(globalExceptionHandlerMiddleware);
-
-        logger.info('✅ Error handlers initialized');
-    }
-
-    private setupHealthChecks(): void {
-        // General health check endpoint
-        this.app.get('/health', async (req, res) => {
-            try {
-                const health = await this.getHealthStatus();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        // ASACI health check
-        this.app.get('/health/asaci', async (req, res) => {
-            try {
-                const health = await this.asaciManager.healthCheck();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    service: 'asaci',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        // ORASS health check
-        this.app.get('/health/orass', async (req, res) => {
-            try {
-                const health = await this.orassManager.healthCheck();
-                const statusCode = health.status === 'healthy' ? 200 : 503;
-                res.status(statusCode).json(health);
-            } catch (error: any) {
-                res.status(503).json({
-                    status: 'unhealthy',
-                    service: 'orass',
-                    error: error.message,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        });
-
-        logger.info('✅ Health check endpoints configured');
     }
 
     async authenticateAsaci(): Promise<void> {
         try {
-            if (!Environment.ASACI_EMAIL || !Environment.ASACI_PASSWORD) {
+            if (!process.env.ASACI_EMAIL || !process.env.ASACI_PASSWORD) {
                 logger.warn('⚠️ Asaci credentials not provided. Services will require manual authentication');
                 return;
             }
 
-            await this.asaciManager.authenticate(
-                Environment.ASACI_EMAIL,
-                Environment.ASACI_PASSWORD,
-                Environment.ASACI_CLIENT_NAME
+            await this.asaciServices.authenticate(
+                process.env.ASACI_EMAIL,
+                process.env.ASACI_PASSWORD,
+                process.env.ASACI_CLIENT_NAME
             );
 
-            logger.info('✅ Asaci services authenticated successfully');
         } catch (error: any) {
             logger.error('❌ Failed to authenticate Asaci services:', error.message);
             throw error;
         }
     }
 
+
+
     async connectOrass(): Promise<void> {
         if(process.env.ORASS_AUTO_CONNECT)
-            this.orassManager.connect().catch(error => {
-                logger.error('❌ Failed to connect to ORASS:', error.message);
-                throw error;
+            await this.orassService.connect().catch(error => {
+                this.scheduleOrassReconnection();
             });
+    }
+
+    /**
+     * Schedule periodic ORASS reconnection attempts
+     */
+    async scheduleOrassReconnection(): Promise<void> {
+        const reconnectInterval = 30000; // 30 seconds
+        const maxRetries = 10;
+        let retryCount = 0;
+
+        const reconnectTimer = setInterval(async () => {
+            if (retryCount >= maxRetries) {
+                logger.warn(`⚠️ ORASS reconnection stopped after ${maxRetries} attempts`);
+                clearInterval(reconnectTimer);
+                return;
+            }
+
+            try {
+                retryCount++;
+                logger.info(`🔄 ORASS reconnection attempt ${retryCount}/${maxRetries}...`);
+
+                await this.connectOrass();
+                logger.info('✅ ORASS reconnection successful');
+                clearInterval(reconnectTimer);
+            } catch (error: any) {
+                logger.warn(`⚠️ ORASS reconnection attempt ${retryCount} failed:`, error.message);
+            }
+        }, reconnectInterval);
     }
 
     async disconnectOrass(): Promise<void> {
         const disconnectionPromises: Promise<void>[] = [
-            this.orassManager.disconnect().catch(error => {
+            this.orassService.disconnect().catch(error => {
                 logger.error('Error disconnecting ORASS:', error);
             })
         ];
@@ -247,52 +192,16 @@ export class App {
     async getHealthStatus(): Promise<any> {
         const services: Record<string, any> = {};
 
-        // Check Asaci service health
-        try {
-            services.asaci = await this.asaciManager.healthCheck();
-        } catch (error: any) {
-            services.asaci = {
-                status: 'error',
-                error: error.message,
-                authenticated: false
-            };
-        }
+        //TODO: correctly build the responses of this service
+        services.asaci = await this.asaciServices.healthCheck();
+        services.orass = await this.orassService.healthCheck();
+        services.database = await checkDatabaseHealth();
 
-        // Check ORASS service health
-        try {
-            services.orass = await this.orassManager.healthCheck();
-        } catch (error: any) {
-            services.orass = {
-                status: 'error',
-                error: error.message,
-                connected: false
-            };
-        }
-
-        // Add database health check
-        services.database = {
-            status: 'healthy', // This should be replaced with an actual database health check
-            connection: 'active'
-        };
-
-        // Add authentication service health
-        services.authentication = {
-            status: 'healthy',
-            initialized: true
-        };
-
-        // Add other service health checks
-        services.application = {
-            status: 'healthy',
-            uptime: process.uptime(),
-            memory: process.memoryUsage(),
-            environment: Environment.NODE_ENV
-        };
-
-        const healthyStatuses = ['healthy', 'ok'];
-        const overallStatus = Object.values(services).every(service =>
-            healthyStatuses.includes(service.status)
-        ) ? 'healthy' : 'degraded';
+        //TODO: Check application health
+        const overallStatus = Object.values(services)
+            .every(service =>
+                HealthStatus.HEALTHY.includes(service.status))
+            ? HealthStatus.HEALTHY : HealthStatus.UNHEALTHY;
 
         return {
             status: overallStatus,
@@ -304,9 +213,7 @@ export class App {
 
 export const createApp = (): App => {
     try {
-        const app = new App();
-        logger.info('✅ Application created successfully');
-        return app;
+        return new App();
     } catch (error: any) {
         logger.error('❌ Failed to create application:', error.message);
         throw error;

@@ -1,14 +1,278 @@
+# ==========================================
+# ULTIMATE .GITIGNORE FILE
+# ==========================================
+# This file covers most common scenarios for modern development
+# Remove sections that don't apply to your project
+
+# ==========================================
+# ENVIRONMENT & SECRETS
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.*.local
+.environment
+config/secrets.yml
+config/database.yml
+config/master.key
+secrets.json
+credentials.json
+service-account-key.json
+firebase-adminsdk-*.json
+.firebase/
+.firebaserc
+
+# ==========================================
+# NODE.JS & NPM/YARN/PNPM
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npmrc
+.yarnrc
+.yarnrc.yml
+
+# ==========================================
+# BUILD OUTPUTS & DIST
+# ==========================================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.cache/
+.parcel-cache/
+.turbo/
+coverage/
+nyc_output/
+lib-cov/
+.grunt/
+.lock-wscript
+.wafpickle-*
+.node_repl_history
+*.tgz
+*.tar.gz
+
+# ==========================================
+# DATABASES
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+dump.rdb
+*.rdb
+*.mdb
+*.ldb
+*.log
+
+# ==========================================
+# LOGS
+# ==========================================
+logs/
+combined.log
+error.log
+access.log
+*.log.*
+log/
+
+# ==========================================
+# RUNTIME DATA
+# ==========================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ==========================================
+# EDITORS & IDEs
+# ==========================================
+# Visual Studio Code
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+.idea/*
+*.iws
+*.iml
+*.ipr
+
+# ==========================================
+# OPERATING SYSTEMS
+# ==========================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# ARCHIVES & COMPRESSED FILES
+# ==========================================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.bz2
+*.xz
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.cache
+*~
+.#*
+.*.swp
+.*.swo
+
+# ==========================================
+# DOCKER
+# ==========================================
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# ==========================================
+# KUBERNETES
+# ==========================================
+*.kubeconfig
+kubeconfig
+.kube/config
+
+# Azure
+.azure/
+
+# ==========================================
+# MISC TOOLS & SERVICES
+# ==========================================
+# Sentry
+.sentryclirc
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettiercache
+
+# StyleLint
+.stylelintcache
+
+# Jest
+jest.config.js
+
+# Webpack
+webpack-stats.json
+
+# Rollup
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Storybook
+.out
+.storybook-out
+storybook-static/
+
+# Chromatic
+chromatic.log
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# ==========================================
+# SECURITY FILES (NEVER COMMIT!)
+# ==========================================
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_dsa
+id_ed25519
+id_ecdsa
+*.ppk
+authorized_keys
+known_hosts
+
+# ==========================================
+# KEEP THESE FILES (NEGATIVE PATTERNS)
+# ==========================================
+# Sometimes you want to keep certain files
+# !important-file.txt
+# !docs/README.md
+# !.gitkeep
+
+# Others
 /tmp
 /out-tsc
 
 /node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 /.pnp
 .pnp.js
-
-.vscode/*
-
-/logs
-/logs/*

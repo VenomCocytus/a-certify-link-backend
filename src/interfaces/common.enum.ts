@@ -1,3 +1,15 @@
+//TODO: Turn descriptions in english
+
+export enum HealthStatus {
+    HEALTHY = 'healthy',
+    UNHEALTHY = 'degraded'
+}
+
+export enum ConnectionStatus {
+    ACTIVE = 'active',
+    FAILED = 'failed'
+}
+
 export enum CertificateType {
     CIMA = 'cima',
     POOLTPV = 'pooltpv',

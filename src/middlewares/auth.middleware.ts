@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { UserModel } from '@models/user.model';
 import { RoleModel } from '@models/role.model';
 import { logger } from '@utils/logger';
-import {AuthenticatedRequest, JwtPayload} from "@interfaces/common.interfaces";
+import {AuthenticatedRequest, JwtPayload} from "@interfaces/middleware.interfaces";
 
 export const authMiddleware = async (
     req: AuthenticatedRequest,

@@ -6,6 +6,8 @@ import { PasswordHistoryModel, initPasswordHistoryModel } from './password-histo
 import { AsaciRequestModel, initAsaciRequestModel } from './asaci-request.model';
 import { OperationLogModel, initOperationLogModel } from './operation-log.model';
 import bcrypt from "bcryptjs";
+import {isDevelopment} from "@config/environment";
+import {ConnectionStatus, HealthStatus} from "@interfaces/common.enum";
 
 let User: typeof UserModel;
 let Role: typeof RoleModel;
@@ -13,26 +15,24 @@ let PasswordHistory: typeof PasswordHistoryModel;
 let AsaciRequest: typeof AsaciRequestModel;
 let OperationLog: typeof OperationLogModel;
 
-function initializeModels(): void {
+function initModels(): void {
     try {
-        console.log('🔄 Initializing models...');
+        console.log('🔄 Initializing models for MSSQL...');
 
-        // Initialize each model with the sequelized instance
-        User = initUserModel(sequelize);
         Role = initRoleModel(sequelize);
+        User = initUserModel(sequelize);
         PasswordHistory = initPasswordHistoryModel(sequelize);
         AsaciRequest = initAsaciRequestModel(sequelize);
         OperationLog = initOperationLogModel(sequelize);
 
-        console.log('✅ Models initialized successfully');
+        console.log('✅ Models initialized successfully for MSSQL');
     } catch (error) {
         console.error('❌ Error initializing models:', error);
         throw error;
     }
 }
 
-// Define model relationships
-function defineAssociations(): void {
+function defineModelsAssociations(): void {
     try {
         console.log('🔄 Defining model associations...');
 
@@ -40,14 +40,14 @@ function defineAssociations(): void {
         User.belongsTo(Role, {
             foreignKey: 'roleId',
             as: 'role',
-            onDelete: 'RESTRICT',
+            onDelete: 'NO ACTION',
             onUpdate: 'CASCADE'
         });
 
         Role.hasMany(User, {
             foreignKey: 'roleId',
             as: 'users',
-            onDelete: 'RESTRICT',
+            onDelete: 'NO ACTION',
             onUpdate: 'CASCADE'
         });
 
@@ -98,14 +98,14 @@ function defineAssociations(): void {
 
         // AsaciRequest <-> OperationLog relationship (One-to-Many)
         AsaciRequest.hasMany(OperationLog, {
-            foreignKey: 'productionRequestId',
+            foreignKey: 'asaciRequestId',
             as: 'operationLogs',
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
         });
 
         OperationLog.belongsTo(AsaciRequest, {
-            foreignKey: 'productionRequestId',
+            foreignKey: 'asaciRequestId',
             as: 'asaciRequest',
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
@@ -118,12 +118,10 @@ function defineAssociations(): void {
     }
 }
 
-// Initialize database with seed data
 async function seedDatabase(): Promise<void> {
     try {
-        console.log('🔄 Seeding database...');
+        console.log('🔄 Seeding database for MSSQL...');
 
-        // Seed default roles
         const roles = [
             {
                 name: 'ADMIN',
@@ -135,45 +133,45 @@ async function seedDatabase(): Promise<void> {
                     'users.delete',
                     'users.block',
                     'users.unblock',
+                    'verify.email',
+                    'profile.update',
+                    'profile.read',
+                    'password.update',
                     'roles.manage',
-                    'asaci:productions:create',
-                    'asaci:productions:read',
-                    'asaci:productions:update',
-                    'asaci:productions:delete',
-                    'asaci:productions:retry',
-                    'asaci:logs.read',
-                    'asaci:system.configure',
-                    'asaci:system.monitor',
-                    'orass:policies:read',
-                    'orass:policies:validate',
-                    'orass:policies:preview',
-                    'orass:policies:create',
-                    'orass:policies:bulk-create',
-                    'orass:certificates:create'
+                    'policies.read',
+                    'edition.requests.create',
+                    'edition.requests.read',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
+                    'orass.statistics.read'
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             },
             {
                 name: 'USER',
                 description: 'Regular user with basic access',
                 permissions: [
-                    'productions.create',
-                    'productions.read',
-                    'productions.download',
+                    'verify.email',
                     'profile.update',
-                    'password.change'
+                    'profile.read',
+                    'password.update',
+                    'policies.read',
+                    'edition.requests.create',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
                 ],
-                isActive: true
+                isActive: true // Changed to 1 for MSSQL BIT type
             },
             {
                 name: 'OPERATOR',
                 description: 'Operator with production management access',
                 permissions: [
-                    'productions.create',
-                    'productions.read',
-                    'productions.update',
-                    'productions.retry',
-                    'productions.download',
+                    'edition.requests.create',
+                    'user.edition.requests.read',
+                    'edition.requests.download',
+                    'user.statistics.read',
                     'users.read',
                     'logs.read',
                     'profile.update',
@@ -185,7 +183,7 @@ async function seedDatabase(): Promise<void> {
                 name: 'VIEWER',
                 description: 'Read-only access for monitoring',
                 permissions: [
-                    'productions.read',
+                    'edition.requests.read',
                     'users.read',
                     'logs.read'
                 ],
@@ -196,17 +194,20 @@ async function seedDatabase(): Promise<void> {
         for (const roleData of roles) {
             const [role] = await Role.findOrCreate({
                 where: { name: roleData.name },
-                defaults: roleData
+                defaults: {
+                    ...roleData,
+                    permissions: roleData.permissions || [],
+                    isActive: roleData.isActive
+                }
             });
 
             console.log(`✅ Role ${role.name} initialized`);
         }
 
-        // Create a default admin user if it doesn't already exist
         const adminRole = await Role.findOne({ where: { name: 'ADMIN' } });
         if (adminRole) {
             const hashedPassword = await bcrypt.hash('Admin123!@#', 12);
-            const [adminUser, created] = await User.findOrCreate({
+            const [created] = await User.findOrCreate({
                 where: { email: 'admin@eattestation.com' },
                 defaults: {
                     email: 'admin@eattestation.com',
@@ -217,7 +218,9 @@ async function seedDatabase(): Promise<void> {
                     isActive: true,
                     isBlocked: false,
                     isEmailVerified: true,
-                    emailVerifiedAt: new Date()
+                    emailVerifiedAt: new Date(),
+                    loginAttempts: 0,
+                    twoFactorEnabled: true
                 }
             });
 
@@ -230,15 +233,14 @@ async function seedDatabase(): Promise<void> {
             }
         }
 
-        console.log('✅ Database seeded successfully');
+        console.log('✅ Database seeded successfully for MSSQL');
     } catch (error) {
         console.error('❌ Error seeding database:', error);
         throw error;
     }
 }
 
-// Setup periodic cleanup jobs
-async function setupCleanupJobs(): Promise<void> {
+async function setupPeriodicCleanupJobs(): Promise<void> {
     // Clean up expired user blocks every hour
     setInterval(async () => {
         try {
@@ -267,32 +269,32 @@ async function setupCleanupJobs(): Promise<void> {
             }
         }, 24 * 60 * 60 * 1000); // Every 24 hours
     }, timeUntil2AM);
+
+    //TODO: Clean up failed asaci requests
 }
 
-// Database initialization function
 export async function initializeDatabase(): Promise<void> {
     try {
-        console.log('🔄 Initializing database...');
+        console.log('🔄 Initializing database for MSSQL...');
 
-        // Test database connection
         await sequelize.authenticate();
         console.log('✅ Database connection established');
-        initializeModels();
-        defineAssociations();
 
-        // Sync database (create tables if they don't exist)
+        initModels();
         await sequelize.sync({
-            alter: process.env.NODE_ENV === 'development',
-            force: false // Never force in production
+            alter: isDevelopment(),
+            force: false, // Never force in production
+            logging: isDevelopment() ? console.log : false
         });
-        console.log('✅ Database synchronized');
+        console.log('✅ Database synchronized for MSSQL');
 
-        // Seed initial data
+        defineModelsAssociations();
+
         await seedDatabase();
         console.log('✅ Database seeded with initial data');
 
-        // Setup cleanup jobs
-        await setupCleanupJobs();
+        console.log('🔄 Setting up periodic cleanup jobs...');
+        await setupPeriodicCleanupJobs();
         console.log('✅ Cleanup jobs scheduled');
 
     } catch (error) {
@@ -301,16 +303,17 @@ export async function initializeDatabase(): Promise<void> {
     }
 }
 
-// Database health check
 export async function checkDatabaseHealth(): Promise<{
-    status: 'healthy' | 'unhealthy';
+    status: HealthStatus;
+    connection: string;
     details: any;
+    timestamp: string;
+    error?: any
 }> {
     try {
-        // Test basic connection
         await sequelize.authenticate();
 
-        // Test table access
+        const timestamp = new Date().toISOString();
         const userCount = await User.count();
         const roleCount = await Role.count();
         const asaciRequestCount = await AsaciRequest.count();
@@ -323,63 +326,36 @@ export async function checkDatabaseHealth(): Promise<{
         });
 
         return {
-            status: 'healthy',
+            status: HealthStatus.HEALTHY,
+            timestamp: timestamp,
+            connection: ConnectionStatus.ACTIVE,
             details: {
-                connection: 'active',
+                database: process.env.DB_INSTANCE_NAME,
                 users: userCount,
                 roles: roleCount,
                 asaciRequests: asaciRequestCount,
                 recentLogs: logCount,
-                timestamp: new Date().toISOString()
             }
         };
 
     } catch (error: any) {
         return {
-            status: 'unhealthy',
+            status: HealthStatus.UNHEALTHY,
+            timestamp: new Date().toISOString(),
+            connection: ConnectionStatus.FAILED,
             details: {
-                connection: 'failed',
-                error: error.message,
-                timestamp: new Date().toISOString()
-            }
+                database: process.env.DB_INSTANCE_NAME,
+            },
+            error: error.message,
         };
     }
 }
 
 export {
-    sequelize
+    sequelize,
+    User,
+    Role,
+    PasswordHistory,
+    AsaciRequest,
+    OperationLog
 };
-export function getUser() {
-    if (!User) throw new Error('User model not initialized. Call initializeDatabase() first.');
-    return User;
-}
-
-export function getRole() {
-    if (!Role) throw new Error('Role model not initialized. Call initializeDatabase() first.');
-    return Role;
-}
-
-export function getPasswordHistory() {
-    if (!PasswordHistory) throw new Error('PasswordHistory model not initialized. Call initializeDatabase() first.');
-    return PasswordHistory;
-}
-
-export function getAsaciRequest() {
-    if (!AsaciRequest) throw new Error('AsaciRequest model not initialized. Call initializeDatabase() first.');
-    return AsaciRequest;
-}
-
-export function getOperationLog() {
-    if (!OperationLog) throw new Error('OperationLog model not initialized. Call initializeDatabase() first.');
-    return OperationLog;
-}
-
-export function getModels() {
-    return {
-        User: getUser(),
-        Role: getRole(),
-        PasswordHistory: getPasswordHistory(),
-        AsaciRequest: getAsaciRequest(),
-        OperationLog: getOperationLog()
-    };
-}
