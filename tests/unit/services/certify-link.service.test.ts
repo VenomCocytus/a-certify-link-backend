@@ -14,7 +14,7 @@ import {
     TEST_DATA,
     setupTestEnvironment,
     setupCertifyLinkTestEnvironment
-} from '../../helpers/test-utils';
+} from '../../utils/test.utils';
 
 // Mock dependencies
 jest.mock('@services/asaci-production.service');

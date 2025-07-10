@@ -1,4 +1,4 @@
-import {setupTestEnvironment} from "./helpers/test-utils";
+import {setupTestEnvironment} from "./utils/test.utils";
 import setTimeout = jest.setTimeout;
 
 

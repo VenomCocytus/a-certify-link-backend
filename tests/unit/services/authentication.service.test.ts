@@ -6,7 +6,7 @@ import qrcode from 'qrcode';
 import { AuthenticationService } from '@services/authentication.service';
 import { UserModel } from '@models/user.model';
 import { RoleModel } from '@models/role.model';
-import {createMockUser, createMockRole, createMockCryptoHash, createMockJWT, createMockSpeakeasy, createMockQRCode, createValidLoginDto, createValidRegisterDto, createValidChangePasswordDto, TEST_DATA, setupTestEnvironment, expectValidationError, expectBaseError} from '../../helpers/test-utils';
+import {createMockUser, createMockRole, createMockCryptoHash, createMockJWT, createMockSpeakeasy, createMockQRCode, createValidLoginDto, createValidRegisterDto, createValidChangePasswordDto, TEST_DATA, setupTestEnvironment, expectValidationError, expectBaseError} from '../../utils/test.utils';
 
 // Mock dependencies
 jest.mock('jsonwebtoken');

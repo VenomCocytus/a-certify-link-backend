@@ -1,21 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="201" failures="1" errors="0" time="6.708">
-  <testsuite name="AuthenticationController" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:15:24" time="4.905" tests="53">
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should login successfully and set cookies" time="0.015">
+<testsuites name="jest tests" tests="201" failures="0" errors="0" time="7.521">
+  <testsuite name="HttpClient" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:21:25" time="4.571" tests="32">
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should create axios instance with provided config" time="0.018">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set secure cookies in production" time="0.003">
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should setup request and response interceptors" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle login errors" time="0.035">
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should create instance with minimal config" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should register successfully and set cookies" time="0.003">
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should log debug message for outgoing requests" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle registration errors" time="0.002">
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle request interceptor errors" time="0.025">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should log debug message for successful responses" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle response errors with response object" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle network errors (no response)" time="0.007">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle generic errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make GET request and return data" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make GET request with config" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle GET request errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request and return data" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request with config" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request without data" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle POST request errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make PUT request and return data" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make PUT request with config" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle PUT request errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make DELETE request and return data" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make DELETE request with config" time="0">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle DELETE request errors" time="0">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set Authorization header with Bearer token" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should override existing Authorization header" time="0">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set API key with default header name" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set API key with custom header name" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should override existing API key" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate timeout errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate server errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate network connectivity errors" time="0">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle typical API workflow" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle API errors gracefully" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthenticationController" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:21:25" time="5.279" tests="53">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should login successfully and set cookies" time="0.023">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set secure cookies in production" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle login errors" time="0.021">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should register successfully and set cookies" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle registration errors" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should change password successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle password change errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle forgot password request" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle forgot password request" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle forgot password errors" time="0.001">
     </testcase>
@@ -27,63 +93,63 @@
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle email verification errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should resend verification email" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should resend verification email" time="0.002">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle resend verification errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should get user profile successfully" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should get user profile successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle profile retrieval errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should update profile successfully" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should update profile successfully" time="0">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle profile update errors" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle profile update errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should setup two-factor authentication" time="0.004">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should setup two-factor authentication" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor setup errors" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor setup errors" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should enable two-factor authentication" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor enable errors" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor enable errors" time="0">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should disable two-factor authentication" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle two-factor disable errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from cookies" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from cookies" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from body" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should refresh token from body" time="0.007">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should prioritize cookie over body" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should prioritize cookie over body" time="0">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return 401 when no refresh token provided" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle refresh token errors" time="0.008">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle refresh token errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout successfully" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout successfully" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout from all devices" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should logout from all devices" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout with empty body" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout with empty body" time="0">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout errors" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle logout errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should create user successfully" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should create user successfully" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle user creation errors" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle user creation errors" time="0">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return health status" time="0.004">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should return valid ISO timestamp" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle service errors and let them bubble up" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle service errors and let them bubble up" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle missing user in authenticated requests" time="0.011">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle missing user in authenticated requests" time="0.009">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle undefined user properties" time="0.002">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle undefined user properties" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle async service errors properly" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle async service errors properly" time="0.002">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle malformed request data" time="0.001">
     </testcase>
@@ -95,21 +161,81 @@
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should handle user ID as string in authenticated requests" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format login response correctly" time="0">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format login response correctly" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format profile response correctly" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should format health check response correctly" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set cookies with correct attributes in development" time="0">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should set cookies with correct attributes in development" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should clear cookies on logout" time="0.001">
+    <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should clear cookies on logout" time="0">
     </testcase>
     <testcase classname="tests\unit\controllers\authentication.controller.test.ts" name="should update refresh token cookie on token refresh" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="AuthenticationService" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:15:24" time="4.98" tests="49">
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully login a user with valid credentials" time="0.016">
+  <testsuite name="CertifyLinkService" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:21:25" time="5.549" tests="29">
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should search ORASS policies with all parameters" time="0.018">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default pagination when not provided" time="0.006">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ORASS service errors" time="0.024">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty search results" time="0.003">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should create edition request successfully" time="0.003">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ASACI service failure" time="0.004">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should mark request as completed for successful response" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default channel when not provided" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should filter requests by generated_id" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty ASACI response" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ASACI service errors" time="0.014">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get stored requests with filters" time="0.003">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default filters when not provided" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get request by ID successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should return null for non-existent request" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should download certificate successfully" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should throw error for non-existent request" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should throw error when certificate URL is not available" time="0.004">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get download link from database" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should return failure when certificate not found" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should process batch requests successfully" time="0.005">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty certificate references" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get user statistics successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get ORASS statistics successfully" time="0">
+    </testcase>
+    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ORASS service errors" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthenticationService" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:21:25" time="5.579" tests="49">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully login a user with valid credentials" time="0.021">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for non-existent user" time="0.002">
     </testcase>
@@ -119,87 +245,87 @@
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should generate tokens with remember me option" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully register a new user" time="0.003">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully register a new user" time="0.004">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched passwords" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched passwords" time="0.003">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for existing user" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException when no default role exists" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should use provided roleId when specified" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should use provided roleId when specified" time="0.003">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully change password" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched new passwords" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched new passwords" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for incorrect current password" time="0.006">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for incorrect current password" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.002">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException when password cannot be changed" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for existing user" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for non-existent user (security)" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for non-existent user (security)" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully reset password" time="0.099">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should successfully reset password" time="0.086">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for mismatched passwords" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid token" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should reset login attempts if account was locked" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should reset login attempts if account was locked" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should verify email successfully" time="0.002">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return already verified message for verified user" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid token" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid token" time="0.002">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should setup two-factor authentication" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException if 2FA already enabled" time="0">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException if 2FA already enabled" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should enable two-factor authentication with valid code" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should enable two-factor authentication with valid code" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid code" time="0.002">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for user without secret" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should disable two-factor authentication" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should disable two-factor authentication" time="0.008">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid password" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid 2FA code" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid 2FA code" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException when 2FA is not enabled" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException when 2FA is not enabled" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should refresh token successfully" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should refresh token successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for inactive user" time="0.002">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for non-existent user" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return user profile" time="0.006">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return user profile" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should update user profile successfully" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should update user profile successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw BaseException for non-existent user" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should create user successfully" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should create user successfully" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for existing user" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for existing user" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid role" time="0.002">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should throw ValidationException for invalid role" time="0">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout successfully" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout successfully" time="0">
     </testcase>
-    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout from all devices" time="0.001">
+    <testcase classname="tests\unit\services\authentication.service.test.ts" name="should logout from all devices" time="0">
     </testcase>
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should resend verification for existing unverified user" time="0.001">
     </testcase>
@@ -208,128 +334,48 @@
     <testcase classname="tests\unit\services\authentication.service.test.ts" name="should return success message for non-existent user (security)" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="CertifyLinkService" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:15:24" time="5.185" tests="29">
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should search ORASS policies with all parameters" time="0.015">
+  <testsuite name="CertifyLinkController" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:21:25" time="6.343" tests="38">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should search policies with query parameters" time="0.097">
     </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default pagination when not provided" time="0.001">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should use default pagination when not provided" time="0.003">
     </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ORASS service errors" time="0.03">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle invalid numeric parameters" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty search results" time="0.003">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.014">
     </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should create edition request successfully" time="0.003">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ASACI service failure" time="0.005">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should mark request as completed for successful response" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default channel when not provided" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should filter requests by generated_id" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty ASACI response" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ASACI service errors" time="0.012">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get stored requests with filters" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should use default filters when not provided" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get request by ID successfully" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should return null for non-existent request" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should download certificate successfully" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should throw error for non-existent request" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should throw error when certificate URL is not available" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get download link from database" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should return failure when certificate not found" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should process batch requests successfully" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle empty certificate references" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get user statistics successfully" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle database errors" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should get ORASS statistics successfully" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\services\certify-link.service.test.ts" name="should handle ORASS service errors" time="0.001">
-    </testcase>
-  </testsuite>
-  <testsuite name="CertifyLinkController" errors="0" failures="1" skipped="0" timestamp="2025-07-10T19:15:24" time="5.216" tests="38">
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should search policies with query parameters" time="0.104">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should use default pagination when not provided" time="0.004">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle invalid numeric parameters" time="0.003">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.024">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should create edition request successfully" time="0.003">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.004">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.003">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get edition requests from ASACI successfully" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get stored requests with filters" time="0.009">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should use default filters when not provided" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get request by ID successfully" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 404 when request not found" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should download edition request successfully" time="0.001">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should create edition request successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.002">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get user statistics successfully" time="0.003">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get edition requests from ASACI successfully" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.002">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get download link successfully" time="0.008">
-      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
-
-- Expected
-+ Received
-
-@@ -3,8 +3,8 @@
-      &quot;downloadCount&quot;: 5,
-      &quot;downloadLink&quot;: &quot;https://example.com/cert.pdf&quot;,
-      &quot;source&quot;: &quot;database&quot;,
-      &quot;success&quot;: true,
-    },
--   &quot;message&quot;: &quot;Certificate download link retrieved successfully&quot;,
-+   &quot;message&quot;: undefined,
-    &quot;user&quot;: &quot;test@example.com&quot;,
-  },
-
-Number of calls: 1
-    at expectJsonResponse (C:\Users\a.elong\Documents\Genesis\Career\Projects\WebStorm\A-CertifyLink\tests\helpers\test-utils.ts:341:27)
-    at Object.&lt;anonymous&gt; (C:\Users\a.elong\Documents\Genesis\Career\Projects\WebStorm\A-CertifyLink\tests\unit\controllers\certify-link.controller.test.ts:512:31)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)</failure>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get stored requests with filters" time="0.005">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should use default filters when not provided" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get request by ID successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 404 when request not found" time="0">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should download edition request successfully" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get user statistics successfully" time="0.002">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 401 when user ID is missing" time="0.001">
+    </testcase>
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get download link successfully" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when certificate reference is missing" time="0.001">
     </testcase>
@@ -341,95 +387,29 @@ Number of calls: 1
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when certificate references is not an array" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when certificate references array is empty" time="0.002">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when certificate references array is empty" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when exceeding maximum limit" time="0.003">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should return 400 when exceeding maximum limit" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get ORASS statistics successfully" time="0.003">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should get ORASS statistics successfully" time="0.002">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors properly" time="0.002">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle service errors properly" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle missing user in authenticated requests" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle malformed request data" time="0.001">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle malformed request data" time="0.002">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should format responses consistently" time="0.002">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should format responses consistently" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should include user email in all responses" time="0.001">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle numeric parameter conversion" time="0.001">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle numeric parameter conversion" time="0">
     </testcase>
-    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle zero values correctly" time="0.006">
+    <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle zero values correctly" time="0.001">
     </testcase>
     <testcase classname="tests\unit\controllers\certify-link.controller.test.ts" name="should handle missing parameters gracefully" time="0.001">
-    </testcase>
-  </testsuite>
-  <testsuite name="HttpClient" errors="0" failures="0" skipped="0" timestamp="2025-07-10T19:15:24" time="5.562" tests="32">
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should create axios instance with provided config" time="0.01">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should setup request and response interceptors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should create instance with minimal config" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should log debug message for outgoing requests" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle request interceptor errors" time="0.018">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should log debug message for successful responses" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle response errors with response object" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle network errors (no response)" time="0.002">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle generic errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make GET request and return data" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make GET request with config" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle GET request errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request and return data" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request with config" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make POST request without data" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle POST request errors" time="0">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make PUT request and return data" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make PUT request with config" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle PUT request errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make DELETE request and return data" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should make DELETE request with config" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle DELETE request errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set Authorization header with Bearer token" time="0">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should override existing Authorization header" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set API key with default header name" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should set API key with custom header name" time="0">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should override existing API key" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate timeout errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate server errors" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should propagate network connectivity errors" time="0">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle typical API workflow" time="0.001">
-    </testcase>
-    <testcase classname="tests\unit\utils\httpClient.test.ts" name="should handle API errors gracefully" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

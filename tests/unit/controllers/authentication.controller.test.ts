@@ -12,7 +12,7 @@ import {
     createValidRegisterDto,
     setupTestEnvironment,
     TEST_DATA
-} from '../../helpers/test-utils';
+} from '../../utils/test.utils';
 
 // Mock the authentication service
 jest.mock('@services/authentication.service');

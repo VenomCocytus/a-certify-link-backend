@@ -307,7 +307,7 @@ export const createMockHttpClient = () => ({
 });
 
 /**
- * Test data generation helpers
+ * Test data generation utils
  */
 export const generateRandomString = (length: number = 10): string => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -331,7 +331,7 @@ export const generateRandomUUID = (): string => {
 };
 
 /**
- * Test assertion helpers
+ * Test assertion utils
  */
 export const expectHttpStatus = (response: any, expectedStatus: number) => {
     expect(response.status).toHaveBeenCalledWith(expectedStatus);
@@ -354,7 +354,7 @@ export const expectCookieCleared = (response: any, name: string) => {
 };
 
 /**
- * Mock middleware helpers
+ * Mock middleware utils
  */
 export const createMockMiddleware = () => jest.fn((req, res, next) => next());
 
@@ -377,7 +377,7 @@ export const createMockValidationMiddleware = (shouldFail: boolean = false) =>
     });
 
 /**
- * Test file helpers
+ * Test file utils
  */
 export const createMockFile = (name: string = 'test.txt', content: string = 'test content') => ({
     originalname: name,
@@ -389,7 +389,7 @@ export const createMockFile = (name: string = 'test.txt', content: string = 'tes
 });
 
 /**
- * Performance testing helpers
+ * Performance testing utils
  */
 export const measureExecutionTime = async (fn: () => Promise<any>): Promise<{ result: any; duration: number }> => {
     const start = Date.now();
@@ -777,7 +777,7 @@ export const createMockAsaciProductionService = () => ({
     healthCheck: jest.fn()
 }as unknown as jest.Mocked<AsaciProductionService>);
 
-// Additional validation helpers for CertifyLink
+// Additional validation utils for CertifyLink
 export const createValidBatchDownloadDto = (overrides: Partial<any> = {}) => ({
     certificateReferences: ['CERT-001', 'CERT-002', 'CERT-003'],
     ...overrides
@@ -859,7 +859,7 @@ export const CERTIFY_LINK_TEST_DATA = {
     VALID_FLEET_REDUCTION: 0
 };
 
-// Performance test helpers for CertifyLink
+// Performance test utils for CertifyLink
 export const createLargeOrassQueryResult = (count: number = 1000) => ({
     policies: Array(count).fill(null).map(() => createMockOrassPolicy()),
     totalCount: count * 5, // Simulate larger dataset
@@ -873,7 +873,7 @@ export const createLargeBatchDownloadRequest = (count: number = 50) => ({
     certificateReferences: Array(count).fill(null).map((_, i) => `CERT-${String(i).padStart(3, '0')}`)
 });
 
-// Assertion helpers for CertifyLink
+// Assertion utils for CertifyLink
 export const expectOrassServiceCall = (mockService: any, method: string, ...args: any[]) => {
     expect(mockService[method]).toHaveBeenCalledWith(...args);
 };
@@ -901,7 +901,7 @@ export const expectOperationLog = (mockLogger: any, operation: string, status: s
     );
 };
 
-// Mock configuration helpers
+// Mock configuration utils
 export const setupCertifyLinkTestEnvironment = () => {
     setupTestEnvironment();
     process.env.ASACI_GENERATED_BY = 'test-generator';
@@ -973,7 +973,7 @@ export const createFailedServiceScenario = (serviceName: string, errorMessage: s
         : createAsaciServiceError(errorMessage)
 });
 
-// Integration test helpers
+// Integration test utils
 export const createMockIntegrationEnvironment = () => ({
     orass: createMockOrassService(),
     asaci: createMockAsaciProductionService(),
@@ -1062,7 +1062,7 @@ export const createMockSequelizeModel = <T>(data: T): T & any => ({
 });
 
 /**
- * Error assertion helpers
+ * Error assertion utils
  */
 export const expectValidationError = (error: any, message?: string) => {
     expect(error).toBeInstanceOf(Error);
@@ -1105,7 +1105,7 @@ export const createServiceResponse = <T>(data: T, success: boolean = true) => ({
 });
 
 /**
- * Date helpers for testing
+ * Date utils for testing
  */
 export const createTestDate = (daysFromNow: number = 0): Date => {
     const date = new Date();
@@ -1117,7 +1117,7 @@ export const createExpiredDate = (): Date => createTestDate(-1);
 export const createFutureDate = (): Date => createTestDate(1);
 
 /**
- * Validation helpers
+ * Validation utils
  */
 export const createValidLoginDto = (overrides: Partial<any> = {}) => ({
     email: TEST_DATA.VALID_EMAIL,
@@ -1190,7 +1190,7 @@ export const createMockOrassConnectionStatus = (overrides: Partial<any> = {}) =>
     ...overrides
 });
 
-// In test-utils.ts
+// In test.utils.ts
 
 export const createMockOracleConnection = (overrides: Partial<any> = {}) => ({
     execute: jest.fn(),
@@ -1360,7 +1360,7 @@ export const createMockOrassHealthCheck = (overrides: Partial<any> = {}) => ({
     ...overrides
 });
 
-// Large dataset test helpers for ORASS
+// Large dataset test utils for ORASS
 export const createLargeOrassDataset = (count: number = 1000) => ({
     rows: Array(count).fill(null).map((_, index) => ({
         ...createMockOracleQueryResult().orassRow,
@@ -1413,7 +1413,7 @@ export const createMockOracleClientConfig = () => ({
     getConnection: jest.fn()
 });
 
-// ORASS performance test helpers
+// ORASS performance test utils
 export const createOrassPerformanceTestData = (queryCount: number = 100, recordsPerQuery: number = 1000) => ({
     queries: Array(queryCount).fill(null).map((_, index) => ({
         criteria: createValidOrassPolicySearchCriteria({
@@ -1423,7 +1423,7 @@ export const createOrassPerformanceTestData = (queryCount: number = 100, records
     }))
 });
 
-// ORASS connection pool test helpers
+// ORASS connection pool test utils
 export const createMockConnectionPoolStats = (overrides: Partial<any> = {}) => ({
     connectionsInUse: 2,
     connectionsOpen: 5,
@@ -1436,7 +1436,7 @@ export const createMockConnectionPoolStats = (overrides: Partial<any> = {}) => (
     ...overrides
 });
 
-// ORASS data type test helpers
+// ORASS data type test utils
 export const createOrassDataTypeTestRow = () => ({
     // String types
     NUMERO_DE_POLICE: 'POL123456789',
@@ -1471,7 +1471,7 @@ export const createSqlInjectionTestCriteria = () => ({
     specialCharsEndorsement: "END%789"
 });
 
-// ORASS assertion helpers
+// ORASS assertion utils
 export const expectOrassConnection = (mockPool: any, config: any) => {
     expect(mockPool.createPool || jest.fn()).toHaveBeenCalledWith({
         user: expect.any(String),
@@ -1541,7 +1541,7 @@ export const createOrassQueryFailureScenario = () => ({
     expectedStatusCode: 500
 });
 
-// ORASS integration test helpers
+// ORASS integration test utils
 export const createMockOrassIntegrationEnvironment = () => ({
     config: createMockOrassConfig(),
     pool: createMockOraclePool(),
@@ -1549,7 +1549,7 @@ export const createMockOrassIntegrationEnvironment = () => ({
     queryResults: createMockOracleQueryResult()
 });
 
-// ORASS stress test helpers
+// ORASS stress test utils
 export const createOrassStressTestData = () => ({
     concurrentConnections: 50,
     queriesPerConnection: 100,
@@ -1557,13 +1557,13 @@ export const createOrassStressTestData = () => ({
     totalExpectedQueries: 5000 // 50 * 100
 });
 
-// ORASS timeout test helpers
+// ORASS timeout test utils
 export const createTimeoutTestPromise = (delay: number = 5000) =>
     new Promise((_, reject) =>
         setTimeout(() => reject(createOracleTimeoutError()), delay)
     );
 
-// ORASS memory test helpers
+// ORASS memory test utils
 export const createMemoryTestDataset = (sizeInMB: number = 100) => {
     const recordSize = 1024; // Approximate size per record in bytes
     const recordCount = (sizeInMB * 1024 * 1024) / recordSize;
@@ -1578,7 +1578,7 @@ export const createMemoryTestDataset = (sizeInMB: number = 100) => {
     }));
 };
 
-// ORASS configuration validation helpers
+// ORASS configuration validation utils
 export const createInvalidOrassConfig = () => ({
     host: '',
     port: -1,
@@ -1593,7 +1593,7 @@ export const createValidOrassConfig = () => ({
     username: 'orass_user'
 });
 
-// ORASS logging test helpers
+// ORASS logging test utils
 export const createMockOrassLogger = () => ({
     info: jest.fn(),
     error: jest.fn(),
@@ -1602,7 +1602,7 @@ export const createMockOrassLogger = () => ({
     trace: jest.fn()
 });
 
-// ORASS security test helpers
+// ORASS security test utils
 export const createSqlInjectionTestData = () => [
     {
         name: 'SQL injection with DROP TABLE',
@@ -1741,7 +1741,7 @@ export const generateOrassTestSuite = () => ({
     performanceBenchmarks: ORASS_PERFORMANCE_BENCHMARKS
 });
 
-// ORASS error simulation helpers
+// ORASS error simulation utils
 export const simulateOrassNetworkError = () => {
     const error = new Error('Network error: Connection refused');
     error.name = 'NetworkError';
@@ -1763,7 +1763,7 @@ export const simulateOrassAuthError = () => {
     return error;
 };
 
-// ORASS load testing helpers
+// ORASS load testing utils
 export const createOrassLoadTestScenario = (users: number, duration: number) => ({
     virtualUsers: users,
     testDurationMinutes: duration,
@@ -1773,7 +1773,7 @@ export const createOrassLoadTestScenario = (users: number, duration: number) => 
     maxAcceptableErrorRate: 0.05 // 5%
 });
 
-// ORASS monitoring helpers
+// ORASS monitoring utils
 export const createOrassMetrics = () => ({
     connectionPoolStats: createMockConnectionPoolStats(),
     queryMetrics: {
@@ -1791,7 +1791,7 @@ export const createOrassMetrics = () => ({
     }
 });
 
-// ORASS cleanup helpers
+// ORASS cleanup utils
 export const cleanupOrassTestResources = async (service: any) => {
     try {
         if (service && typeof service.disconnect === 'function') {

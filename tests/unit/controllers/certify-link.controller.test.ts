@@ -14,7 +14,7 @@ import {
     setupTestEnvironment,
     expectHttpStatus,
     expectJsonResponse, setupCertifyLinkTestEnvironment
-} from '../../helpers/test-utils';
+} from '../../utils/test.utils';
 import {AsaciProductionService} from "@services/asaci-production.service";
 import {OrassService} from "@services/orass.service";
 
@@ -495,7 +495,8 @@ describe('CertifyLinkController', () => {
                 success: true,
                 downloadLink: 'https://example.com/cert.pdf',
                 source: 'database',
-                downloadCount: 5
+                downloadCount: 5,
+                message: 'Certificate download link retrieved successfully'
             };
             mockAuthenticatedRequest.params = { reference: certificateReference };
             mockService.getEditionRequestDownloadLink.mockResolvedValue(mockResult);

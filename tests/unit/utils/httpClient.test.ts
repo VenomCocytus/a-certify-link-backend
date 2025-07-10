@@ -1,4 +1,3 @@
-// tests/unit/utils/httpClient.test.ts
 import { describe, beforeEach, afterEach, it, expect, jest } from '@jest/globals';
 import axios, {AxiosHeaders} from 'axios';
 import { HttpClient, HttpClientConfig } from '@utils/httpClient';
@@ -8,11 +7,10 @@ import {
     createMockNetworkError,
     createMockAxiosInstance,
     testFixtures,
-    flushPromises,
     HTTP_STATUS,
     assertions,
     createTestEnvironment,
-} from '../../helpers/neo-test-utils';
+} from '../../utils/http-client.test.utils';
 import {logger} from "@utils/logger";
 
 jest.mock('axios');
