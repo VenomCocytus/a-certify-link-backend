@@ -279,61 +279,61 @@ export function createAsaciRoutes(
     // ASACI Certificate Routes
 
     /**
-     * @route GET /certificates
-     * @desc Get ASACI certificates
+     * @route GET /edition-requests
+     * @desc Get ASACI edition-requests
      * @access Private
      */
-    router.get('/certificates',
+    router.get('/edition-requests',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.getCertificates.bind(attestationController))
     );
 
     /**
-     * @route GET /certificates/:reference
+     * @route GET /edition-requests/:reference
      * @desc Get ASACI certificate by reference
      * @access Private
      */
-    router.get('/certificates/:reference',
+    router.get('/edition-requests/:reference',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.getCertificate.bind(attestationController))
     );
 
     /**
-     * @route GET /certificates/:reference/download
+     * @route GET /edition-requests/:reference/download
      * @desc Download ASACI certificate
      * @access Private
      */
-    router.get('/certificates/:reference/download',
+    router.get('/edition-requests/:reference/download',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.downloadCertificate.bind(attestationController))
     );
 
     /**
-     * @route POST /certificates/:reference/cancel
+     * @route POST /edition-requests/:reference/cancel
      * @desc Cancel ASACI certificate
      * @access Private
      */
-    router.post('/certificates/:reference/cancel',
+    router.post('/edition-requests/:reference/cancel',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.cancelCertificate.bind(attestationController))
     );
 
     /**
-     * @route POST /certificates/:reference/suspend
+     * @route POST /edition-requests/:reference/suspend
      * @desc Suspend ASACI certificate
      * @access Private
      */
-    router.post('/certificates/:reference/suspend',
+    router.post('/edition-requests/:reference/suspend',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.suspendCertificate.bind(attestationController))
     );
 
     /**
-     * @route POST /certificates/:reference/check
+     * @route POST /edition-requests/:reference/check
      * @desc Check ASACI certificate
      * @access Private
      */
-    router.post('/certificates/:reference/check',
+    router.post('/edition-requests/:reference/check',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.checkCertificate.bind(attestationController))
     );
@@ -433,31 +433,31 @@ export function createAsaciRoutes(
     // ASACI Statistics Routes
 
     /**
-     * @route GET /statistics/certificates/usage
+     * @route GET /statistics/edition-requests/usage
      * @desc Get ASACI certificate usage statistics
      * @access Private
      */
-    router.get('/statistics/certificates/usage',
+    router.get('/statistics/edition-requests/usage',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.getCertificateUsageStatistics.bind(attestationController))
     );
 
     /**
-     * @route GET /statistics/certificates/available
-     * @desc Get ASACI available certificates statistics
+     * @route GET /statistics/edition-requests/available
+     * @desc Get ASACI available edition-requests statistics
      * @access Private
      */
-    router.get('/statistics/certificates/available',
+    router.get('/statistics/edition-requests/available',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.getAvailableCertificatesStatistics.bind(attestationController))
     );
 
     /**
-     * @route GET /statistics/certificates/used
-     * @desc Get ASACI used certificates statistics
+     * @route GET /statistics/edition-requests/used
+     * @desc Get ASACI used edition-requests statistics
      * @access Private
      */
-    router.get('/statistics/certificates/used',
+    router.get('/statistics/edition-requests/used',
         authMiddleware,
         asyncHandlerMiddleware(attestationController.getUsedCertificatesStatistics.bind(attestationController))
     );

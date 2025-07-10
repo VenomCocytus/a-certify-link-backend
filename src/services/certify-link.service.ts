@@ -333,7 +333,7 @@ export class CertifyLinkService {
             return {
                 success: true,
                 certificateUrl: request.certificateUrl,
-                downloadCount: request.downloadCount + 1,
+                downloadCount: request.downloadCount ? request.downloadCount + 1 : 0,
                 message: 'Certificate download initiated'
             };
 

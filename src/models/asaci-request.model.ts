@@ -76,13 +76,13 @@ export interface AsaciRequestAttributes {
 
     certificateUrl?: string;
     certificateData?: object;
-    downloadCount: number;
+    downloadCount?: number;
     lastDownloadAt?: Date;
 
     errorMessage?: string;
     errorDetails?: object;
-    retryCount: number;
-    maxRetries: number;
+    retryCount?: number;
+    maxRetries?: number;
 
     createdAt: Date;
     updatedAt: Date;
@@ -129,13 +129,13 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
 
     public certificateUrl?: string;
     public certificateData?: object;
-    public downloadCount!: number;
+    public downloadCount?: number;
     public lastDownloadAt?: Date;
 
     public errorMessage?: string;
     public errorDetails?: object;
-    public retryCount!: number;
-    public maxRetries!: number;
+    public retryCount?: number;
+    public maxRetries?: number;
 
     public readonly createdAt!: Date;
     public updatedAt!: Date;
@@ -150,7 +150,7 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
     }
 
     public get canRetry(): boolean {
-        return this.isFailed && this.retryCount < this.maxRetries;
+        return this.isFailed && (this.retryCount || 0) < (this.maxRetries || 3);
     }
 
     public get totalProcessingTime(): number | null {
@@ -192,13 +192,13 @@ export class AsaciRequestModel extends Model<AsaciRequestAttributes, AsaciReques
             status: AsaciRequestStatus.FAILED,
             errorMessage,
             errorDetails,
-            retryCount: this.retryCount + 1
+            retryCount: this.retryCount ? + this.retryCount + 1 : 0
         });
     }
 
     public async incrementDownloadCount(): Promise<void> {
         await this.update({
-            downloadCount: this.downloadCount + 1,
+            downloadCount: this.downloadCount ?  this.downloadCount + 1 : 0,
             lastDownloadAt: new Date()
         });
     }
@@ -500,7 +500,7 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         },
         downloadCount: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'download_count'
         },
         lastDownloadAt: {
@@ -529,12 +529,12 @@ export function initAsaciRequestModel(sequelize: Sequelize): typeof AsaciRequest
         },
         retryCount: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'retry_count'
         },
         maxRetries: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'max_retries'
         },
 
