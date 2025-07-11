@@ -3,7 +3,9 @@ import { CertifyLinkService } from '@services/certify-link.service';
 import { AsaciProductionService } from '@services/asaci-production.service';
 import { OrassService } from '@services/orass.service';
 import AsaciRequestModel, { AsaciRequestStatus } from '@models/asaci-request.model';
+import OperationLogModel, { OperationStatus, OperationType } from '@models/operation-log.model';
 import { logger } from '@utils/logger';
+import { ASACI_ENDPOINTS } from '@config/asaci-endpoints';
 import {
     createMockAsaciRequest,
     createMockOrassQueryResult,
@@ -26,6 +28,8 @@ jest.mock('@utils/logger');
 const MockedAsaciProductionService = AsaciProductionService as jest.MockedClass<typeof AsaciProductionService>;
 const MockedOrassService = OrassService as jest.MockedClass<typeof OrassService>;
 const MockedAsaciRequestModel = AsaciRequestModel as jest.MockedClass<typeof AsaciRequestModel>;
+const MockedOperationLogModel = OperationLogModel as jest.MockedClass<typeof OperationLogModel>;
+
 describe('CertifyLinkService', () => {
     let service: CertifyLinkService;
     let mockOrassService: jest.Mocked<OrassService>;
@@ -51,9 +55,17 @@ describe('CertifyLinkService', () => {
         jest.mocked(MockedAsaciRequestModel.findOne).mockResolvedValue(mockAsaciRequest);
         jest.mocked(MockedAsaciRequestModel.count).mockResolvedValue(1);
         jest.mocked(MockedAsaciRequestModel.getStatsByUser).mockResolvedValue(createMockStatistics());
-        // jest.mocked(MockedOperationLogModel.logOrassOperation).mockResolvedValue(undefined);
-        // jest.mocked(MockedOperationLogModel.logAsaciOperation).mockResolvedValue(undefined);
+        jest.mocked(MockedOperationLogModel.logOrassOperation).mockResolvedValue(undefined as any);
+        jest.mocked(MockedOperationLogModel.logAsaciOperation).mockResolvedValue(undefined as any);
     };
+
+    describe('constructor', () => {
+        it('should initialize with provided services', () => {
+            expect(service).toBeInstanceOf(CertifyLinkService);
+            expect((service as any).orassService).toBe(mockOrassService);
+            expect((service as any).asaciProductionService).toBe(mockAsaciService);
+        });
+    });
 
     describe('searchOrassPolicies', () => {
         it('should search ORASS policies with all parameters', async () => {
@@ -122,6 +134,35 @@ describe('CertifyLinkService', () => {
             expect(result.policies).toHaveLength(0);
             expect(result.totalCount).toBe(0);
             expect(result.hasMore).toBe(false);
+        });
+
+        it('should map all search criteria correctly', async () => {
+            // Arrange
+            const searchDto = createValidSearchOrassPoliciesDto({
+                policyNumber: 'POL123',
+                applicantCode: 'APP456',
+                endorsementNumber: 'END789',
+                organizationCode: 'ORG001',
+                officeCode: 'OFF002'
+            });
+            const expectedResult = createMockOrassQueryResult();
+            mockOrassService.searchPolicies.mockResolvedValue(expectedResult);
+
+            // Act
+            await service.searchOrassPolicies(searchDto);
+
+            // Assert
+            expect(mockOrassService.searchPolicies).toHaveBeenCalledWith(
+                {
+                    policyNumber: 'POL123',
+                    applicantCode: 'APP456',
+                    endorsementNumber: 'END789',
+                    organizationCode: 'ORG001',
+                    officeCode: 'OFF002'
+                },
+                expect.any(Number),
+                expect.any(Number)
+            );
         });
     });
 
@@ -212,6 +253,135 @@ describe('CertifyLinkService', () => {
                 expect.objectContaining({ channel: 'web' })
             );
         });
+
+        it('should handle certificate URL from certificates array', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const mockResponse = createMockAsaciResponse({
+                status: 201,
+                data: {
+                    reference: 'CERT-12345',
+                    certificates: [{ download_link: 'https://example.com/cert-from-array.pdf' }]
+                }
+            });
+            mockAsaciService.createProductionRequest.mockResolvedValue(mockResponse);
+
+            // Act
+            await service.createEditionRequest(createRequest, userId);
+
+            // Assert
+            expect(mockAsaciRequest.markAsCompleted).toHaveBeenCalledWith(
+                'https://example.com/cert-from-array.pdf',
+                mockResponse.data
+            );
+        });
+
+        it('should log ORASS operation start', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const mockResponse = createMockAsaciResponse();
+            mockAsaciService.createProductionRequest.mockResolvedValue(mockResponse);
+
+            // Act
+            await service.createEditionRequest(createRequest, userId);
+
+            // Assert
+            expect(MockedOperationLogModel.logOrassOperation).toHaveBeenCalledWith(
+                userId,
+                mockAsaciRequest.id,
+                OperationStatus.STARTED,
+                undefined,
+                { policyNumber: createRequest.policyNumber }
+            );
+        });
+
+        it('should log successful ASACI operation', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const mockResponse = createMockAsaciResponse({ status: 201 });
+            mockAsaciService.createProductionRequest.mockResolvedValue(mockResponse);
+
+            // Act
+            await service.createEditionRequest(createRequest, userId);
+
+            // Assert
+            expect(MockedOperationLogModel.logAsaciOperation).toHaveBeenCalledWith(
+                userId,
+                mockAsaciRequest.id,
+                OperationType.ASACI_REQUEST,
+                OperationStatus.SUCCESS,
+                'POST',
+                ASACI_ENDPOINTS.PRODUCTIONS,
+                expect.any(Number),
+                expect.any(Object),
+                mockResponse,
+                201
+            );
+        });
+
+        it('should log failed ASACI operation', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const error = new Error('ASACI service failed');
+            mockAsaciService.createProductionRequest.mockRejectedValue(error);
+
+            // Act & Assert
+            await expect(service.createEditionRequest(createRequest, userId))
+                .rejects.toThrow('ASACI service failed');
+
+            expect(MockedOperationLogModel.logAsaciOperation).toHaveBeenCalledWith(
+                userId,
+                mockAsaciRequest.id,
+                OperationType.ASACI_REQUEST,
+                OperationStatus.FAILED,
+                'POST',
+                ASACI_ENDPOINTS.PRODUCTIONS,
+                expect.any(Number),
+                undefined,
+                undefined,
+                undefined,
+                error
+            );
+        });
+
+        it('should handle non-201 status response', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const mockResponse = createMockAsaciResponse({ status: 400 });
+            mockAsaciService.createProductionRequest.mockResolvedValue(mockResponse);
+
+            // Act
+            const result = await service.createEditionRequest(createRequest, userId);
+
+            // Assert
+            expect(mockAsaciRequest.markAsCompleted).not.toHaveBeenCalled();
+            expect(result.success).toBe(true);
+            expect(result.asaciResult.status).toBe(400);
+        });
+
+        it('should set ORASS data and ASACI request data', async () => {
+            // Arrange
+            const createRequest = createValidCreateEditionFromOrassDataRequest();
+            const userId = TEST_DATA.VALID_UUID;
+            const mockResponse = createMockAsaciResponse();
+            mockAsaciService.createProductionRequest.mockResolvedValue(mockResponse);
+
+            // Act
+            await service.createEditionRequest(createRequest, userId);
+
+            // Assert
+            expect(mockAsaciRequest.setOrassData).toHaveBeenCalledWith(
+                createRequest.policyNumber,
+                createRequest
+            );
+            expect(mockAsaciRequest.setAsaciRequest).toHaveBeenCalled();
+            expect(mockAsaciRequest.setAsaciResponse).toHaveBeenCalled();
+        });
     });
 
     describe('getEditionRequestFromAsaci', () => {
@@ -223,7 +393,13 @@ describe('CertifyLinkService', () => {
                     { id: 1, user: { username: 'test-generator' } },
                     { id: 2, user: { username: 'other-user' } }
                 ],
-                meta: { total: 2, per_page: 10 }
+                meta: { 
+                    total: 2, 
+                    per_page: 10,
+                    path: '/api/productions',
+                    next_cursor: null,
+                    prev_cursor: null
+                }
             };
             mockAsaciService.getProductionRequests.mockResolvedValue(mockResponse);
 
@@ -235,11 +411,21 @@ describe('CertifyLinkService', () => {
             expect(result.data).toHaveLength(1);
             expect(result.data[0].user.username).toBe('test-generator');
             expect(result.metadata.filteredBy).toBe('generated_id');
+            expect(result.pagination.path).toBe('/api/productions');
         });
 
         it('should handle empty ASACI response', async () => {
             // Arrange
-            const mockResponse = { data: [], meta: { total: 0 } };
+            const mockResponse = { 
+                data: [], 
+                meta: { 
+                    total: 0,
+                    per_page: 10,
+                    path: '/api/productions',
+                    next_cursor: null,
+                    prev_cursor: null
+                }
+            };
             mockAsaciService.getProductionRequests.mockResolvedValue(mockResponse);
 
             // Act
@@ -248,6 +434,7 @@ describe('CertifyLinkService', () => {
             // Assert
             expect(result.success).toBe(true);
             expect(result.data).toHaveLength(0);
+            expect(result.pagination.total).toBe(0);
         });
 
         it('should handle ASACI service errors', async () => {
@@ -258,6 +445,54 @@ describe('CertifyLinkService', () => {
             // Act & Assert
             await expect(service.getEditionRequestFromAsaci())
                 .rejects.toThrow('Failed to retrieve attestations: ASACI service unavailable');
+        });
+
+        it('should handle non-array data response', async () => {
+            // Arrange
+            const mockResponse = { 
+                data: null,
+                meta: { total: 0 }
+            };
+            mockAsaciService.getProductionRequests.mockResolvedValue(mockResponse);
+
+            // Act
+            const result = await service.getEditionRequestFromAsaci();
+
+            // Assert
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([]);
+            expect(result.pagination.total).toBe(0);
+        });
+
+        it('should handle missing ASACI_GENERATED_BY environment variable', async () => {
+            // Arrange
+            delete process.env.ASACI_GENERATED_BY;
+            const mockResponse = {
+                data: [{ id: 1, user: { username: 'test-user' } }],
+                meta: { total: 1 }
+            };
+            mockAsaciService.getProductionRequests.mockResolvedValue(mockResponse);
+
+            // Act
+            const result = await service.getEditionRequestFromAsaci();
+
+            // Assert
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([]);
+            expect(result.metadata.filteredBy).toBeNull();
+        });
+
+        it('should include execution time in metadata', async () => {
+            // Arrange
+            const mockResponse = { data: [], meta: { total: 0 } };
+            mockAsaciService.getProductionRequests.mockResolvedValue(mockResponse);
+
+            // Act
+            const result = await service.getEditionRequestFromAsaci();
+
+            // Assert
+            expect(result.metadata.executionTime).toBeGreaterThanOrEqual(0);
+            expect(result.metadata.timestamp).toBeDefined();
         });
     });
 
@@ -324,6 +559,44 @@ describe('CertifyLinkService', () => {
             await expect(service.getStoredAsaciRequests(userId))
                 .rejects.toThrow('Database connection failed');
         });
+
+        it('should filter by status only', async () => {
+            // Arrange
+            const userId = TEST_DATA.VALID_UUID;
+            const filters = { status: AsaciRequestStatus.ASACI_PENDING };
+            MockedAsaciRequestModel.findAll.mockResolvedValue([]);
+            MockedAsaciRequestModel.count.mockResolvedValue(0);
+
+            // Act
+            await service.getStoredAsaciRequests(userId, filters);
+
+            // Assert
+            expect(MockedAsaciRequestModel.findAll).toHaveBeenCalledWith({
+                where: { userId, status: AsaciRequestStatus.ASACI_PENDING },
+                order: [['createdAt', 'DESC']],
+                limit: 50,
+                offset: 0
+            });
+        });
+
+        it('should filter by certificate type only', async () => {
+            // Arrange
+            const userId = TEST_DATA.VALID_UUID;
+            const filters = { certificateType: 'original' };
+            MockedAsaciRequestModel.findAll.mockResolvedValue([]);
+            MockedAsaciRequestModel.count.mockResolvedValue(0);
+
+            // Act
+            await service.getStoredAsaciRequests(userId, filters);
+
+            // Assert
+            expect(MockedAsaciRequestModel.findAll).toHaveBeenCalledWith({
+                where: { userId, certificateType: 'original' },
+                order: [['createdAt', 'DESC']],
+                limit: 50,
+                offset: 0
+            });
+        });
     });
 
     describe('getAsaciRequestById', () => {
@@ -342,6 +615,11 @@ describe('CertifyLinkService', () => {
                 where: { id: requestId, userId }
             });
             expect(result).toEqual(mockRequest);
+            expect(logger.info).toHaveBeenCalledWith('Retrieved ASACI request by ID', {
+                requestId,
+                userId,
+                status: mockRequest.status
+            });
         });
 
         it('should return null for non-existent request', async () => {
@@ -355,6 +633,7 @@ describe('CertifyLinkService', () => {
 
             // Assert
             expect(result).toBeNull();
+            expect(logger.info).not.toHaveBeenCalledWith('Retrieved ASACI request by ID', expect.any(Object));
         });
 
         it('should handle database errors', async () => {
@@ -367,6 +646,7 @@ describe('CertifyLinkService', () => {
             // Act & Assert
             await expect(service.getAsaciRequestById(requestId, userId))
                 .rejects.toThrow('Database query failed');
+            expect(logger.error).toHaveBeenCalledWith('Failed to get ASACI request by ID:', error);
         });
     });
 
@@ -389,6 +669,14 @@ describe('CertifyLinkService', () => {
             expect(result.certificateUrl).toBe('https://example.com/cert.pdf');
             expect(result.downloadCount).toBe(6);
             expect(mockRequest.incrementDownloadCount).toHaveBeenCalled();
+            expect(MockedOperationLogModel.logAsaciOperation).toHaveBeenCalledWith(
+                userId,
+                requestId,
+                OperationType.ASACI_DOWNLOAD,
+                OperationStatus.SUCCESS,
+                'GET',
+                'https://example.com/cert.pdf'
+            );
         });
 
         it('should throw error for non-existent request', async () => {
@@ -413,6 +701,49 @@ describe('CertifyLinkService', () => {
             await expect(service.downloadCertificate(requestId, userId))
                 .rejects.toThrow('Certificate URL not available');
         });
+
+        it('should handle download count when it is null', async () => {
+            // Arrange
+            const requestId = TEST_DATA.VALID_UUID;
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                certificateUrl: 'https://example.com/cert.pdf',
+                downloadCount: null
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.downloadCertificate(requestId, userId);
+
+            // Assert
+            expect(result.downloadCount).toBe(0);
+        });
+
+        it('should log download failure', async () => {
+            // Arrange
+            const requestId = TEST_DATA.VALID_UUID;
+            const userId = TEST_DATA.VALID_UUID;
+            const error = new Error('Download failed');
+            MockedAsaciRequestModel.findOne.mockRejectedValue(error);
+
+            // Act & Assert
+            await expect(service.downloadCertificate(requestId, userId))
+                .rejects.toThrow('Download failed');
+
+            expect(MockedOperationLogModel.logAsaciOperation).toHaveBeenCalledWith(
+                userId,
+                requestId,
+                OperationType.ASACI_DOWNLOAD,
+                OperationStatus.FAILED,
+                'GET',
+                '',
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                error
+            );
+        });
     });
 
     describe('getEditionRequestDownloadLink', () => {
@@ -435,6 +766,7 @@ describe('CertifyLinkService', () => {
             expect(result.source).toBe('database');
             expect(result.downloadLink).toBe('https://example.com/cert.pdf');
             expect(mockRequest.incrementDownloadCount).toHaveBeenCalled();
+            expect(mockRequest.reload).toHaveBeenCalled();
         });
 
         it('should return failure when certificate not found', async () => {
@@ -449,6 +781,7 @@ describe('CertifyLinkService', () => {
             // Assert
             expect(result.success).toBe(false);
             expect(result.message).toBe('Certificate not found in database');
+            expect(result.downloadLink).toBeNull();
         });
 
         it('should handle database errors', async () => {
@@ -461,6 +794,93 @@ describe('CertifyLinkService', () => {
             // Act & Assert
             await expect(service.getEditionRequestDownloadLink(certificateReference, userId))
                 .rejects.toThrow('Failed to retrieve certificate download link: Database connection failed');
+        });
+
+        it('should work without userId', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference);
+
+            // Assert
+            expect(MockedAsaciRequestModel.findOne).not.toHaveBeenCalled();
+            expect(result.success).toBe(false);
+        });
+
+        it('should extract download link from asaciResponsePayload certificates array', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                asaciReference: certificateReference,
+                certificateUrl: 'https://example.com/fallback.pdf',
+                asaciResponsePayload: {
+                    data: {
+                        certificates: [{ download_link: 'https://example.com/cert-from-payload.pdf' }]
+                    }
+                }
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference, userId);
+
+            // Assert
+            expect(result.downloadLink).toBe('https://example.com/cert-from-payload.pdf');
+        });
+
+        it('should fallback to production download link from payload', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                asaciReference: certificateReference,
+                certificateUrl: 'https://example.com/fallback.pdf',
+                asaciResponsePayload: {
+                    data: {
+                        download_link: 'https://example.com/production-link.pdf'
+                    }
+                }
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference, userId);
+
+            // Assert
+            expect(result.downloadLink).toBe('https://example.com/production-link.pdf');
+        });
+
+        it('should handle logging errors when request is found but operation logging fails', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({ asaciReference: certificateReference });
+            const operationError = new Error('Operation error');
+            const logError = new Error('Log error');
+
+            // First call succeeds to find the request
+            MockedAsaciRequestModel.findOne
+                .mockResolvedValueOnce(mockRequest)
+                .mockResolvedValueOnce(mockRequest); // Second call for logging also succeeds
+
+            // Mock incrementDownloadCount to throw an error
+            mockRequest.incrementDownloadCount.mockRejectedValue(operationError);
+
+            // Mock the logging operation to also fail
+            MockedOperationLogModel.logAsaciOperation.mockRejectedValue(logError);
+
+            // Act & Assert
+            await expect(service.getEditionRequestDownloadLink(certificateReference, userId))
+                .rejects.toThrow('Failed to retrieve certificate download link: Operation error');
+
+            expect(logger.error).toHaveBeenCalledWith('Failed to log operation failure:', expect.objectContaining({
+                error: 'Log error',
+                originalError: 'Operation error',
+                certificateReference,
+                userId
+            }));
         });
     });
 
@@ -490,6 +910,11 @@ describe('CertifyLinkService', () => {
             });
             expect(result.results).toHaveLength(2);
             expect(result.errors).toHaveLength(1);
+            expect(result.errors[0]).toEqual({
+                certificateReference: 'CERT-003',
+                error: 'Certificate not found',
+                success: false
+            });
         });
 
         it('should handle empty certificate references', async () => {
@@ -503,6 +928,77 @@ describe('CertifyLinkService', () => {
             // Assert
             expect(result.success).toBe(true);
             expect(result.summary.total).toBe(0);
+            expect(result.summary.successful).toBe(0);
+            expect(result.summary.failed).toBe(0);
+            expect(result.results).toHaveLength(0);
+            expect(result.errors).toBeUndefined();
+        });
+
+        it('should handle all successful requests', async () => {
+            // Arrange
+            const certificateReferences = ['CERT-001', 'CERT-002'];
+            const userId = TEST_DATA.VALID_UUID;
+
+            jest.spyOn(service, 'getEditionRequestDownloadLink')
+                .mockResolvedValue({ success: true, downloadLink: 'https://example.com/cert.pdf' } as any);
+
+            // Act
+            const result = await service.getBatchCertificateDownloadLinks(certificateReferences, userId);
+
+            // Assert
+            expect(result.summary.failed).toBe(0);
+            expect(result.errors).toBeUndefined();
+        });
+
+        it('should handle all failed requests', async () => {
+            // Arrange
+            const certificateReferences = ['CERT-001', 'CERT-002'];
+            const userId = TEST_DATA.VALID_UUID;
+
+            jest.spyOn(service, 'getEditionRequestDownloadLink')
+                .mockRejectedValue(new Error('All failed'));
+
+            // Act
+            const result = await service.getBatchCertificateDownloadLinks(certificateReferences, userId);
+
+            // Assert
+            expect(result.summary.successful).toBe(0);
+            expect(result.summary.failed).toBe(2);
+            expect(result.errors).toHaveLength(2);
+        });
+
+        it('should work without userId', async () => {
+            // Arrange
+            const certificateReferences = ['CERT-001'];
+
+            jest.spyOn(service, 'getEditionRequestDownloadLink')
+                .mockResolvedValue({ success: true } as any);
+
+            // Act
+            const result = await service.getBatchCertificateDownloadLinks(certificateReferences);
+
+            // Assert
+            expect(result.success).toBe(true);
+            expect(service.getEditionRequestDownloadLink).toHaveBeenCalledWith('CERT-001', undefined);
+        });
+
+        it('should handle service-level errors', async () => {
+            // Arrange
+            const certificateReferences = ['CERT-001'];
+            const userId = TEST_DATA.VALID_UUID;
+            const error = new Error('Service error');
+
+            // Mock Promise.allSettled to throw
+            jest.spyOn(Promise, 'allSettled').mockRejectedValue(error);
+
+            // Act & Assert
+            await expect(service.getBatchCertificateDownloadLinks(certificateReferences, userId))
+                .rejects.toThrow('Service error');
+
+            expect(logger.error).toHaveBeenCalledWith('Failed batch certificate download links operation:', error);
+
+            // Restore Promise.allSettled
+            (Promise.allSettled as jest.Mock).mockRestore();
         });
     });
 
@@ -517,6 +1013,7 @@ describe('CertifyLinkService', () => {
             const result = await service.getUserStatistics(userId);
 
             // Assert
+            expect(MockedAsaciRequestModel.getStatsByUser).toHaveBeenCalledWith(userId, AsaciRequestModel.sequelize);
             expect(result.success).toBe(true);
             expect(result.data).toEqual(mockStats);
             expect(result.timestamp).toBeDefined();
@@ -531,6 +1028,7 @@ describe('CertifyLinkService', () => {
             // Act & Assert
             await expect(service.getUserStatistics(userId))
                 .rejects.toThrow('Statistics query failed');
+            expect(logger.error).toHaveBeenCalledWith('Failed to get user statistics:', error);
         });
     });
 
@@ -544,6 +1042,7 @@ describe('CertifyLinkService', () => {
             const result = await service.getOrassStatistics();
 
             // Assert
+            expect(mockOrassService.searchPolicies).toHaveBeenCalledWith({}, 1);
             expect(result.totalPolicies).toBe(1500);
             expect(result.lastUpdated).toBeDefined();
         });
@@ -556,6 +1055,67 @@ describe('CertifyLinkService', () => {
             // Act & Assert
             await expect(service.getOrassStatistics())
                 .rejects.toThrow('ORASS service unavailable');
+            expect(logger.error).toHaveBeenCalledWith('Failed to get ORASS statistics:', error);
+        });
+    });
+
+    describe('error handling and edge cases', () => {
+        it('should handle null asaciResponsePayload gracefully', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                asaciReference: certificateReference,
+                certificateUrl: 'https://example.com/cert.pdf',
+                asaciResponsePayload: null
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference, userId);
+
+            // Assert
+            expect(result.downloadLink).toBe('https://example.com/cert.pdf');
+        });
+
+        it('should handle empty certificates array in payload', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                asaciReference: certificateReference,
+                certificateUrl: 'https://example.com/cert.pdf',
+                asaciResponsePayload: {
+                    data: {
+                        certificates: []
+                    }
+                }
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference, userId);
+
+            // Assert
+            expect(result.downloadLink).toBe('https://example.com/cert.pdf');
+        });
+
+        it('should handle missing data in payload', async () => {
+            // Arrange
+            const certificateReference = 'CERT-12345';
+            const userId = TEST_DATA.VALID_UUID;
+            const mockRequest = createMockAsaciRequest({
+                asaciReference: certificateReference,
+                certificateUrl: 'https://example.com/cert.pdf',
+                asaciResponsePayload: {}
+            });
+            MockedAsaciRequestModel.findOne.mockResolvedValue(mockRequest);
+
+            // Act
+            const result = await service.getEditionRequestDownloadLink(certificateReference, userId);
+
+            // Assert
+            expect(result.downloadLink).toBe('https://example.com/cert.pdf');
         });
     });
 });

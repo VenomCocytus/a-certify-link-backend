@@ -1,4 +1,3 @@
-import oracledb from 'oracledb';
 import {logger} from '@utils/logger';
 import {getOrassConfig} from '@config/environment';
 import {BaseException} from '@exceptions/base.exception';
@@ -8,12 +7,14 @@ import {CertificateColor, CertificateType, ChannelType, ConnectionStatus, Health
 import {OrassConfig} from "@interfaces/common.interfaces";
 
 export class OrassService {
-    private pool: oracledb.Pool | null = null;
     private config: OrassConfig;
     private isConnected: boolean = false;
     private lastConnectionCheck: Date = new Date();
+    private oracledb: any;
+    private pool: any | null = null;
 
-    constructor() {
+    constructor(oracleInstance = require('oracledb')) {
+        this.oracledb = oracleInstance;
         this.config = getOrassConfig()
         this.initializeOracleClient();
     }
@@ -24,9 +25,9 @@ export class OrassService {
     private initializeOracleClient(): void {
         try {
             // Set Oracle client configuration
-            oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
-            oracledb.autoCommit = true;
-            oracledb.initOracleClient();
+            this.oracledb.outFormat = this.oracledb.OUT_FORMAT_OBJECT;
+            this.oracledb.autoCommit = true;
+            this.oracledb.initOracleClient();
 
             logger.info('✅ Oracle client initialized');
         } catch (error: any) {
@@ -52,7 +53,7 @@ export class OrassService {
 
             const connectionString = `${this.config.host}:${this.config.port}/${this.config.sid}`;
 
-            this.pool = await oracledb.createPool({
+            this.pool = await this.oracledb.createPool({
                 user: process.env.ORASS_USERNAME,
                 password: process.env.ORASS_PASSWORD,
                 connectString: connectionString,
@@ -100,21 +101,34 @@ export class OrassService {
      */
     private async testConnection(): Promise<void> {
         if (!this.pool) {
-            throw new Error('Connection pool not initialized');
+            throw new BaseException(
+                'Connection pool not initialized',
+                ErrorCodes.DATABASE_CONNECTION_ERROR,
+                500
+            );
         }
 
-        let connection: oracledb.Connection | null = null;
+        let connection: any = null;
 
         try {
             connection = await this.pool.getConnection();
             await connection.execute('SELECT 1 FROM DUAL');
-
             logger.debug('ORASS database connection test successful');
         } catch (error: any) {
-            throw new Error(`Connection test failed: ${error.message}`);
+            logger.error('❌ ORASS database connection test failed:', error);
+            throw new BaseException(
+                `Connection test failed: ${error.message}`,
+                ErrorCodes.DATABASE_CONNECTION_ERROR,
+                500,
+                { error: error.message }
+            );
         } finally {
             if (connection) {
-                await connection.close();
+                try {
+                    await connection.close();
+                } catch (closeError: any) {
+                    logger.warn('⚠️ Failed to close ORASS test connection:', closeError);
+                }
             }
         }
     }
@@ -178,7 +192,7 @@ export class OrassService {
             );
         }
 
-        let connection: oracledb.Connection | null = null;
+        let connection: any = null;
 
         try {
             connection = await this.pool.getConnection();
