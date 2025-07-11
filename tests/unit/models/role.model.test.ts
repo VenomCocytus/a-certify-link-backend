@@ -26,7 +26,6 @@ import {
     cleanupRoleTestEnvironment,
     createRoleIntegrationTestData,
     createSecurityTestScenarios,
-    createConcurrencyTestScenarios,
     createMemoryTestData,
     ROLE_TEST_CONSTANTS
 } from './role.test.utils';
